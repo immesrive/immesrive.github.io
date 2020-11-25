@@ -1,54 +1,92 @@
-<script src="https://cdn.jsdelivr.net/gh/aframevr/aframe@1c2407b26c61958baa93967b5412487cd94b290b/dist/aframe-master.min.js"></script>
-<script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
+﻿<!DOCTYPE html>
+<html>
 
-<style>
-  .arjs-loader {
-    height: 100%;
-    width: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    background-color: rgba(0, 0, 0, 0.8);
-    z-index: 9999;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Home - IMMERSIVE XR</title>
+    <meta name="description" content="IMMERSIVE XR">
+    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic">
+    <link rel="stylesheet" href="assets/fonts/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+    <link rel="stylesheet" href="assets/css/project-card.css">
+</head>
 
-  .arjs-loader div {
-    text-align: center;
-    font-size: 1.25em;
-    color: white;
-  }
-</style>
-
-<body style="margin : 0px; overflow: hidden;">
-  <!-- minimal loader shown until image descriptors are loaded -->
-  <div class="arjs-loader">
-    <div>Loading, please wait...</div>
-  </div>
-  <a-scene
-    vr-mode-ui="enabled: false;"
-    renderer="logarithmicDepthBuffer: true;"
-    embedded
-    arjs="trackingMethod: best; sourceType: webcam;debugUIEnabled: false;"
-  >
-    <!-- we use cors proxy to avoid cross-origin problems -->
-    <a-nft
-      type="nft"
-      url="https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/AR-js-org/AR.js/master/aframe/examples/image-tracking/nft/trex/trex-image/trex"
-      smooth="true"
-      smoothCount="10"
-      smoothTolerance=".01"
-      smoothThreshold="5"
-    >
-      <a-entity
-        gltf-model="https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/AR-js-org/AR.js/master/aframe/examples/image-tracking/nft/trex/scene.gltf"
-        scale="5 5 5"
-        position="50 150 0"
-      >
-      </a-entity>
-    </a-nft>
-    <a-entity camera></a-entity>
-  </a-scene>
+<body>
+    <nav class="navbar navbar-light navbar-expand bg-light navigation-clean">
+        <div class="container"><a class="navbar-brand" href="#">IMMERSIVE XR</a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"></button>
+            <div class="collapse navbar-collapse" id="navcol-1"></div>
+        </div>
+    </nav>
+    <header class="pulse animated masthead text-white text-center" style="background: url(&quot;assets/img/BGXR.jpeg&quot;);padding-top: 192;padding-bottom: 192;">
+        <div class="overlay" style="filter: saturate(80%);"></div>
+        <div class="container">
+            <div class="row tada animated">
+                <div class="col-xl-9 mx-auto">
+                    <h1 class="mb-5" style="text-align: center;"><br>ImmersiveXR brings the awesome to the party with augmented reality, virtual reality, 360 videos, gamification, app development, live events, and other&nbsp;<strong>immersive</strong>&nbsp;experiences.<br><br></h1>
+                </div>
+            </div>
+        </div>
+    </header>
+    <section class="showcase"></section>
+    <section class="testimonials text-center bg-light">
+        <div class="container" style="text-align: center;">
+            <h2 class="mb-5">Demo</h2>
+            <div class="row" style="text-align: center;">
+                <div class="col-lg-6" data-bs-hover-animate="pulse" style="text-align: center;">
+                    <div class="mx-auto testimonial-item mb-5 mb-lg-0" style="text-align: center;">
+                        <div class="card border-white border rounded shadow-lg" data-bs-hover-animate="pulse" style="width: 230px;height: 350px;margin: 10px;margin-left: 15px;">
+                            <div class="card-body" style="width: 205px;height: 350px;padding: 0px;margin: 10px;"><img class="d-lg-flex m-auto align-items-lg-center" style="width: 205px;height: 115.31px;margin-left: 0px;padding-left: 0px;" src="assets/img/cardvisitar.png">
+                                <h4 class="card-title" style="margin-top: 5px;"><strong>Card Visit AR</strong><br></h4>
+                                <p class="card-text" style="width: 180px;margin-top: 15px;margin-bottom: 20px;">&nbsp;"make your business&nbsp;<strong>card</strong>&nbsp;unique by adding&nbsp;<strong>AR</strong>&nbsp;features to it"<br></p>
+                                <div class="btn-group" role="group"><button class="btn btn-primary" type="button" style="background-color: rgb(72,72,72);"><a href="/cardvisitAR/" style="color: white">Open</a></button></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6" data-bs-hover-animate="pulse">
+                    <div class="mx-auto testimonial-item mb-5 mb-lg-0">
+                        <div class="card border-white border rounded shadow-lg" data-bs-hover-animate="pulse" style="width: 230px;height: 350px;margin: 10px;margin-left: 15px;">
+                            <div class="card-body" style="width: 205px;height: 350px;padding: 0px;margin: 10px;"><img class="d-lg-flex m-auto align-items-lg-center" style="width: 205px;height: 115.31px;margin-left: 0px;padding-left: 0px;" src="assets/img/interior%20ar.jpg">
+                                <h4 class="card-title" style="margin-top: 5px;"><strong>Interior AR</strong><br></h4>
+                                <p class="card-text" style="width: 180px;margin-top: 15px;margin-bottom: 20px;">"Interior designing experience with Augmented Reality!"<br></p>
+                                <div class="btn-group" role="group"><button class="btn btn-primary" type="button" style="background-color: rgb(72,72,72);"><a href="/interiorAR/" style="color: white">Open</a></button></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer class="footer bg-light">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6 my-auto h-100 text-center text-lg-left">
+                    <ul class="list-inline mb-2">
+                        <li class="list-inline-item"><a href="#">About</a></li>
+                        <li class="list-inline-item"><span>⋅</span></li>
+                        <li class="list-inline-item"><a href="#">Contact</a></li>
+                        <li class="list-inline-item"><span>⋅</span></li>
+                        <li class="list-inline-item"><a href="#">Terms of &nbsp;Use</a></li>
+                        <li class="list-inline-item"><span>⋅</span></li>
+                        <li class="list-inline-item"><a href="#">Privacy Policy</a></li>
+                    </ul>
+                    <p class="text-muted small mb-4 mb-lg-0">© IMMERSIVE XR 2020. All Rights Reserved.</p>
+                </div>
+                <div class="col-lg-6 my-auto h-100 text-center text-lg-right">
+                    <ul class="list-inline mb-0">
+                        <li class="list-inline-item"><a href="#"><i class="fa fa-facebook fa-2x fa-fw"></i></a></li>
+                        <li class="list-inline-item"><a href="#"><i class="fa fa-twitter fa-2x fa-fw"></i></a></li>
+                        <li class="list-inline-item"><a href="#"><i class="fa fa-instagram fa-2x fa-fw"></i></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="assets/js/bs-init.js"></script>
 </body>
+
+</html>
