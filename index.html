@@ -1,48 +1,39 @@
 <!DOCTYPE html>
-<html lang="en-us">
-
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>Piano AR | SimpleWebXR Unity</title>
-  <link rel="shortcut icon" href="TemplateData/favicon.ico">
-  <link rel="stylesheet" href="TemplateData/style.css">
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-163892314-1"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'UA-163892314-1');
-  </script>
-  <script src="TemplateData/UnityProgress.js"></script>
-  <script src="Build/UnityLoader.js"></script>
-  <script>
-    UnityLoader.SystemInfo.mobile = false;  // workaround to prevent the warning popup from opening on mobile phone
-
-    if (["Edge", "Firefox", "Chrome", "Safari"].indexOf(UnityLoader.SystemInfo.browser) == -1) {
-      UnityLoader.SystemInfo.browser = "Firefox"; // another workaround to prevent the warning popup from opening on unknown browsers
-    }
-
-    var gameInstance = UnityLoader.instantiate("gameContainer", "Build/ARPiano.json", { onProgress: UnityProgress });
-
-    // on iOS 13+, show request permission button
-    document.addEventListener("SimpleWebXRNeedMotionPermission", () => {
-      document.getElementById("iosPermission").style.display = "inline";
-    }, false);
-  </script>
+    <meta charset="UTF-8">
+    <title>WebAR Demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link rel="stylesheet" href="asset/css/default.css" />
 </head>
-
 <body>
-  <div class="webgl-content">
-    <div id="gameContainer" style="width: 960px; height: 600px"></div>
-    <div class="footer">
-      <div class="webgl-logo"></div>
-      <div class="fullscreen" onclick="gameInstance.SendMessage('WebXR', 'StartSession')"></div>
-      <div class="title">Piano AR [PianoAR]<a href="#" id="iosPermission" style="display:none;" onclick="DeviceMotionEvent.requestPermission()">-- CLICK HERE TO REQUEST SENSOR PERMISSION --</a></div>
-    </div>
-    <div class="footer">Demo Piano AR </div>
-  </div>
-</body>
 
+<div class="footer">
+    <input type="button" value="打开摄像头" id="openCamera" />
+    <select class="none" id="videoDevice"></select>
+    <input class="none" type="button" value="开始识别" id="start" />
+    <input class="none" type="button" value="停止识别" id="stop" />
+</div>
+
+
+<script type="text/javascript" src="asset/js/adapter.js"></script>
+<script type="text/javascript" src="asset/js/vconsole.min.js"></script>
+<script type="text/javascript" src="asset/libs/three/three.min.js"></script>
+<script type="text/javascript" src="asset/libs/three/FBXLoader.js"></script>
+<script type="text/javascript" src="asset/libs/three/inflate.min.js"></script>
+<script type="text/javascript" src="asset/libs/three/OrbitControls.js"></script>
+<script type="text/javascript" src="asset/js/ThreeHelper.js"></script>
+<script type="text/javascript" src="asset/js/webar.js"></script>
+<script>
+    (function(){
+        var vConsole = new VConsole();
+
+        const now = (new Date()).getTime();
+
+        const e = document.createElement('script');
+        e.setAttribute('src', `asset/js/app.js?t=${now}`);
+        document.body.appendChild(e);
+    })();
+</script>
+</body>
 </html>
