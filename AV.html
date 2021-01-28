@@ -1,0 +1,180 @@
+﻿<html>
+    <head>
+        <title>Web Model</title>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+
+        <!-- 합쳐지고 최소화된 최신 CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+
+        
+        <style>
+            model-viewer {
+                --ar-button-display: none;
+                background-color: #eee;
+                overflow-x: hidden;
+                --poster-color: #eee;
+                height: 50%;
+                width: auto;
+            }
+           
+            .btn-primary {
+                background-color: #b2073b;
+                border-color:  #b2073b;
+                
+                border-radius: 40px;
+            }
+            .hide 
+            {
+                display:none;
+            }
+            
+            .btnArea
+            {
+                position: absolute;
+                top : 90%;
+                left : 50%;
+                -ms-transform: translate(-50%, -90%);
+                transform: translate(-50%, -90%);
+
+            }
+            .spinner-border-sm {
+                width : 1.1em;
+                height : 1.1em;
+            }
+        </style>
+
+        <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+        <script nomodule src="https://unpkg.com/@google/model-viewer/dist/model-viewer-legacy.js"></script>
+
+    </head>
+    <div class="container">
+        <br />
+        <h2><b>XBoom Go</b></h2>
+        <br />
+        <br />
+        <audio id="myAudio" loop>
+            <source src="./assets/sound/danchoi.mp3" type="audio/mpeg">
+
+            Your browser does not support the audio element.
+        </audio>
+
+        <model-viewer id="model-viewer" 
+        src="../assets/models/PL5_Black.glb" 
+        ios-src="../assets/models/PL5_Black.usdz"
+
+        ar 
+        camera-controls 
+        interaction-prompt="none"
+        auto-rotate
+        ar-modes="scene-viewer quick-look webxr" 
+        ar-scale="auto"
+        >
+            <div class="d-grid gap-2 col-1 mx-auto btnArea">
+                   <button type="button" class="btn btn-danger hide"  id="animationBtn" onclick="animationPlay()"> 
+
+                    <span class="glyphicon glyphicon-off" aria-hidden="true" id="animationStatus"></span>
+                      <div class="spinner-border spinner-border-sm hide" role="status" id="loadingAnimation">
+                        <span class="sr-only">Loading...</span>
+                      </div>
+                </button>        
+            </div>
+            <div class="d-grid gap-2 mx-auto btnArea">
+                <button type="button" class="btn btn-success hide"  id="sharesnsBtn" onclick="shareSNS_click()"> 
+                    <span class="glyphicon glyphicon-share" aria-hidden="true">Share</span>
+                </button>        
+                <button type="button" id="audiobtn" style="background-image: url('./assets/button/play.png'); width :64px; height:64px;display:none " onclick="toggleAudio()"></button>
+            </div>
+        </model-viewer>
+      
+        <br/>
+         <div class="row">
+            <div class="row">
+                <div class="col-5" style="text-align : center;">
+                    <h6>select model</h6>
+                </div>
+                <div class="col-7">
+                    <select id="selectBox" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" onchange="modelChange()">
+                        <!--
+                            <option value="RollableTVClipAnimation" selected>TV</option>
+                            <option value="VivacewasherBlack" >세탁기(블랙)</option>
+                            <option value="VivacewasherWhite" >세탁기 (화이트)</option>
+                        -->
+                        <option value="PL5_Black" selected>PL5 (Black)</option>
+                        <option value="PL5_White" >PL5 (White)</option>
+                        <option value="PN1" >PN1</option>
+                        <option value="SP2_Dark Gray" >SP2 (Dark Gray)</option>
+                        <option value="SP2_Light Gray" >SP2 (Light Gray)</option>
+                      </select>
+                </div>
+
+          </div>
+        <br />
+        <div class="d-grid gap-2 col-8 mx-auto">
+        <button type="button" class="btn btn-primary btn-lg" id="my-own-custom-button" onclick="activateAR_click()"> View in AR </button>    
+        </div>
+        <br/>    <br/>
+    </div>
+    
+    <script>
+        
+        function toggleAudio() {
+            var audio = document.getElementById('myAudio');
+            if (audio.paused) {
+                audio.play()
+            } else {
+                audio.pause();
+            }
+        }
+        function shareSNS_click() {
+            const shareData = {
+                title: document.title,
+                text: 'Xboom GO',
+                url: 'https://daum.net',
+            };
+
+            if (navigator.canShare && navigator.canShare(shareData)) {
+                navigator.share(shareData);
+            }
+        }
+        
+        function modelChange() {
+
+            var selectBox = document.getElementById("selectBox");
+            var selectedValue = selectBox.options[selectBox.selectedIndex].value;
+
+            var animationBtn = document.getElementById("animationBtn");
+            if (selectedValue == 'RollableTVClipAnimation') 
+            {
+                animationBtn.classList.remove('hide')
+            }
+            else
+            {
+                animationBtn.classList.add('hide')
+            }
+
+            var modelViewer = document.querySelector("model-viewer")
+            const base = "../assets/models/" + selectedValue;
+            modelViewer.src = base + '.glb';
+            modelViewer.iosSrc = base + '.usdz';
+        }
+
+        function activateAR_click() {
+            var modelViewer = document.getElementById('model-viewer');
+            modelViewer.activateAR();
+            var x = document.getElementById("audiobtn");
+            x.style.display = "block";
+            var sharesnsBtn = document.getElementById("sharesnsBtn");
+            sharesnsBtn.classList.remove('hide');
+
+
+        }
+
+        
+    </script>
+</html>
+
+

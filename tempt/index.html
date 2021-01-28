@@ -1,0 +1,68 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <title>Hello!</title>
+    <style>
+        body {
+            font-family: helvetica, arial, sans-serif;
+            margin: 2em;
+        }
+
+        h1 {
+            font-style: italic;
+            color: #373fff;
+        }
+
+        .attribution {
+            font-size: 1rem;
+            text-align: center;
+            display: inline-block;
+            width: 100%;
+            padding: 2% 0;
+            }
+
+        model-viewer {
+            height: 15rem;
+            /*   width: 60%;
+            margin: 0 20%; */
+            width: 100%;
+            border: outset black;
+            border-radius: 4px;
+        }
+    </style>
+    <script type="module" src="./script/model-viewer.js"></script>
+
+    <!--
+        <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+    -->
+
+  </head>  
+  <body>
+    
+    <model-viewer
+                  src="./assets/models/boom_2_.glb"
+                  ios-src=""
+                  quick-look-browsers="safari chrome"
+                  alt="A football helmet"
+                  auto-rotate
+                  camera-controls
+                  ar
+                  ar-placement="wall"
+    ></model-viewer>
+    <ul>
+        <li><a href="./index.html">HOME</a></li>
+        <li><a href="./AV.html">AV</a></li>
+        <li><a href="./Refrigerator.html">Refrigerator</a></li>
+        <li><a href="./TestAR.html">TestAR</a></li>
+        <li><a href="./TV.html">TV</a></li>
+        <li><a href="./WashTower.html">WashTower</a></li>
+        <li><a href="./GIBOR.html">GIBOR</a></li>
+
+    </ul>
+
+</body>
+</html>
