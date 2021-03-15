@@ -104,17 +104,16 @@
         -->
         <canvas id='JeeWidgetCanvas'></canvas>
         
-        <div class='JeeWidgetControls JeeWidgetControlsTop'>
-          <!-- ADJUST BUTTON: -->
-          <button id='JeeWidgetAdjust'>
-            <div class="buttonIcon"><i class="fas fa-arrows-alt"></i></div>Adjust
-          </button>
-
-          <!-- RESIZE WIDGET BUTTON: -->
-          <button id='buttonResizeCanvas' onclick='test_resizeCanvas();'>
-            <div class="buttonIcon"><i class="fas fa-sync-alt"></i></div>Resize widget
-          </button>
-        </div>
+          <div class='JeeWidgetControls JeeWidgetControlsTop' style="display: none;">
+              <!-- ADJUST BUTTON: -->
+              <button id='JeeWidgetAdjust'>
+                  <div class="buttonIcon"><i class="fas fa-arrows-alt"></i></div>Adjust
+              </button>
+              <!-- RESIZE WIDGET BUTTON: -->
+              <button id='buttonResizeCanvas' onclick='test_resizeCanvas();'>
+                  <div class="buttonIcon"><i class="fas fa-sync-alt"></i></div>Resize widget
+              </button>
+          </div>
 
         <!-- CHANGE MODEL BUTTONS: -->
         <div class='JeeWidgetControls' id='JeeWidgetChangeModelContainer'>
