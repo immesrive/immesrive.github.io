@@ -1,7 +1,7 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
   <head>
-    <title>JEELIZ VTO WIDGET INTEGRATION DEMO</title>
+    <title>Glazz Try On</title>
     <meta charset='utf-8' />
 
     <!-- Forbid resize on pinch with IOS Safari: -->
@@ -35,10 +35,10 @@
       function main() {
         JEEWIDGET.start({
           sku: 'rayban_aviator_or_vertFlash',
-          searchImageMask: 'https://appstatic.jeeliz.com/jeewidget/images/target.png',
+          searchImageMask: 'https://github.com/immesrive/immesrive.github.io/blob/main/target%20GV_D.png',
           searchImageColor: 0xeeeeee,
           callbackReady: function(){
-            console.log('INFO: JEEWIDGET is ready :)');
+            console.log('INFO: glazz is ready :)');
           },
           onError: function(errorLabel){ // this function catches errors, so you can display custom integrated messages
             alert('An error happened. errorLabel =' + errorLabel)
@@ -82,7 +82,7 @@
 
       <div class='header'>
         <div class="headerTitle">
-          Jeeliz VTO Widget
+            Try on virtual glazz
         </div>      
       </div>
 
@@ -118,9 +118,9 @@
 
         <!-- CHANGE MODEL BUTTONS: -->
         <div class='JeeWidgetControls' id='JeeWidgetChangeModelContainer'>
-          <button onclick="JEEWIDGET.load('rayban_aviator_or_vertFlash')">Model 1</button>
-          <button onclick="JEEWIDGET.load('rayban_round_cuivre_pinkBrownDegrade')">Model 2</button>
-          <button onclick="JEEWIDGET.load_modelStandalone('glasses3D/glasses1.json')">Model 3</button>
+            <button onclick="JEEWIDGET.load('rayban_aviator_or_vertFlash')"><img src="./images/model1.png"></button>
+            <button onclick="JEEWIDGET.load('rayban_round_cuivre_pinkBrownDegrade')"><img src="./images/model2.png"></button>
+            <button onclick="JEEWIDGET.load_modelStandalone('glasses3D/glasses1.json')"><img src="./images/model3.png"></button>
         </div>
 
         <!-- BEGIN ADJUST NOTICE -->
