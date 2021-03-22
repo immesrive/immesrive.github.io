@@ -1,0 +1,77 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>AR Bracelet web</title>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- import the webpage's stylesheet -->
+    <link rel="stylesheet" href="/style.css" />
+
+    <!-- import the webpage's javascript file -->
+    <script src="/script.js" defer></script>
+  </head>
+  <body>
+    <h1>Select a Vehicles to display in AR</h1>
+    <div class="box">
+      <h2>Voronoi_Style_Bracelet</h2>
+      <model-viewer
+         src="./asset/model/voronoi_style_bracelet/scene.gltf" 
+        ios-src="./asset/model/Voronoi_Style_Bracelet.usdz" 
+        alt="Voronoi Style Bracelet"
+        background-color="#42697b"
+        auto-rotate
+        camera-controls
+        ar
+      ></model-viewer>
+      <div class="cc">
+        <a href="https://creativecommons.org/licenses/by/2.0/" target="_blank">
+          <img
+            src="https://mirrors.creativecommons.org/presskit/icons/cc.svg"
+          />
+          <img
+            src="https://mirrors.creativecommons.org/presskit/icons/by.svg"
+          />
+        </a>
+        &nbsp;&nbsp;
+      
+      </div>
+    </div>
+    <div class="box">
+      <h2>swiss_blue_topaz_woven_cuff_bracelet</h2>
+      <model-viewer
+        src="./asset/model/swiss_blue_topaz_woven_cuff_bracelet/scene.gltf" 
+        ios-src="./asset/model/Swiss_Blue_Topaz_Woven.usdz" 
+        alt="Gold Bracelet"
+        background-color="#42697b"
+        auto-rotate
+        camera-controls
+        ar
+      ></model-viewer>
+      <div class="cc">
+        <a href="https://creativecommons.org/licenses/by/2.0/" target="_blank">
+          <img
+            src="https://mirrors.creativecommons.org/presskit/icons/cc.svg"
+          />
+          <img
+            src="https://mirrors.creativecommons.org/presskit/icons/by.svg"
+          />
+        </a>
+        &nbsp; &nbsp;
+        >
+      </div>
+    </div>
+    
+    
+
+    <script
+      type="module"
+      src="https://unpkg.com/@google/model-viewer/dist/model-viewer.js"
+    ></script>
+    <script
+      nomodule
+      src="https://unpkg.com/@google/model-viewer/dist/model-viewer-legacy.js"
+    ></script>
+  </body>
+</html>
