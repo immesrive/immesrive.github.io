@@ -1,0 +1,172 @@
+<html>
+    <head>
+        <title>Web Model</title>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+
+        <!-- 합쳐지고 최소화된 최신 CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+        <link href="./../assets/css/main.css?ver=202101063" rel="stylesheet">
+        
+        
+
+        <!-- 
+        <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+        <script nomodule src="https://unpkg.com/@google/model-viewer/dist/model-viewer-legacy.js"></script>
+        -->
+        <script type="module" src="./../script/model-viewer.js"></script>
+        <script  src="http://code.jquery.com/jquery-latest.min.js"></script>
+        <script src="./../script/etc.js"></script>
+
+<script src="https://kit.fontawesome.com/767c73f891.js" crossorigin="anonymous"></script>
+    </head>
+    <div class="container">
+        <br />
+        <div><img src="./../assets/img/title/14_Styler.png" alt="title" width="100%" />       </div>
+        <div id="modelSizeDesc">Size : W 700 X H 1,890 X D 770mm (mm)</div>
+        
+        <br />
+        <model-viewer id="model-viewer" 
+        src="./../assets/models/WashTower.glb" 
+        ios-src="./../assets/models/WashTower.usdz" 
+        ar 
+        camera-controls 
+        interaction-prompt="none"
+        auto-rotate
+        ar-modes="scene-viewer quick-look webxr" 
+        ar-scale="auto"
+        >
+            <div class="d-grid gap-2 col-1 mx-auto btnArea">
+                <button type="button" class="btn btn-danger hide"  id="animationBtn" onclick="animationPlay()"> 
+                    <span class="glyphicon glyphicon-off" aria-hidden="true" id="animationStatus"></span>
+                      <div class="spinner-border spinner-border-sm hide" role="status" id="loadingAnimation">
+                        <span class="sr-only">Loading...</span>
+                      </div>
+                </button>        
+            </div>
+
+
+            <div id="sns_popup" class="text-center hide" >
+                <div class="mb-2">
+                    <div class="remove_btn" onclick="document.getElementById('sns_popup').classList.add('hide');">
+                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                    </div>
+
+                <div class="snsTitle">Share your AR experience <br/>
+                on social media with hashtags!</div>
+                <div class="snsText">
+                #LGHomeAppliances <br/>
+                #LGStyler
+                </div>
+                <br/>
+                </div>
+                <div class="btnHashtag">
+                    <button type="button" class="btn btn-primary btn"  onclick="jsCopyLink('#LGHomeAppliances #LGstyler #SteamClothingSystem #SteamClothing #LGClothingCare #LGTrueSteam')"> Copy #Hashtag</button>        
+                </div>
+
+                <a onclick="action_app_instagram('intent://facebook.com/#Intent;package=com.facebook.katana;scheme=https;end', 'https://www.facebook.com', 'https://itunes.apple.com/kr/app/facebook/id284882215')">
+                    <img src='./../assets/img/facebook.png' width = 40 alt='facebook_img'>
+                  </a>
+
+                  <a onclick="action_app_instagram('intent://instagram.com/#Intent;package=com.instagram.android;scheme=https;end', 'https://www.instagram.com', 'https://itunes.apple.com/kr/app/instagram/id389801252?mt=8')">
+                    <img src='./../assets/img/instagram.png' width = 40 alt='instagram_img'>
+                  </a>
+
+                <a onclick="action_app_instagram('intent://twitter.com/#Intent;package=com.twitter.android;scheme=https;end', 'https://www.twitter.com', 'https://itunes.apple.com/kr/app/twitter/id333903271')">
+                    <img src='./../assets/img/twitter.png' width = 40 alt='twitter_img'>
+                  </a>
+                             
+            </div>
+        </model-viewer>
+      
+        <br/>
+         <div class="row">
+            <div class="row">
+                <div class="col-5 " style="text-align : center;">
+                    <div class="select_label">Color</div>
+                </div>
+                <div class="col-7">
+                    <select id="selectBox" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" onchange="modelChange()">
+                        <option value='{"name" :"Styler_Mirror","size" : "W445 x H1850 x W585 mm"}' selected> Mirror</option>
+                        <option value='{"name" :"Styler_Brown","size" : "W690 x H1130 x D730 mm"}'  >Brown</option>
+                        <option value='{"name" :"Styler_White","size" : "W690 x H1130 x D730 mm"}'  >White</option>
+
+                      </select>
+                </div>
+
+          </div>
+        <br />
+        <div class="d-grid gap-2 col-6 mx-auto">
+        <button type="button" class="btn btn-primary btn-lg" id="my-own-custom-button" onclick="activateAR_click()"> View in your space</button>        
+        </div>
+        <br/>    <br/>
+        <div class="viewother" onClick="window.location.href='http://lgevirtual.com/ar/index'">
+            <a href="http://lgevirtual.com/ar/index"></span> View Other Products </a>
+            </div>
+    </div>
+    
+    <script>
+        function getDirName(name) {
+                return './../assets/models/H_A/LG Styler/';
+        }
+        
+
+        function modelChange() {
+
+            var selectBox = document.getElementById("selectBox");
+            var selecrArray = selectBox.options[selectBox.selectedIndex].value;
+
+            var selectedValue = JSON.parse(selecrArray).name;
+
+            var size  = JSON.parse(selecrArray).size;
+            $("#modelSizeDesc").html(size);
+
+            var animationBtn = document.getElementById("animationBtn");
+            if (selectedValue == 'RollableTVClipAnimation') 
+            {
+                animationBtn.classList.remove('hide')
+            }
+            else
+            {
+                animationBtn.classList.add('hide')
+            }
+
+            var modelViewer = document.querySelector("model-viewer")
+            const base = getDirName(selectedValue) + selectedValue;
+            modelViewer.src = base + '.glb';
+            modelViewer.iosSrc = base + '.usdz';
+            
+            modelViewer.resetTurntableRotation();
+        }
+
+        function activateAR_click() {
+            var modelViewer = document.getElementById('model-viewer');
+            modelViewer.activateAR();
+
+            var sns_popup = document.getElementById("sns_popup");
+            sns_popup.classList.remove('hide');
+        }
+
+        function init(){
+            var selectBox = document.getElementById("selectBox");
+            var selecrArray = selectBox.options[selectBox.selectedIndex].value;
+
+            var selectedValue = JSON.parse(selecrArray).name;
+
+            var size  = JSON.parse(selecrArray).size;
+            $("#modelSizeDesc").html(size);
+
+            var modelViewer = document.querySelector("model-viewer")
+            const base = getDirName(selectedValue) + selectedValue;
+            modelViewer.src = base + '.glb';
+            modelViewer.iosSrc = base + '.usdz';
+        }
+
+        init();        
+    </script>
+</html>
+
+
