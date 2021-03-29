@@ -40,17 +40,22 @@
     </div>
     <div class="box">
       <h2>Naked Bike</h2>
-        <model-viewer src="./assets/models/naked_street_bike/scene.gltf" 
-                      camera-controls 
-                      ar 
-                      ar-modes="webxr quick-look" 
-                      background-color="#42697b"
-                      auto-rotate
-                      ios-src="./assets/models/Naked_Street_Bike.usdz">
-  
-
-            
+        <model-viewer 
+                      src="scene.glb" 
+                      camera-controls environment-image="pillars_1k.hdr"
+                       shadow-intensity="1" 
+                      camera-orbit="-793.4deg 86.17deg 477m" 
+                      poster="poster.png" 
+                      ar-modes="webxr scene-viewer quick-look">
+            <button class="Hotspot" slot="hotspot-1" data-position="20.40192401847439m 141.26110294325235m -75.24408136469609m" data-normal="0.9807850139455224m 0.08227862899021045m -0.17689257652986193m" data-visibility-attribute="visible">
+                <div class="HotspotAnnotation">Pistol</div>
+            </button><button class="Hotspot" slot="hotspot-4" data-position="10.351944886350744m 39.64462714658501m -127.74097863862207m" data-normal="0.999999999995879m 0.0000018317215243587175m -0.0000022106827239686944m" data-visibility-attribute="visible">
+                <div class="HotspotAnnotation">Double abs</div>           
+            <div id="ar-prompt">
+                <img src="https://modelviewer.dev/shared-assets/icons/hand.png">
+            </div>
         </model-viewer>
+
       <div class="cc">
         <a href="https://www.youtube.com/user/3eic" target="_blank">
           <img
