@@ -40,15 +40,18 @@
     </div>
     <div class="box">
       <h2>Naked Bike</h2>
-      <model-viewer
-        src="./assets/models/naked_street_bike/scene.gltf" 
-        ios-src="./assets/models/Naked_Street_Bike.usdz" 
-        alt="Gold Bracelet"
-        background-color="#42697b"
-        auto-rotate
-        camera-controls
-        ar
-      ></model-viewer>
+        <model-viewer src="./assets/models/naked_street_bike/scene.gltf" camera-controls ar ar-modes="scene-viewer webxr quick-look" ios-src="./assets/models/Naked_Street_Bike.usdz">
+
+            <div class="progress-bar hide" slot="progress-bar">
+                <div class="update-bar"></div>
+            </div>
+            <button slot="ar-button" id="ar-button">
+                View in your space
+            </button>
+            <div id="ar-prompt">
+                <img src="https://modelviewer.dev/shared-assets/icons/hand.png">
+            </div>
+        </model-viewer>
       <div class="cc">
         <a href="https://www.youtube.com/user/3eic" target="_blank">
           <img
