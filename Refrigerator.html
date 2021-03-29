@@ -13,7 +13,7 @@
         
         <style>
             model-viewer {
-                --ar-button-display: none;
+                --ar-button-display: true;
                 background-color: #eee;
                 overflow-x: hidden;
                 --poster-color: #eee;
@@ -46,8 +46,8 @@
             }
         </style>
 
-        <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
-        <script nomodule src="https://unpkg.com/@google/model-viewer/dist/model-viewer-legacy.js"></script>
+        <!--<script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+        <script nomodule src="https://unpkg.com/@google/model-viewer/dist/model-viewer-legacy.js"></script>-->
 
     </head>
     <div class="container">
@@ -66,6 +66,7 @@
         auto-rotate
         ar-modes="scene-viewer quick-look webxr" 
         ar-scale="auto"
+        autoplay
         >
             <div class="d-grid gap-2 col-1 mx-auto btnArea">
                 <button type="button" class="btn btn-danger hide"  id="animationBtn" onclick="animationPlay()"> 
