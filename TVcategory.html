@@ -13,6 +13,51 @@
     <script src="./script/etc.js"></script>
     <script src="https://kit.fontawesome.com/767c73f891.js" crossorigin="anonymous"></script>
 </head>
-<div class="container"> <br /> <div class="title"> LG SIGNATURE OLED 8K</div> <div id="modelSizeDesc"></div> <br /> <model-viewer id="model-viewer" src="./assets/models/LG SIGNATURE OLED 8K/88Z1.glb" ios-src="./assets/models/LG SIGNATURE OLED 8K/88Z1.usdz" ar camera-controls interaction-prompt="none" auto-rotate ar-modes="scene-viewer quick-look webxr" ar-scale="auto" autoplay> <div class="d-grid gap-2 col-1 mx-auto btnArea"> <button type="button" class="btn btn-danger hide" id="animationBtn" onclick="animationPlay()"> <span class="glyphicon glyphicon-off" aria-hidden="true" id="animationStatus"></span> <div class="spinner-border spinner-border-sm hide" role="status" id="loadingAnimation"> <span class="sr-only">Loading...</span> </div> </button> </div> </model-viewer> <br /> <div class="row"> <div class="row"> <div class="col-5" style="text-align : center;"> <div class="select_label">Size</div> </div> <div class="col-7"> <select id="selectBox" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" onchange="selectBoxChange()"> <option value='88inch'  selected > 88inch</option> <option value='75inch'   > 75inch</option> </select> </div> <div class="col-5" style="text-align : center;"> <div class="select_label">Installation Type</div> </div> <div class="col-7"> <select id="selectColor" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" onchange="modelChange()"> </select> </div> </div> <br /> <div class="d-grid gap-2 col-6 mx-auto"> <button type="button" class="btn btn-primary btn-lg" id="my-own-custom-button" onclick="activateAR_click()"> View in your space </button> </div> <div class="viewother" onClick="window.location.href='/'"> </div> </div>
-<script> const ColorData = [ {name : '88inch', color :[ "Stand"], ProductName : 'LG SIGNATURE OLED 8K'}, {name : '75inch', color :[ "Stand", "Wall Mount" ], ProductName : 'LG SIGNATURE OLED 8K'}, ]; const tvInfos = [ {modelName : '88inch_Stand', fileName : '88Z1' , size : 'W1961 x H1456 x D281mm'}, {modelName : '75inch_Wall Mount', fileName : '77Z1_Wall' , size : 'W1717 x H984 x D32.2mm'}, {modelName : '75inch_Stand', fileName : '77Z1' , size : 'W1717 x H1044 x D323mm'}, ]; init(); function getDirName(name) { return './assets/models/LG SIGNATURE OLED 8K/'; } function selectBoxChange() { var selectedModel = $("#selectBox option:selected").val(); colorArray = ColorData.find(x => { return x.name == selectedModel}) if (colorArray == undefined) return; $('#productName').html(colorArray.ProductName); $("select[id='selectColor'] option").remove(); colorArray.color.forEach( function(item,index,arr2){ $("#selectColor").append('<option value="' + item + '">' + item + '</option'); }) $('#selectColor option:eq(0)').attr('selected', 'selected'); modelChange(); } function modelChange() { var selectBox = document.getElementById("selectBox"); var selecrArray = selectBox.options[selectBox.selectedIndex].value; var tvInfo = tvInfos.find(x => { return x.modelName == $("#selectBox option:selected").val() + '_' + $("#selectColor option:selected").val() }) ;if (tvInfo == undefined) return; var selectedValue = tvInfo.fileName; var size = tvInfo.size; $("#modelSizeDesc").html(size); var modelViewer = document.querySelector("model-viewer") const base = getDirName(selectedValue) + selectedValue; modelViewer.src = base + '.glb'; modelViewer.iosSrc = base + '.usdz'; if (selectedValue.indexOf('Wall') != -1) { modelViewer.arPlacement = 'wall' } else { modelViewer.arPlacement = 'floor' } modelViewer.resetTurntableRotation(); } function activateAR_click() { var modelViewer = document.getElementById('model-viewer'); modelViewer.activateAR(); } function init() { var selectedModel = $("#selectBox option:selected").val(); colorArray = ColorData.find(x => { return x.name == selectedModel}) if (colorArray == undefined) return; $('#productName').html(colorArray.ProductName); $("select[id='selectColor'] option").remove(); colorArray.color.forEach( function(item,index,arr2){ $("#selectColor").append('<option value="' + item + '">' + item + '</option'); }) $('#selectColor option:eq(1)').attr('selected', 'selected'); var selectBox = document.getElementById("selectBox"); var selecrArray = selectBox.options[selectBox.selectedIndex].value; var tvInfo = tvInfos.find(x => { return x.modelName == '88inch_Stand' }) if (tvInfo == undefined) return; var selectedValue = tvInfo.fileName; var size = tvInfo.size; $("#modelSizeDesc").html(size); var modelViewer = document.querySelector("model-viewer") const base = getDirName(selectedValue) + selectedValue; modelViewer.src = base + '.glb'; modelViewer.iosSrc = base + '.usdz'; if (selectedValue.indexOf('Wall') != -1) { modelViewer.arPlacement = 'wall' } else { modelViewer.arPlacement = 'floor' } } </script>
+<div class="container">
+    <br />
+    <div class="title"> LG SIGNATURE OLED 8K</div>
+    <div id="modelSizeDesc"></div> <br />
+    <model-viewer id="model-viewer" src="./assets/models/LG SIGNATURE OLED 8K/88Z1.glb" ios-src="./assets/models/LG SIGNATURE OLED 8K/88Z1.usdz"
+                  ar camera-controls interaction-prompt="none" auto-rotate ar-modes="scene-viewer quick-look webxr"
+                  ar-scale="auto" autoplay>
+        <div class="d-grid gap-2 col-1 mx-auto btnArea">
+            <button type="button" class="btn btn-danger hide" id="animationBtn" onclick="animationPlay()">
+                <span class="glyphicon glyphicon-off" aria-hidden="true" id="animationStatus"></span> <div class="spinner-border spinner-border-sm hide" role="status" id="loadingAnimation">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </button>
+        </div>
+    </model-viewer> <br />
+    <div class="row">
+        <div class="row"> <div class="col-5" style="text-align : center;"> <div class="select_label">Size</div> </div> <div class="col-7"> <select id="selectBox" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" onchange="selectBoxChange()"> <option value='88inch'  selected > 88inch</option> <option value='75inch'   > 75inch</option> </select> </div> <div class="col-5" style="text-align : center;"> <div class="select_label">Installation Type</div> </div> <div class="col-7"> <select id="selectColor" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" onchange="modelChange()"> </select> </div> </div> <br /> <div class="d-grid gap-2 col-6 mx-auto"> <button type="button" class="btn btn-primary btn-lg" id="my-own-custom-button" onclick="activateAR_click()"> View in your space </button> </div> <div class="viewother" onClick="window.location.href='/'"> </div>
+    </div>
+</div>
+<script> 
+    const ColorData = [ {name : '88inch', color :[ "Stand"], ProductName : 'LG SIGNATURE OLED 8K'}, {name : '75inch', color :[ "Stand", "Wall Mount" ], ProductName : 'LG SIGNATURE OLED 8K'}, ]; 
+    const tvInfos = [ {modelName : '88inch_Stand', fileName : '88Z1' , size : 'W1961 x H1456 x D281mm'}, {modelName : '75inch_Wall Mount', fileName : '77Z1_Wall' , size : 'W1717 x H984 x D32.2mm'}, {modelName : '75inch_Stand', fileName : '77Z1' , size : 'W1717 x H1044 x D323mm'}, ]; 
+    init(); 
+    function getDirName(name) { return './assets/models/LG SIGNATURE OLED 8K/'; } 
+    function selectBoxChange() { var selectedModel = $("#selectBox option:selected").val(); colorArray = ColorData.find(x => { return x.name == selectedModel}); 
+        if (colorArray == undefined) return; $('#productName').html(colorArray.ProductName);
+        $("select[id='selectColor'] option").remove(); colorArray.color.forEach( function(item,index,arr2){ $("#selectColor").append('<option value="' + item + '">' + item + '</option'); }) 
+        $('#selectColor option:eq(0)').attr('selected', 'selected'); modelChange(); } 
+    function modelChange() { var selectBox = document.getElementById("selectBox"); 
+        var selecrArray = selectBox.options[selectBox.selectedIndex].value; 
+        var tvInfo = tvInfos.find(x => { return x.modelName == $("#selectBox option:selected").val() + '_' + $("#selectColor option:selected").val() }) ;
+        if (tvInfo == undefined) return; var selectedValue = tvInfo.fileName; var size = tvInfo.size; $("#modelSizeDesc").html(size); 
+        var modelViewer = document.querySelector("model-viewer")
+        const base = getDirName(selectedValue) + selectedValue; modelViewer.src = base + '.glb'; modelViewer.iosSrc = base + '.usdz';
+        if (selectedValue.indexOf('Wall') != -1) { modelViewer.arPlacement = 'wall' } else { modelViewer.arPlacement = 'floor' } modelViewer.resetTurntableRotation(); } 
+    function activateAR_click() { var modelViewer = document.getElementById('model-viewer'); modelViewer.activateAR(); } 
+    function init() { var selectedModel = $("#selectBox option:selected").val(); colorArray = ColorData.find(x => { return x.name == selectedModel}) ;
+        if (colorArray == undefined) return; $('#productName').html(colorArray.ProductName); $("select[id='selectColor'] option").remove();
+        colorArray.color.forEach( function(item,index,arr2){ $("#selectColor").append('<option value="' + item + '">' + item + '</option'); }) 
+        $('#selectColor option:eq(1)').attr('selected', 'selected'); var selectBox = document.getElementById("selectBox"); 
+        var selecrArray = selectBox.options[selectBox.selectedIndex].value; var tvInfo = tvInfos.find(x => { return x.modelName == '88inch_Stand' }); 
+        if (tvInfo == undefined) return; var selectedValue = tvInfo.fileName; var size = tvInfo.size; $("#modelSizeDesc").html(size); 
+        var modelViewer = document.querySelector("model-viewer") 
+        const base = getDirName(selectedValue) + selectedValue; modelViewer.src = base + '.glb'; 
+        modelViewer.iosSrc = base + '.usdz'; 
+        if (selectedValue.indexOf('Wall') != -1) { modelViewer.arPlacement = 'wall' } else { modelViewer.arPlacement = 'floor' } }
+ </script>
 </html>
