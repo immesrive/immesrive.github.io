@@ -13,9 +13,7 @@ h1 {
 
 model-viewer {
   --ar-button-display: none;
-    background-color: #eee;
-    overflow-x: hidden;
-    --poster-color: #eee;
+    background-color: #eee;   
     height: 50%;
     width: auto;
 }
