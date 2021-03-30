@@ -31,7 +31,7 @@
     <div class="row">
         <div class="row"> <div class="col-5" style="text-align : center;"> <div class="select_label">Size</div> </div> <div class="col-7"> <select id="selectBox" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" onchange="selectBoxChange()"> <option value='88inch'  selected > 88inch</option> <option value='75inch'   > 75inch</option> </select> </div> <div class="col-5" style="text-align : center;"> <div class="select_label">Installation Type</div> </div> <div class="col-7"> <select id="selectColor" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" onchange="modelChange()"> </select> </div> </div> <br /> <div class="d-grid gap-2 col-6 mx-auto"> <button type="button" class="btn btn-primary btn-lg" id="my-own-custom-button" onclick="activateAR_click()"> View in your space </button> </div> <div class="viewother" onClick="window.location.href='/'"> </div>
     </div>
-</div>
+
 <script> 
     const ColorData = [ {name : '88inch', color :[ "Stand"], ProductName : 'LG SIGNATURE OLED 8K'}, {name : '75inch', color :[ "Stand", "Wall Mount" ], ProductName : 'LG SIGNATURE OLED 8K'}, ]; 
     const tvInfos = [ {modelName : '88inch_Stand', fileName : '88Z1' , size : 'W1961 x H1456 x D281mm'}, {modelName : '75inch_Wall Mount', fileName : '77Z1_Wall' , size : 'W1717 x H984 x D32.2mm'}, {modelName : '75inch_Stand', fileName : '77Z1' , size : 'W1717 x H1044 x D323mm'}, ]; 
@@ -58,6 +58,27 @@
         var modelViewer = document.querySelector("model-viewer") 
         const base = getDirName(selectedValue) + selectedValue; modelViewer.src = base + '.glb'; 
         modelViewer.iosSrc = base + '.usdz'; 
-        if (selectedValue.indexOf('Wall') != -1) { modelViewer.arPlacement = 'wall' } else { modelViewer.arPlacement = 'floor' } }
+        if (selectedValue.indexOf('Wall') != -1) { modelViewer.arPlacement = 'wall' } else { modelViewer.arPlacement = 'floor' }
+    }
+    define(function (require, exports, module) {
+        "use strict";
+
+        var EditorManager = brackets.getModule("editor/EditorManager");
+
+        $("html").on("mousedown", function (e) {
+            var editor = EditorManager.getActiveEditor(),
+                language = editor.document.getLanguage().getName().toLowerCase(),
+                cm = editor._codeMirror,
+                matchTags;
+
+            if ((e.ctrlKey || e.metaKey) && $.inArray(language, ["html", "php", "xml"]) > -1) {
+                matchTags = CodeMirror.findMatchingTag(cm, cm.getCursor());
+
+                if (matchTags && matchTags.open && matchTags.close) {
+                    cm.setSelection(matchTags.open.from, matchTags.close.to);
+                }
+            }
+        });
+    });
  </script>
 </html>
