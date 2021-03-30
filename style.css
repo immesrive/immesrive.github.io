@@ -12,10 +12,8 @@ h1 {
 }
 
 model-viewer {
-  --ar-button-display: none;
-    background-color: #eee;   
-    height: 50%;
-    width: auto;
+  width: 100%;
+  height: 580px;
 }
 
 .box {
