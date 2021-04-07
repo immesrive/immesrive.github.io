@@ -1,79 +1,330 @@
-<html>
-  <head>
-    <title>Portal Shader Demo</title>
-    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-    <script src="https://unpkg.com/aframe-environment-component@1.2.0/dist/aframe-environment-component.min.js"></script>
-    <script src="https://unpkg.com/dat.gui"></script>
-    <script src="./aframe-liquid-portal-shader.js"></script>
+<script
+    src="https://cdn.rawgit.com/jeromeetienne/AR.js/1.5.0/aframe/examples/vendor/aframe/build/aframe.min.js"></script>
+<script src="https://cdn.rawgit.com/jeromeetienne/AR.js/1.5.0/aframe/build/aframe-ar.js"></script>
+<script>
+    AFRAME.registerComponent('arjs-portal-door', {
+        schema: {
+            url: {		// Url of the content - may be video or image
+                type: 'string',
+            },
+            doorWidth: {	// width of the door
+                type: 'number',
+                default: 1,
+            },
+            doorHeight: {	// height of the door
+                type: 'number',
+                default: 2,
+            },
+        },
+        init: function () {
+            var _this = this
 
-    <script type="text/javascript">
-      window.onload = function () {
-        let gui = new dat.GUI();
+            var doorWidth = this.data.doorWidth
+            var doorHeight = this.data.doorHeight
+            var imageURL = this.data.url
 
-        let params = {
-          numRipples: 5,
-          maxRippleOffset: 0.01,
-          rippleSpeed: 0.1,
+            var portalDoor = new THREEx.Portal360(imageURL, doorWidth, doorHeight)
+            this._portalDoor = portalDoor
 
-          twistRadius: 0.3,
-          maxTwist: 1.0,
-
-          strength: 1.0,
-        };
-
-        function setParams() {
-          let portal = document.getElementById("portal");
-          portal.setAttribute("material", params);
+            this.el.object3D.add(portalDoor.object3d)
+        },
+        tick: function () {
+            this._portalDoor.update()
         }
-        setParams();
+    })
 
-        let ranges = {
-          numRipples: { min: 0, max: 20, step: 0.1 },
-          maxRippleOffset: { min: 0, max: 0.05, step: 0.001 },
-          rippleSpeed: { min: 0, max: 1, step: 0.001 },
 
-          twistRadius: { min: 0, max: 0.5, step: 0.001 },
-          maxTwist: { min: 0, max: 10, step: 0.001 },
+    AFRAME.registerPrimitive('a-portal-door', AFRAME.utils.extendDeep({}, AFRAME.primitives.getMeshMixin(), {
+        defaultComponents: {
+            'arjs-portal-door': {},
+        },
+        mappings: {
+            'url': 'arjs-portal-door.url',
+        }
+    }))
+</script>
+<script>
+    var THREEx = THREEx || {}
 
-          strength: { min: 0, max: 1, step: 0.001 },
-        };
+    THREEx.Portal360 = function (videoImageURL, doorWidth, doorHeight) {
 
-        for (let name in ranges) {
-          gui
-            .add(params, name)
-            .min(ranges[name].min)
-            .max(ranges[name].max)
-            .step(ranges[name].step)
-            .onChange(setParams);
+        var doorCenter = new THREE.Group
+        doorCenter.position.y = doorHeight / 2
+        this.object3d = doorCenter
+
+        //////////////////////////////////////////////////////////////////////////////
+        //		build texture360
+        //////////////////////////////////////////////////////////////////////////////
+        var isVideo = videoImageURL.match(/.(mp4|webm|ogv)/i) ? true : false
+        if (isVideo) {
+            var video = document.createElement('video')
+            video.width = 640;
+            video.height = 360;
+            video.loop = true;
+            video.muted = true;
+            video.src = videoImageURL;
+            video.crossOrigin = 'anonymous'
+            video.setAttribute('webkit-playsinline', 'webkit-playsinline');
+            video.play();
+
+            var texture360 = new THREE.VideoTexture(video);
+            texture360.minFilter = THREE.LinearFilter;
+            texture360.format = THREE.RGBFormat;
+            texture360.flipY = false;
+        } else {
+            var texture360 = new THREE.TextureLoader().load(videoImageURL)
+            texture360.minFilter = THREE.NearestFilter;
+            texture360.format = THREE.RGBFormat;
+            texture360.flipY = false;
         }
 
-        let componentStatus = { mouse: false };
-        gui.add(componentStatus, "mouse").onChange(() => {
-          let portal = document.getElementById("portal");
-          if (componentStatus.mouse) {
-            portal.setAttribute("liquid-portal-mouse", {});
-          } else {
-            portal.removeAttribute("liquid-portal-mouse");
-            portal.setAttribute("material", "rippleCenter", { x: 0.5, y: 0.5 });
-            setParams();
-          }
+        //////////////////////////////////////////////////////////////////////////////
+        //		build mesh
+        //////////////////////////////////////////////////////////////////////////////
+
+        // create insideMesh which is visible IIF inside the portal
+        var insideMesh = this._buildInsideMesh(texture360, doorWidth, doorHeight)
+        doorCenter.add(insideMesh)
+        this.insideMesh = insideMesh
+
+        // create outsideMesh which is visible IIF outside the portal
+        var outsideMesh = this._buildOutsideMesh(texture360, doorWidth, doorHeight)
+        doorCenter.add(outsideMesh)
+        this.outsideMesh = outsideMesh
+
+        // create frameMesh for the frame of the portal
+        var frameMesh = this._buildRectangularFrame(doorWidth / 100, doorWidth, doorHeight)
+        doorCenter.add(frameMesh)
+    }
+    //////////////////////////////////////////////////////////////////////////////
+    //		Code Separator
+    //////////////////////////////////////////////////////////////////////////////
+    THREEx.Portal360.buildTransparentMaterial = function () {
+        // if there is a cached version, return it
+        if (THREEx.Portal360.buildTransparentMaterial.material) {
+            return THREEx.Portal360.buildTransparentMaterial.material
+        }
+        var material = new THREE.MeshBasicMaterial({
+            colorWrite: false // only write to z-buf
+        })
+        // an alternative to reach the same visual - this one seems way slower tho. My guess is it is hitting a slow-path in gpu
+        // var material   = new THREE.MeshBasicMaterial();
+        // material.color.set('black')
+        // material.opacity   = 0;
+        // material.blending  = THREE.NoBlending;
+
+        // cache the material
+        THREEx.Portal360.buildTransparentMaterial.material = material
+
+        return material
+    }
+
+    //////////////////////////////////////////////////////////////////////////////
+    //		Build various cache
+    //////////////////////////////////////////////////////////////////////////////
+    THREEx.Portal360.buildSquareCache = function () {
+        var container = new THREE.Group
+        // add outter cube - invisibility cloak
+        var geometry = new THREE.PlaneGeometry(50, 50);
+        var material = THREEx.Portal360.buildTransparentMaterial()
+
+        var mesh = new THREE.Mesh(geometry, material);
+        mesh.position.x = geometry.parameters.width / 2 + 0.5
+        mesh.position.y = -geometry.parameters.height / 2 + 0.5
+        container.add(mesh)
+
+        var mesh = new THREE.Mesh(geometry, material);
+        mesh.position.x = -geometry.parameters.width / 2 + 0.5
+        mesh.position.y = -geometry.parameters.height / 2 - 0.5
+        container.add(mesh)
+
+        var mesh = new THREE.Mesh(geometry, material);
+        mesh.position.x = -geometry.parameters.width / 2 - 0.5
+        mesh.position.y = geometry.parameters.height / 2 - 0.5
+        container.add(mesh)
+
+        var mesh = new THREE.Mesh(geometry, material);
+        mesh.position.x = +geometry.parameters.width / 2 - 0.5
+        mesh.position.y = geometry.parameters.height / 2 + 0.5
+        container.add(mesh)
+
+        return container
+    }
+
+    //////////////////////////////////////////////////////////////////////////////
+    //		build meshes
+    //////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * create insideMesh which is visible IIF inside the portal
+     */
+    THREEx.Portal360.prototype._buildInsideMesh = function (texture360, doorWidth, doorHeight) {
+        var doorInsideCenter = new THREE.Group
+
+        // var squareCache = THREEx.Portal360.buildSquareCache()
+        // squareCache.scale.y = doorWidth
+        // squareCache.scale.y = doorHeight
+        // doorInsideCenter.add( squareCache )
+
+        var geometry = new THREE.PlaneGeometry(doorWidth, doorHeight)
+        var material = THREEx.Portal360.buildTransparentMaterial()
+        // var material = new THREE.MeshNormalMaterial()
+        var mesh = new THREE.Mesh(geometry, material)
+        mesh.rotation.y = Math.PI
+        // mesh.position.z = 0.03
+        doorInsideCenter.add(mesh)
+
+
+        //////////////////////////////////////////////////////////////////////////////
+        //		add 360 sphere
+        //////////////////////////////////////////////////////////////////////////////
+        // add 360 texture
+        // TODO put that in a this.data
+        var radius360Sphere = 10
+        // var radius360Sphere = 1
+
+        var geometry = new THREE.SphereGeometry(radius360Sphere, 16, 16).rotateZ(Math.PI)
+        var material = new THREE.MeshBasicMaterial({
+            map: texture360,
+            // opacity: 0.9,
+            side: THREE.DoubleSide,
         });
-      };
-    </script>
-  </head>
-  <body style="background-color: black">
-    <a-scene>
-      <a-assets timeout="20000">
-        <img id="demo" src="demo.png" crossorigin="anonymous" />
-      </a-assets>
-      <a-image
-        id="portal"
-        src="#demo"
-        position="-0.5 1.6 -2"
-        material="shader: liquid-portal"
-      ></a-image>
-      <a-image src="#demo" position="0.5 1.6 -2"></a-image>
-      <a-entity environment="preset: osiris; dressingAmount: 50"></a-entity>
+        // var material = new THREE.MeshNormalMaterial()
+        var sphere360Mesh = new THREE.Mesh(geometry, material);
+        sphere360Mesh.position.z = -0.1
+        sphere360Mesh.rotation.y = Math.PI
+        doorInsideCenter.add(sphere360Mesh)
+
+        return doorInsideCenter
+    }
+
+    /**
+     * create outsideMesh which is visible IIF outside the portal
+     */
+    THREEx.Portal360.prototype._buildOutsideMesh = function (texture360, doorWidth, doorHeight) {
+        var doorOutsideCenter = new THREE.Group
+
+        //////////////////////////////////////////////////////////////////////////////
+        //		add squareCache
+        //////////////////////////////////////////////////////////////////////////////
+        var squareCache = THREEx.Portal360.buildSquareCache()
+        squareCache.scale.y = doorWidth
+        squareCache.scale.y = doorHeight
+        doorOutsideCenter.add(squareCache)
+
+        //////////////////////////////////////////////////////////////////////////////
+        //		add 360 sphere
+        //////////////////////////////////////////////////////////////////////////////
+        // add 360 texture
+        var radius360Sphere = 10
+        // var radius360Sphere = 1
+
+        // build half sphere geometry
+        var geometry = new THREE.SphereGeometry(radius360Sphere, 16, 16, Math.PI, Math.PI, 0, Math.PI).rotateZ(Math.PI)
+        // fix UVs
+        geometry.faceVertexUvs[0].forEach(function (faceUvs) {
+            faceUvs.forEach(function (uv) {
+                uv.x /= 2
+            })
+        })
+        geometry.uvsNeedUpdate = true
+        var material = new THREE.MeshBasicMaterial({
+            map: texture360,
+            // opacity: 0.9,
+            side: THREE.BackSide,
+        });
+        // var geometry = new THREE.SphereGeometry( radius360Sphere, 16, 16);
+        // var material = new THREE.MeshNormalMaterial()
+        var sphere360Mesh = new THREE.Mesh(geometry, material);
+        sphere360Mesh.position.z = -0.1
+        doorOutsideCenter.add(sphere360Mesh)
+
+        return doorOutsideCenter
+    }
+
+    /**
+     * create frameMesh for the frame of the portal
+     */
+    THREEx.Portal360.prototype._buildRectangularFrame = function (radius, width, height) {
+        var container = new THREE.Group
+        var material = new THREE.MeshNormalMaterial()
+        var material = new THREE.MeshPhongMaterial({
+            color: 'silver',
+            emissive: 'green'
+        })
+
+        var geometryBeamVertical = new THREE.CylinderGeometry(radius, radius, height - radius)
+
+        // mesh right
+        var meshRight = new THREE.Mesh(geometryBeamVertical, material)
+        meshRight.position.x = width / 2
+        container.add(meshRight)
+
+        // mesh right
+        var meshLeft = new THREE.Mesh(geometryBeamVertical, material)
+        meshLeft.position.x = -width / 2
+        container.add(meshLeft)
+
+        var geometryBeamHorizontal = new THREE.CylinderGeometry(radius, radius, width - radius).rotateZ(Math.PI / 2)
+
+        // mesh top
+        var meshTop = new THREE.Mesh(geometryBeamHorizontal, material)
+        meshTop.position.y = height / 2
+        container.add(meshTop)
+
+        // mesh bottom
+        var meshBottom = new THREE.Mesh(geometryBeamHorizontal, material)
+        meshBottom.position.y = -height / 2
+        container.add(meshBottom)
+
+        return container
+    }
+
+    //////////////////////////////////////////////////////////////////////////////
+    //		update function
+    //////////////////////////////////////////////////////////////////////////////
+
+    THREEx.Portal360.prototype.update = function () {
+        // determine if the user is isOutsidePortal
+        var localPosition = new THREE.Vector3
+        this.object3d.worldToLocal(localPosition)
+        var isOutsidePortal = localPosition.z >= 0 ? true : false
+
+        // handle mesh visibility based on isOutsidePortal
+        if (isOutsidePortal) {
+            this.outsideMesh.visible = true
+            this.insideMesh.visible = false
+        } else {
+            this.outsideMesh.visible = false
+            this.insideMesh.visible = true
+        }
+    }
+</script>
+
+<body style='margin : 0px; overflow: hidden;'>
+    <a-scene embedded arjs='trackingMethod: best;'>
+        <a-assets>
+            <video
+                src="https://cdn.rawgit.com/jeromeetienne/AR.js/1.5.1/aframe/examples/demo-portal-door/videos/aframe-city-360.mp4"></video>
+            <img id="times-square" src="./times-square.jpg">
+        </a-assets>
+        <!-- Create a anchor to attach your augmented reality -->
+        <a-anchor hit-testing-enabled='true'>
+
+            <!-- portal 360 with an image -->
+            <a-portal-door url='./times-square.jpg' position='0 0 0' scale='1 1 1' rotation='0 90 0'>
+                <a-portal-door>
+
+                    <!-- portal 360 with an video -->
+                    <!-- <a-portal-door url='videos/pano.webm' position='0 0 0' scale='2 2 2' rotation='0 90 0'><a-portal-door> -->
+                    <!-- <a-portal-door
+                url='https://cdn.rawgit.com/jeromeetienne/AR.js/1.5.1/aframe/examples/demo-portal-door/videos/aframe-city-360.mp4'
+                position='0 0 0' scale='2 2 2' rotation='0 90 0'>
+                <a-portal-door> -->
+
+        </a-anchor>
+
+        <!-- Define a static camera -->
+        <a-camera-static />
     </a-scene>
-  </body>
-</html>
+</body>
