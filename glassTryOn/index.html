@@ -103,43 +103,40 @@
          changing the total size of the placeholder
         -->
         <canvas id='JeeWidgetCanvas'></canvas>
-        
-          <div class='JeeWidgetControls JeeWidgetControlsTop' style="display: none;">
-              <!-- ADJUST BUTTON: -->
-              <button id='JeeWidgetAdjust'>
-                  <div class="buttonIcon"><i class="fas fa-arrows-alt"></i></div>Adjust
-              </button>
-              <!-- RESIZE WIDGET BUTTON: -->
-              <button id='buttonResizeCanvas' onclick='test_resizeCanvas();'>
-                  <div class="buttonIcon"><i class="fas fa-sync-alt"></i></div>Resize widget
-              </button>
+          <div class='JeeWidgetControls JeeWidgetControlsTop'>
+
+              <!--<div class='JeeWidgetControls JeeWidgetControlsTop' style="display: none;">-->
+                  <!-- ADJUST BUTTON: -->
+                  <button id='JeeWidgetAdjust'>
+                      <div class="buttonIcon"><i class="fas fa-arrows-alt"></i></div>Adjust
+                  </button>
+                  <!-- RESIZE WIDGET BUTTON: -->
+                  <button id='buttonResizeCanvas' onclick='test_resizeCanvas();'>
+                      <div class="buttonIcon"><i class="fas fa-sync-alt"></i></div>Resize widget
+                  </button>
+              </div>
+              <!-- CHANGE MODEL BUTTONS: -->
+              <div class='JeeWidgetControls' id='JeeWidgetChangeModelContainer'>
+                  <button onclick="JEEWIDGET.load('rayban_aviator_or_vertFlash')"><img src="./images/model1.png"></button>
+                  <button onclick="JEEWIDGET.load('rayban_doubleBridge_bleu_gradient_flash')"><img src="./images/model2.png"></button>
+                  <button onclick="JEEWIDGET.load('rayban_erika_havaneGun_marronDegrade')"><img src="./images/model3.png"></button>
+
+                  <!--<button onclick="JEEWIDGET.load_modelStandalone('glasses3D/glasses1.json')"><img src="./images/model3.png"></button>-->
+              </div>
+              <!-- BEGIN ADJUST NOTICE -->
+              <div id='JeeWidgetAdjustNotice'>
+                  Move the glasses to adjust them.
+                  <button class='JeeWidgetBottomButton' id='JeeWidgetAdjustExit'>Quit</button>
+              </div>
+              <!-- END AJUST NOTICE -->
+              <!-- BEGIN LOADING WIDGET (not model) -->
+              <div id='JeeWidgetLoading'>
+                  <div class='JeeWidgetLoadingText'>
+                      LOADING...
+                  </div>
+              </div>
+              <!-- END LOADING -->
           </div>
-
-        <!-- CHANGE MODEL BUTTONS: -->
-        <div class='JeeWidgetControls' id='JeeWidgetChangeModelContainer'>
-            <button onclick="JEEWIDGET.load('rayban_aviator_or_vertFlash')"><img src="./images/model1.png"></button>
-            <button onclick="JEEWIDGET.load('rayban_doubleBridge_bleu_gradient_flash')"><img src="./images/model2.png"></button>
-            <button onclick="JEEWIDGET.load('rayban_erika_havaneGun_marronDegrade')"><img src="./images/model3.png"></button>
-
-            <!--<button onclick="JEEWIDGET.load_modelStandalone('glasses3D/glasses1.json')"><img src="./images/model3.png"></button>-->
-        </div>
-
-        <!-- BEGIN ADJUST NOTICE -->
-        <div id='JeeWidgetAdjustNotice'>
-          Move the glasses to adjust them.
-          <button class='JeeWidgetBottomButton' id='JeeWidgetAdjustExit'>Quit</button>
-        </div>
-        <!-- END AJUST NOTICE -->
-
-        <!-- BEGIN LOADING WIDGET (not model) -->
-        <div id='JeeWidgetLoading'>
-           <div class='JeeWidgetLoadingText'>
-              LOADING...
-            </div>
-        </div>
-        <!-- END LOADING -->
-
-      </div>
     </div>
   </body>
 </html>
