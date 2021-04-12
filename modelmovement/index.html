@@ -1,0 +1,231 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebAR Animation Experiment</title>
+    <script src="https://cdn.jsdelivr.net/gh/aframevr/aframe@e47f441/dist/aframe-master.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.0/dist/aframe-extras.min.js"></script>
+    <script src="https://ghcdn.rawgit.org/chenzlabs/aframe-ar/8a7ee3b/dist/aframe-ar.min.js"></script>
+    <script>
+    
+    // AFRAME no longer sends intersection event every time intersection changes position;
+    // this component is modified from docs to move a different entity than the one hit.
+    AFRAME.registerComponent('raycaster-move', {
+        schema: {
+            target: {type: 'selector'}
+        },
+        init: function () {
+            // Use events to figure out what raycaster is listening so we don't have to
+            // hardcode the raycaster.
+            this.el.addEventListener('raycaster-intersected', evt => {
+                this.raycaster = evt.detail.el;
+            });
+            this.el.addEventListener('raycaster-intersected-cleared', evt => {
+                this.raycaster = null;
+            });
+        },
+        update: function (oldData) {
+            //
+        },
+        tick: function () {
+            if (!this.raycaster) { return; }  // Not intersecting.
+
+            let intersection = this.raycaster.components.raycaster.getIntersection(this.el);
+            if (!intersection) { return; }
+            //console.log(intersection.point);
+            this.data.target.setAttribute("position", intersection.point);
+        }
+    });
+    
+    </script>    
+
+    <script>
+        AFRAME.registerComponent('shadow-material', {
+            init: function () {
+                this.material = this.el.getOrCreateObject3D('mesh').material = new THREE.ShadowMaterial();
+                this.material.opacity = 0.3;
+            }
+        });
+    </script>
+    <!-- Prevent touch causing flicker on iOS. -->
+    <style> * { -webkit-tap-highlight-color: rgba(0,0,0,0); } </style>        
+</head>
+
+<body>
+    <a-scene ar raycaster-move="target:#intersection">
+        <!-- Specify raycaster="objects:none" to avoid intersections with A-Frame entities like the fox. -->
+        <a-camera user-height="0" cursor="fuse:false" ar-raycaster raycaster="objects:none"></a-camera>
+        <a-entity id="walker" position="0 0 -5" visible="false">
+            <a-entity gltf-model="models/fox.glb" scale="0.5 0.5 0.5" id="fox" animation-mixer="clip:Fox_Idle" shadow="cast: true">
+            </a-entity>
+            <a-plane width="0.4" height="0.4" position="0 0 0" rotation="-90 0 0" color="white" shadow="receive: true" shadow-material></a-plane>
+        </a-entity>
+        <a-entity id="walker2" position="0 0 -5" visible="false">
+            <a-entity gltf-model="models/dino.glb" id="dino"  scale="0.5 0.5 0.5" animation-mixer="clip:Idle" shadow="cast: true">
+            </a-entity>
+            <a-plane width="0.9" height="0.9" position="0 0 0" rotation="-90 0 0" color="white" shadow="receive: true" shadow-material></a-plane>
+        </a-entity>
+        <a-sphere id="intersection" visible="false" radius="0.02" color="red"></a-sphere>
+    </a-scene>
+
+    <script>
+        let scene = document.querySelector('a-scene');
+        let walker;
+        let fox;
+        let idleAnimation;
+        let sitting = false;
+
+        function activateFox() {
+            walker = document.querySelector('#walker');
+            fox = document.querySelector('#fox');
+            idleAnimation = 'Fox_Idle';
+            walkAnimation = 'Fox_Run';
+        }
+
+        function activateDino() {
+            walker = document.querySelector('#walker2');
+            fox = document.querySelector('#dino');
+            idleAnimation = 'Idle';
+            walkAnimation = 'Walk';
+        }
+
+        function playAnimation(animation) {
+            if (fox === document.querySelector('#dino')) {
+                sitting = animation.startsWith('Sit') && animation !== 'Sit_Up';
+                fox.setAttribute('animation-mixer', { clip: animation });
+                const listener = () => {
+                    fox.setAttribute('animation-mixer', { clip: sitting ? 'Sit_Idle' : idleAnimation });
+                    fox.removeEventListener('animation-loop', listener);
+                };
+                fox.addEventListener('animation-loop', listener);
+            }
+        }
+
+        function onceSceneLoaded() {
+            let raycaster = document.querySelector('[ar-raycaster]');
+            let marker = document.querySelector('#intersection');
+            activateFox();
+            raycaster.addEventListener('raycaster-intersection', function (event) {
+                const intersection = event.detail.intersections[0]; //.find(i => i.object.type === 'Scene');
+                if (intersection) {
+                    marker.setAttribute('position', intersection.point);
+                    marker.setAttribute('visible', true);
+                    marker.setAttribute('color', 'green');
+                }
+            });
+
+            raycaster.addEventListener('raycaster-intersection-cleared', function (event) {
+                marker.setAttribute('color', 'red');
+            });
+
+            const { stringify } = AFRAME.utils.coordinates;
+
+            let lastEvent = null;
+            raycaster.addEventListener('click', function () {
+                const currentEvent = new Date().getTime();
+                if (lastEvent && (currentEvent - lastEvent < 1000)) {
+                    return;
+                }
+                lastEvent = currentEvent;
+
+                const targetPosition = raycaster.components.cursor
+                  // this is broken in current A-Frame 1.0.x --> .intersection.point;
+                  .intersectedEventDetail.intersection.point;
+                if (!walker.getAttribute('visible')) {
+                    walker.setAttribute('visible', true);
+                    walker.setAttribute('position', stringify(targetPosition));
+                } else {
+                    const currentPosition = walker.object3D.position;
+                    const distance = currentPosition.distanceTo(targetPosition);
+                    // face the right way
+                    walker.object3D.lookAt(targetPosition);
+                    // make it look like it's walking
+                    fox.setAttribute('animation-mixer', { clip: walkAnimation });
+                    // only add completion listener once
+                    if (!walker.getAttribute('animation')) {
+                      // once it's there,
+                      walker.addEventListener('animationcomplete', () => { 
+                        // make it look like it's idle                    
+                        fox.setAttribute('animation-mixer', { clip: idleAnimation });
+                      });
+                    }
+                    // set the animation in new A-Frame 1.0.x style
+                    walker.setAttribute('animation', {
+                      property: 'position',
+                      to: stringify(targetPosition), // just targetPosition doesn't work!?
+                      dur: distance * 3000,
+                      easing: 'linear'                      
+                    });
+                    // toggle marker color to show we're doing it 
+                    marker.setAttribute('color', 'blue');
+                    setTimeout(() => marker.setAttribute('color', 'green'), 350);
+                }
+            });
+        }
+
+        function tryAgain() {
+            recognition.stop();
+            setTimeout(() => { recognition.start(); });          
+        }
+      
+        function onCommand(results) {
+            tryAgain();
+            for (const result of results) {
+                for (const { transcript } of Array.from(result)) {
+                    if (transcript.toLowerCase().includes('dino') || transcript.toLowerCase().includes('dina')) {
+                        activateDino();
+                    }
+                    if (transcript.toLowerCase().includes('fox')) {
+                        activateFox();
+                    }
+                    const animations = sitting ? {
+                        'Stand up': 'Sit_Up',
+                        'Eat': 'Sit_Eat',
+                        'Chew': 'Sit_Chew',
+                        'Look left': 'Sit_Head_Left',
+                        'Look right': 'Sit_Head_Right', 
+                    } : {
+                        'Look left': 'Head_Left',
+                        'Look right': 'Head_Right', 
+                        'Chew': 'Chew',
+                        'Drink': 'Drink',
+                        'Jump': 'Jump',
+                        'Head': 'Attack1',
+                        'Attack': 'Attack2',
+                        'Sit Down': 'Sit',
+                        'Eat': 'Eat2',
+                        'Run': 'Run',
+                    };
+                    for (const animationKey of Object.keys(animations)) {
+                        if (transcript.toLowerCase().includes(animationKey.toLowerCase())) {
+                            playAnimation(animations[animationKey]);
+                            return;
+                        }
+                    }
+                    if (transcript.toLowerCase().includes('random')) {
+                        const animationKey = Object.keys(animations)[Math.floor(Math.random() * Object.keys(animations).length)];
+                        playAnimation(animations[animationKey]);
+                        return;
+                    }
+                }
+            }
+        }
+
+        try {
+            
+        recognition = new webkitSpeechRecognition();
+        recognition.continuous = true;
+        recognition.maxAlternatives = 5;
+        recognition.onresult = ({results}) => onCommand(results);
+        recognition.onerror = () => setTimeout(tryAgain, 500);
+        recognition.start();
+
+        } catch (err) { console.error(err.message); }
+
+        scene.addEventListener('loaded', onceSceneLoaded);
+    </script>
+</body>
+
+</html>
