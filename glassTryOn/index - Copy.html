@@ -38,45 +38,6 @@
                             ];
       // entry point:
       function main() {
-             JEEWIDGET.start({
-            sku: 'rayban_aviator_gun_argentFlash',
-          searchImageMask: 'https://github.com/immesrive/immesrive.github.io/blob/main/rayban.png',
-          searchImageColor: 0x4a8aa4,
-          callbackReady: function(){
-            console.log('INFO: glazz is ready :)');
-          },
-          onError: function(errorLabel){ // this function catches errors, so you can display custom integrated messages
-            alert('An error happened. errorLabel =' + errorLabel)
-            switch(errorLabel) {
-              case 'NOFILE':
-                // the user send an image, but it is not here
-                break;
-
-              case 'WRONGFILEFORMAT':
-                // the user upload a file which is not an image or corrupted
-                break;
-
-              case 'INVALID_SKU':
-                // the provided SKU does not match with a glasses model
-                break;
-
-              case 'FALLBACK_UNAVAILABLE':
-                // we cannot switch to file upload mode. browser too old?
-                break;
-
-              case 'PLACEHOLDER_NULL_WIDTH':
-              case 'PLACEHOLDER_NULL_HEIGHT':
-                // Something is wrong with the placeholder
-                // (element whose id='JeeWidget')
-                break;
-                
-              case 'FATAL':
-              default:
-                // a bit error happens:(
-                break;
-            } // end switch
-          } // end onError()
-        }) // end JEEWIDGET.start call */
              function loadModel(event) {
                           
                           switch(event.target.id) {

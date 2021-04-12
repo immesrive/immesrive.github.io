@@ -151,3 +151,15 @@ button:hover {
 #buttonResizeCanvas {
   display: none;
 }
+#buttonSeePrice {
+  background: #1e61b4;
+  color: white;
+  text-decoration: none;
+  display: block;
+  width: 150px;
+  padding: 10px 15px;
+  border-radius: 3px;
+  margin: 20px auto;
+  font-family: Helvetica;
+  text-align: center;
+}
