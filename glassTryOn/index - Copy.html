@@ -30,79 +30,11 @@
 
         _isResized = !_isResized;
       }
-      const glassesSkus = ['rayban_aviator_gun_argentFlash', 'rayban_doubleBridge_bleu_gradient_flash', 'rayban_erika_havaneGun_marronDegrade'];
-      const productURLs = [
-                              'https://www.amazon.fr/Ray-Ban-Lunettes-Aviator-Polaris%C3%A9e-Argento/dp/B002QJHD1C/ref=sr_1_3?__mk_fr_FR=%C3%85M%C3%85%C5%BD%C3%95%C3%91&dchild=1&keywords=rayban+aviator+gun+argent+flash&qid=1618247044&s=apparel&sr=1-3',
-                              'https://www.amazon.fr/Ray-Ban-lunettes-Multicolore-Gestell-Gunmetal/dp/B005OBQMBQ/ref=sr_1_1?__mk_fr_FR=%C3%85M%C3%85%C5%BD%C3%95%C3%91&dchild=1&keywords=rayban+erika+havaneGun+marronDegrade&qid=1618247285&s=apparel&sr=1-1',
-                              'https://www.amazon.fr/Ray-Ban-lunettes-Multicolore-Gestell-Gunmetal/dp/B005OBQMBQ/ref=sr_1_1?__mk_fr_FR=%C3%85M%C3%85%C5%BD%C3%95%C3%91&dchild=1&keywords=rayban+erika+havaneGun+marronDegrade&qid=1618247285&s=apparel&sr=1-1'
-                            ];
+     
       // entry point:
       function main() {
-             JEEWIDGET.start({
-            sku: 'rayban_aviator_gun_argentFlash',
-          searchImageMask: 'https://github.com/immesrive/immesrive.github.io/blob/main/rayban.png',
-          searchImageColor: 0x4a8aa4,
-          callbackReady: function(){
-            console.log('INFO: glazz is ready :)');
-          },
-          onError: function(errorLabel){ // this function catches errors, so you can display custom integrated messages
-            alert('An error happened. errorLabel =' + errorLabel)
-            switch(errorLabel) {
-              case 'NOFILE':
-                // the user send an image, but it is not here
-                break;
-
-              case 'WRONGFILEFORMAT':
-                // the user upload a file which is not an image or corrupted
-                break;
-
-              case 'INVALID_SKU':
-                // the provided SKU does not match with a glasses model
-                break;
-
-              case 'FALLBACK_UNAVAILABLE':
-                // we cannot switch to file upload mode. browser too old?
-                break;
-
-              case 'PLACEHOLDER_NULL_WIDTH':
-              case 'PLACEHOLDER_NULL_HEIGHT':
-                // Something is wrong with the placeholder
-                // (element whose id='JeeWidget')
-                break;
-                
-              case 'FATAL':
-              default:
-                // a bit error happens:(
-                break;
-            } // end switch
-          } // end onError()
-        }) // end JEEWIDGET.start call */
-             function loadModel(event) {
-                          
-                          switch(event.target.id) {
-                            case model1:
-                              // And load the model
-                              JEEWIDGET.load(glassesSkus[0]);
-                              setURLButtonSeePrice(0);
-                              break;
-                            case model2:
-                              JEEWIDGET.load(glassesSkus[1]);
-                              setURLButtonSeePrice(1);
-                              break;
-                            case model3:
-                               JEEWIDGET.load(glassesSkus[2]);
-                               setURLButtonSeePrice(2);
-                               break;
-                             default:
-                               return;
-                          }
-}
-                function setURLButtonSeePrice(index) {
-                                      const button = document.getElementById('buttonSeePrice');
-                                      // We modify the href attribute
-                                      button.setAttribute(href, productURLs[index]);
-                                    }
-        /*JEEWIDGET.start({
+          
+        JEEWIDGET.start({
             sku: 'rayban_erika_havaneGun_marronDegrade',
           searchImageMask: 'https://github.com/immesrive/immesrive.github.io/blob/main/rayban.png',
           searchImageColor: 0x4a8aa4,
@@ -140,7 +72,7 @@
                 break;
             } // end switch
           } // end onError()
-        }) // end JEEWIDGET.start call */
+        }) // end JEEWIDGET.start call 
       } // end main()
     </script>
   </head>
@@ -183,17 +115,15 @@
                   <!--<button id='buttonResizeCanvas' onclick='test_resizeCanvas();'>
                       <div class="buttonIcon"><i class="fas fa-sync-alt"></i></div>Resize widget
                   </button>-->
-                  <!--<a target="_blank" href="https://www.amazon.fr/Ray-Ban-Lunettes-Aviator-Polaris%C3%A9e-Argento/dp/B002QJHD1C/ref=sr_1_3?__mk_fr_FR=%C3%85M%C3%85%C5%BD%C3%95%C3%91&dchild=1&keywords=rayban+aviator+gun+argent+flash&qid=1618247044&s=apparel&sr=1-3 id='buttonSeePrice">Price</a>-->
+                  <a target="_blank" href="https://www.amazon.fr/Ray-Ban-Lunettes-Aviator-Polaris%C3%A9e-Argento/dp/B002QJHD1C/ref=sr_1_3?__mk_fr_FR=%C3%85M%C3%85%C5%BD%C3%95%C3%91&dchild=1&keywords=rayban+aviator+gun+argent+flash&qid=1618247044&s=apparel&sr=1-3 id='buttonSeePrice">Price</a>
 
               </div>
               <!-- CHANGE MODEL BUTTONS: -->
               <div class='JeeWidgetControls' id='JeeWidgetChangeModelContainer'>
-                   <!-- <button onclick="loadModel(model1)" id="model1"><img src="./images/model1.png"></button>
-                    <button onclick="loadModel(model2)" id="model2"><img src="./images/model2.png"></button>
-                    <button onclick="loadModel(model3)" id="model3"><img src="./images/model3.png"></button> -->
-                 <button onclick="JEEWIDGET.load('rayban_aviator_gun_argentFlash')"><img src="./images/model1.png"></button>
+               
+                <button onclick="JEEWIDGET.load('rayban_aviator_gun_argentFlash')"><img src="./images/model1.png"></button>
                   <button onclick="JEEWIDGET.load('rayban_doubleBridge_bleu_gradient_flash')"><img src="./images/model2.png"></button>
-                  <button onclick="JEEWIDGET.load('rayban_erika_havaneGun_marronDegrade')"><img src="./images/model3.png"></button>-->
+                  <button onclick="JEEWIDGET.load('rayban_erika_havaneGun_marronDegrade')"><img src="./images/model3.png"></button>
 
                   <!--<button onclick="JEEWIDGET.load_modelStandalone('glasses3D/glasses1.json')"><img src="./images/model3.png"></button>-->
               </div>
