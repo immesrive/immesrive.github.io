@@ -1,0 +1,11 @@
+Model Information:
+* title:	SpaceX Starship - Spaceship
+* source:	https://sketchfab.com/3d-models/spacex-starship-spaceship-f5bbabadb7b44645a7fe9e0e619d555e
+* author:	MOJackal (https://sketchfab.com/MOJackal)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "SpaceX Starship - Spaceship" (https://sketchfab.com/3d-models/spacex-starship-spaceship-f5bbabadb7b44645a7fe9e0e619d555e) by MOJackal (https://sketchfab.com/MOJackal) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
