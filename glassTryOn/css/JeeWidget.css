@@ -16,7 +16,7 @@ body {
   box-sizing: border-box;
 }
 
-button, select {
+a, button, select {
   cursor: pointer;
   background: rgba(0, 0, 0, 0.5);
   color: #ddd;
@@ -152,14 +152,7 @@ button:hover {
   display: none;
 }
 #buttonSeePrice {
-  background: #1e61b4;
-  color: white;
-  text-decoration: none;
-  display: block;
-  width: 150px;
-  padding: 10px 15px;
-  border-radius: 3px;
-  margin: 20px auto;
-  font-family: Helvetica;
-  text-align: center;
+  display: inline-block;
+  width: 45%;
+  min-width: auto;
 }
