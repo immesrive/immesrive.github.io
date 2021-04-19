@@ -1,0 +1,70 @@
+* {
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  background-color: blanchedalmond;
+}
+
+model-viewer {
+  width: 520px;
+  height: 350px;
+  border: 1px solid black;
+  border-radius: 10px;
+  margin: 10px;
+  -webkit-box-shadow: 0 8px 12px 0 rgba(0, 0, 0, 0.2);
+          box-shadow: 0 8px 12px 0 rgba(0, 0, 0, 0.2);
+  --poster-color: rgb(204, 61, 133);
+  --progress-bar-color: rgb(251, 255, 0);
+  --progress-bar-height: 10px;
+  --progress-mask: rgb(55, 0, 255);
+}
+
+model-viewer .container {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  width: 100%;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  position: absolute;
+  bottom: 0;
+}
+
+model-viewer .container button {
+  height: auto;
+  width: 100px;
+  padding: 10px;
+  color: black;
+  background-color: #e7c711;
+  padding: 10px;
+  text-align: center;
+  cursor: pointer;
+}
+
+model-viewer .container button:focus {
+  outline: none;
+}
+
+model-viewer .container button:hover {
+  color: #e7c711;
+  background-color: black;
+}
+
+model-viewer .container button:active {
+  -webkit-transform: scale(0.98);
+          transform: scale(0.98);
+}
+/*# sourceMappingURL=style.css.map */
