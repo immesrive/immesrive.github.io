@@ -1,0 +1,104 @@
+<p><a href="https://ada.is/SoundThing/">[Glitch Bunny]</a> is an audio visualisation. It uses input from the microphone via webaudio and maps it onto a bunny.</p>
+
+<video class="gallery-item" data-src="/post_resources/BunnyBunny.m4v" poster="/images/post_resources/BunnyBunnyPreview.jpeg" loop="true" controls="controls">
+	Sorry it appears video is not supported in your browser.
+</video>
+
+<p><a href="https://ada.is/SoundThing/?vr">Later support for google cardboard and better lighting was added.</a> The source code is <a href="https://github.com/AdaRoseCannon/SoundThing">[Here]</a></p>
+
+<h2 id="why">Why?</h2>
+
+<p>I wanted to do some interesting data visualistation. I had a half finished guitar tuner I was writing (never did finish) and that inspired me to hook it up to that. The challenges were mostly in getting and maintainging 30-60fps on mobile whilst fourier transforming audio and mapping it to a 3d object.</p>
+
+<h2 id="how">How?</h2>
+
+<p>The Algorithm is nice and simple. (/js/processVerts.js) I take the Audio data which has been fourier transformed into 32 buckets. I then remove the highest 50% of the frequency bins because they weren’t that interesting and were quite noisy. I wanted it to be best for music.</p>
+
+<p>The algo:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+
+<span class="kd">function</span> <span class="nx">updateAudioData</span><span class="p">(</span><span class="nx">d</span><span class="p">)</span> <span class="p">{</span>
+	<span class="kd">var</span> <span class="nx">l</span> <span class="o">=</span> <span class="nx">d</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+	<span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">l</span><span class="p">;</span> <span class="nx">i</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">currentAudioData</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">parseFloat</span><span class="p">(</span><span class="nx">d</span><span class="p">[</span><span class="nx">i</span><span class="p">]);</span>
+		<span class="nx">previousAudioData</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="nx">previousAudioData</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">||</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="nx">currentAudioData</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+		<span class="nx">sumOfSquareDeviations</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="nx">sumOfSquareDeviations</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">||</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">pow</span><span class="p">(</span><span class="nx">currentAudioData</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">-</span> <span class="nx">averageAudioChannel</span><span class="p">(</span><span class="nx">i</span><span class="p">),</span> <span class="mi">2</span><span class="p">);</span>
+	<span class="p">}</span>
+	<span class="nx">count</span><span class="o">++</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">standardDeviation</span><span class="p">(</span><span class="nx">i</span><span class="p">)</span> <span class="p">{</span>
+	<span class="k">if</span> <span class="p">(</span><span class="nx">count</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">sqrt</span><span class="p">(</span><span class="nx">sumOfSquareDeviations</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span><span class="o">/</span><span class="p">(</span><span class="nx">count</span> <span class="o">-</span><span class="mi">1</span><span class="p">));</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">scaleSphere</span><span class="p">(</span><span class="nx">p</span><span class="p">,</span> <span class="nx">t</span><span class="p">,</span> <span class="nx">array</span><span class="p">)</span> <span class="p">{</span>
+	<span class="kd">var</span> <span class="nx">scale</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+	<span class="kd">var</span> <span class="nx">l</span> <span class="o">=</span> <span class="nx">array</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+	<span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">l</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">amplitude</span> <span class="o">=</span> <span class="p">(</span><span class="nx">array</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">-</span> <span class="nx">averageAudioChannel</span><span class="p">(</span><span class="nx">i</span><span class="p">))</span> <span class="o">/</span> <span class="nx">standardDeviation</span><span class="p">(</span><span class="nx">i</span><span class="p">);</span>
+		<span class="nx">scale</span> <span class="o">+=</span> <span class="nx">amplitude</span><span class="o">/</span><span class="p">(</span><span class="nx">l</span> <span class="o">*</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">sin</span><span class="p">(</span><span class="nx">i</span> <span class="o">*</span> <span class="nx">i</span> <span class="o">*</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">PI</span> <span class="o">*</span> <span class="nx">p</span> <span class="o">/</span> <span class="nx">l</span><span class="p">)</span> <span class="o">+</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">cos</span><span class="p">(</span><span class="nx">i</span> <span class="o">*</span> <span class="nx">i</span> <span class="o">*</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">PI</span> <span class="o">*</span> <span class="nx">t</span> <span class="o">/</span> <span class="nx">l</span><span class="p">));</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="mi">1</span> <span class="o">+</span> <span class="nx">scale</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// Map the x,y,z to phi, theta, r (radius) spherical coordinates.</span>
+<span class="kd">function</span> <span class="nx">convertCartesianToSpherical</span><span class="p">(</span><span class="nx">cartesian</span><span class="p">)</span> <span class="p">{</span>
+
+	<span class="kd">var</span> <span class="nx">r</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">sqrt</span><span class="p">(</span><span class="nx">cartesian</span><span class="p">.</span><span class="nx">x</span> <span class="o">*</span> <span class="nx">cartesian</span><span class="p">.</span><span class="nx">x</span> <span class="o">+</span> <span class="nx">cartesian</span><span class="p">.</span><span class="nx">y</span> <span class="o">*</span> <span class="nx">cartesian</span><span class="p">.</span><span class="nx">y</span> <span class="o">+</span> <span class="nx">cartesian</span><span class="p">.</span><span class="nx">z</span> <span class="o">*</span> <span class="nx">cartesian</span><span class="p">.</span><span class="nx">z</span><span class="p">);</span>
+	<span class="kd">var</span> <span class="nx">lat</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">asin</span><span class="p">(</span><span class="nx">cartesian</span><span class="p">.</span><span class="nx">z</span> <span class="o">/</span> <span class="nx">r</span><span class="p">);</span>
+	<span class="kd">var</span> <span class="nx">lon</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">atan2</span><span class="p">(</span><span class="nx">cartesian</span><span class="p">.</span><span class="nx">y</span><span class="p">,</span> <span class="nx">cartesian</span><span class="p">.</span><span class="nx">x</span><span class="p">);</span>
+	<span class="k">return</span> <span class="p">{</span>
+		<span class="na">p</span><span class="p">:</span> <span class="nx">lat</span><span class="p">,</span>
+		<span class="na">t</span><span class="p">:</span> <span class="nx">lon</span><span class="p">,</span>
+		<span class="na">r</span><span class="p">:</span> <span class="nx">r</span>
+	<span class="p">};</span>
+<span class="p">}</span>
+
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">scaleSphere</code> maps different frequencies to different points on the sphere. Higher frequencies have more spikes and lower frequencies have fewer the video below shows what happens if we turn on only one frequency bin at a time:</p>
+
+<video class="gallery-item" data-src="/post_resources/bunny_debug.m4v" poster="/images/post_resources/bunny_debugPreview.jpeg" loop="true" controls="controls">
+	Sorry it appears video is not supported in your browser.
+</video>
+
+<p>As you can see as we turn on higher frequencies the rabbit gets spikier. This behaviour is generated with the following formulae.</p>
+
+<p>Where <code class="language-plaintext highlighter-rouge">i</code> is the frequency bin, <code class="language-plaintext highlighter-rouge">p</code> &amp; <code class="language-plaintext highlighter-rouge">t</code> stand for phi and theta respectively from the angle components of the vertex position in spherical polar coordinates. <code class="language-plaintext highlighter-rouge">l</code> is just the number of bins. Finally <code class="language-plaintext highlighter-rouge">amplitude</code> is the value of that bin from the audio analyser.</p>
+
+<p>As you’ll remember from physics the function for a simple plane wave is
+    y = Amplitude * sin(2π*Frequency * x);
+In this case the amplitude is <code class="language-plaintext highlighter-rouge">amplitude/(l * Math.log(i + 2))</code> It is damped at higher frequencies since they tended to have higher amplitudes and the frequency in the <code class="language-plaintext highlighter-rouge">phi</code> direction is <code class="language-plaintext highlighter-rouge">i</code><sup>2</sup><code class="language-plaintext highlighter-rouge">/2l</code>. In the <code class="language-plaintext highlighter-rouge">theta</code> direction it is the same frequency but offset by <code class="language-plaintext highlighter-rouge">π/2</code>.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">amplitude</span><span class="o">/</span><span class="p">(</span><span class="nx">l</span> <span class="o">*</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">sin</span><span class="p">(</span><span class="nx">i</span> <span class="o">*</span> <span class="nx">i</span> <span class="o">*</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">PI</span> <span class="o">*</span> <span class="nx">p</span> <span class="o">/</span> <span class="nx">l</span><span class="p">)</span> <span class="o">+</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">cos</span><span class="p">(</span><span class="nx">i</span> <span class="o">*</span> <span class="nx">i</span> <span class="o">*</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">PI</span> <span class="o">*</span> <span class="nx">t</span> <span class="o">/</span> <span class="nx">l</span><span class="p">));</span>
+</code></pre></div></div>
+
+<h2 id="performance">Performance</h2>
+
+<p>The bunny has 1569 vertices which are updated on every requestAnimationFrame with a fair amount of Maths, so the vertices are not cached which I can imagine makes it more difficult for the shadow mapping algorithm in three.js.</p>
+
+<p>I run the bulk of the calculations for the vertices in a service worker then pass them back to the main app to update the mesh. This allows the 3d render to stay in 60fps and the mesh gets updated when the new vertices are calculated.</p>
+
+<p>It runs very fast on my Nexus 5 which is nice although it kills my 1st gen Moto X.</p>
+
+<p>Scripts are downloaded as they are required so someone who chooses to view it in the browser does not get the cardboard libraries and someone who is viewing it in cardboard does not get the touch interaction.</p>
+
+<p>The webaudio analyser has support for very fine grain fourier transform with hundreds of bins but I am limiting it to 32 (The top 16 are discarded) because it is very computationally expensive to generate. With hundreds of bins my laptop would spin up the fans even without drawing anything.</p>
+
+<h2 id="cardboard">Cardboard</h2>
+
+<p>After seeing some Virtual Reality demoes in the borwser I used the three.js cardboard demoes to add cardboard support it works really well and required no calibration. VR in the browser is super easy and a fun weekend project.</p>
+
+<h2 id="future-work">Future Work?</h2>
+
+<ul>
+  <li>Algorithm improvements to make the effect look better.</li>
+  <li>Add a sky box so you can tell you are turning in VR.</li>
+  <li>Probably can squeeze out some more performance. - Will write post on how I ported this to run from the glsl shader.</li>
+  <li>Add occulus rift support.</li>
+</ul>

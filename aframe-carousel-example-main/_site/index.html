@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="style.css">
+	<title>Document</title>
+	<!-- <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+	<script nomodule src="https://unpkg.com/@google/model-viewer/dist/model-viewer-legacy.js"></script> -->
+	<script src="https://aframe.io/releases/1.1.0/aframe.min.js"></script>
+	<script src="https://unpkg.com/aframe-orbit-controls@1.2.0/dist/aframe-orbit-controls.min.js"></script> 
+	<script src="./index.js"></script>
+</head>
+<body>
+	<section aria-roledescription="carousel" aria-label="XR Demo Reel">
+		<h2 style="text-align: left;display: inline-block;padding: 0; position: absolute;">Demos</h2>
+		<a-scene embedded style="position: absolute;">
+			<a-camera look-controls orbit-controls="target: 0 0 0; enablePan: false; minDistance: 0.5; maxDistance: 4; initialPosition: 1 0.2 1">
+			</a-camera>
+			<a-entity id="lazy-susan" position="0 0 5" data-rotate-by="180.0">
+				
+				<a-entity
+					data-rotation="0.0"
+					rotation="0 0.0 0"
+				>
+					<a-entity position="0 0 -5">
+						<a-gltf-model src="./assets/basketball.glb" normalize-size="1"></a-gltf-model>
+					</a-entity>
+				</a-entity>
+				
+				<a-entity
+					data-rotation="180.0"
+					rotation="0 180.0 0"
+				>
+					<a-entity position="0 0 -5">
+						<a-gltf-model src="./assets/xrgarden.glb" normalize-size="10"></a-gltf-model>
+					</a-entity>
+				</a-entity>
+				
+			</a-entity>
+		</a-scene>
+		<div class="carousel-controls">
+			<button aria-controls="carousel-items" id="prev-slide" aria-label="Previous Demo">&lt;</button>
+			<button aria-controls="carousel-items" id="next-slide" aria-label="Next Slide">&gt;</button>
+		</div>
+		<div id="carousel-items">
+			
+			<div class="carousel-item" id="xr-garden" aria-label="1 of 2" role="group" aria-roledescription="slide">
+				<div class="carousel-caption">
+					<!-- <h3><a href="/demos/xrgarden">XR Garden</a></h3> -->
+					<p><p>Relax in this augmented reality garden.</p>
+</p>
+				</div>
+			</div>
+			
+			<div class="carousel-item" id="ar-basketball-demo" aria-label="2 of 2" role="group" aria-roledescription="slide">
+				<div class="carousel-caption">
+					<!-- <h3><a href="/demos/basketball">AR Basketball Demo</a></h3> -->
+					<p><p>Play Augmented reality basketball right in your browser!</p>
+<ul>
+  <li>Play the Demo: <a href="https://ada.is/basketball-demo/">https://ada.is/basketball-demo/</a></li>
+  <li>Read how to make it: https://ada.is/blog/2021/01/14/making-an-ar-game/</li>
+</ul>
+</p>
+				</div>
+			</div>
+			
+		</div>
+	</section>
+	<main>
+		<h2 style="transform: rotate(1deg);">Blog</h2>
+		
+		
+			<h3><a class="article-link" href="/blog/2021/01/14/making-an-ar-game.html">Making an AR Game</a></h3>
+			<article><p>Here is a .gif (jiff?) of the final game, click here to play the game. It uses the WebXR DOM Overlay API, and the WebXR Hit Test API. So right now the best way to play it is in Mobile Chrome or Samsung Internet Beta.</p></article>
+			<time>14 Jan 2021</time>
+		
+		
+		
+			<h3><a class="article-link" href="/blog/2021/01/07/using-webxr-in-html-iframes.html">Using WebXR in HTML IFrames</a></h3>
+			<article><p>IFrames are really useful for WebXR. Often WebXR web pages are large with a lot of code and many 3D frameworks default to taking up all the available space on the page. IFrames solve these issues by letting you put all the XR code into another webpage, which can even be on a different domain, they also let you choose exactly how much space they take up on the page and can be used with Flexbox and CSS Grid.</p></article>
+			<time>07 Jan 2021</time>
+		
+		
+		
+			<h3><a class="article-link" href="/blog/2020/11/03/three-powerful-tools-in-my-web-development-swiss-army-knife.html">Three Powerful Tools in my Web Development Swiss Army Knife</a></h3>
+			<article><p>These tools are not ones I use everyday but they have got me out some really sticky situations. I hope you find them useful too.</p></article>
+			<time>03 Nov 2020</time>
+		
+		
+		
+			<h3><a class="article-link" href="/blog/2020/10/29/curve-modifiers-in-threejs.html">Curve Modifiers in Three.js</a></h3>
+			<article><p>I recently made a relaxing koi garden demo, where koi fish swim around a VR environment. The two most notable parts of the scene are the 3D positioned audio which I wrote about previously and the 100s of fish which appear to organically swim around the trees.</p></article>
+			<time>29 Oct 2020</time>
+		
+		
+		
+			<h3><a class="article-link" href="/blog/2020/10/19/audio-on-the-web-for-games-and-vr.html">Audio on the Web, for Games and VR!</a></h3>
+			<article><p>Audio is a fundamental way of adding important theming and immersion to games and virtual reality experiences on the Web. It’s not too hard to add but can do wonders for giving the user a wonderful experience. Resources like Freesound make it easier to find Creative Commons sound effects and music so there is no excuse to leave your experience silent.</p></article>
+			<time>19 Oct 2020</time>
+		
+		
+		
+			<h3><a class="article-link" href="/blog/2020/10/06/html-and-templates-javascript-template-literals.html">HTML and Templates & JavaScript Template Literals</a></h3>
+			<article><p>HTML in the Web is often made of reusable components, composed by templates, making it convenient to edit the different parts that make up a website. There are many templating languages used in the web such as handlebars, Pug, Vue and JSX; these are primarily used for composing HTML. Modern JavaScript has templating syntax built in which can use for all kinds of purposes including composing HTML.</p></article>
+			<time>06 Oct 2020</time>
+		
+		
+		
+			<h3><a class="article-link" href="/blog/2020/09/30/redeeming-push-notifications.html">Redeeming Push Notifications</a></h3>
+			<article><p>You know that thing where you go to a web site then before you can do anything you have to acknowledge the push notification request. Do you hate that? Yeah, me too.</p></article>
+			<time>30 Sep 2020</time>
+		
+		
+		
+			<h3><a class="article-link" href="/blog/2020/08/25/improve-device-integration-for-your-web-app-in-just-a-few-minutes.html">Improve device integration for your Web App in just a few minutes</a></h3>
+			<article><p>This was a feature I had set aside an afternoon to implement but in the end it only needed a moment and made the experience significantly better.</p></article>
+			<time>25 Aug 2020</time>
+		
+		
+		
+			<h3><a class="article-link" href="/blog/2020/08/04/ar-in-the-web-now-in-samsung-internet-stable.html">AR in the Web, now in Samsung Internet Stable</a></h3>
+			<article><p>Edit: This has now landed in Samsung Internet stable. You can download here.</p></article>
+			<time>04 Aug 2020</time>
+		
+		
+		
+			<h3><a class="article-link" href="/blog/2020/08/03/using-node-modules-in-deno.html">Using node modules in Deno</a></h3>
+			<article><p>Last time we introduced about Deno and discussed how it compares to node, like node, Deno is a server side code-execution environment based on web technology.</p></article>
+			<time>03 Aug 2020</time>
+		
+		
+		
+			<h3><a class="article-link" href="/blog/2020/07/27/making-a-useful-offline-page-for-your-web-app.html">Making a useful ‘offline’ page for your web app.</a></h3>
+			<article><p>In ideal conditions the user will always maintain a good connection to the web but things are seldom ideal. Fortunately since we’re been building a web app we have a service worker which has the capability of caching network responses.</p></article>
+			<time>27 Jul 2020</time>
+		
+		
+		
+			<h3><a class="article-link" href="/blog/2020/05/18/using-vr-controllers-and-locomotion-in-threejs.html">Using VR controllers and locomotion in THREE.js</a></h3>
+			<article><p>In VR, with an advanced headset, one can explore a scene by walking in the real world. We’re often limited to the size of the room we’re in but the VR world can go on forever!</p></article>
+			<time>18 May 2020</time>
+		
+		
+		
+			<h3><a class="article-link" href="/blog/2020/04/23/animating-dom-changes.html">Animating DOM Changes</a></h3>
+			<article><p>A common misconception in Web Development is that the DOM is slow. The DOM, short for Document Object Model, is the structure of the Web Site which your code interacts with. If you were to ask me whether the DOM is slow I would answer that, like most things in computer science, it depends on the circumstances.</p></article>
+			<time>23 Apr 2020</time>
+		
+		
+		
+			<h3><a class="article-link" href="/blog/2020/03/23/building-a-menu-which-reveals-on-scroll.html">Building a menu which reveals on scroll.</a></h3>
+			<article><p>I built this demo as a quick experiment when we were working on an Internal Samsung product. One feature I implemented was the menu where items reveal themselves as you scroll down.</p></article>
+			<time>23 Mar 2020</time>
+		
+		
+		
+			<h3><a class="article-link" href="/blog/2020/03/17/enhancing-multi-pane-single-page-web-apps-with-intersection-observer.html">Enhancing Multi Pane, Single Page Web Apps with Intersection Observer</a></h3>
+			<article><p>In the previous article we built a magazine style page layout of horizontal scrolling panes using only CSS and HTML, link to the demo. This works really well and is great experience with touch and mouse.</p></article>
+			<time>17 Mar 2020</time>
+		
+		
+		
+			<h3><a class="article-link" href="/blog/2020/03/11/horizontally-scrolling-panes-with-clean-html-and-modern-css.html">Horizontally Scrolling Panes with clean HTML and modern CSS</a></h3>
+			<article><p>Isn’t it nice when the tools you work with get better and better when you’re not looking? That’s what it feels like working in the Web some days.</p></article>
+			<time>11 Mar 2020</time>
+		
+		
+		
+			<h3><a class="article-link" href="/blog/2020/03/02/generating-a-water-effect-part-2.html">Generating a water effect, part 2.</a></h3>
+			<article><p>In the first part of this series we looked at generating the texture that goes on top of the water which looks like this, using SVG and canvas:</p></article>
+			<time>02 Mar 2020</time>
+		
+		
+		
+			<h3><a class="article-link" href="/blog/2020/02/25/testing-your-websites-on-real-devices.html">Testing your websites on real devices</a></h3>
+			<article><p>As desktop browser developer tools improve continuously, the responsive design modes are incredibly useful for testing out designs on other screen sizes such as tablets and mobile phones. For web developers, it can be tempting to rely on these tools for full end to end development, but I want to highlight the important of testing on real devices.</p></article>
+			<time>25 Feb 2020</time>
+		
+		
+		
+			<h3><a class="article-link" href="/blog/2020/02/11/generating-a-water-effect-part-1-svg-and-canvas.html">Generating a water effect, part 1. SVG and Canvas</a></h3>
+			<article><p>This is a 3 part breakdown of how this water effect works, you can view the finished demo here: https://a-toon-ocean.glitch.me/</p></article>
+			<time>11 Feb 2020</time>
+		
+		
+		
+			<h3><a class="article-link" href="/blog/2019/06/28/using-basis-textures-in-threejs.html">Using Basis Textures in Three.js</a></h3>
+			<article><p>You can have 6-8x more images in your WebGL scene by using Basis Universal textures which are very efficiently compressed. This article describes how to encode images as Basis files and read them with THREE.js</p></article>
+			<time>28 Jun 2019</time>
+		
+		
+		
+			<h3><a class="article-link" href="/blog/2019/06/11/six-assumptions-which-could-break-your-website.html">Six assumptions which could break your website</a></h3>
+			<article><p>A mistake consistently made by some of the biggest websites shows they are thinking about responsive web design incorrectly.</p></article>
+			<time>11 Jun 2019</time>
+		
+		
+		
+			<h3><a class="article-link" href="/blog/2019/05/16/using-houdini-paint-api-to-render-a-3d-model.html">Using Houdini Paint API to Render a 3D Model</a></h3>
+			<article><p>The demo in this article show’s how to uses the Houdini paint API, which is a part of the larger Houdini spec. Houdini is still coming to browsers but is ready to try out.</p></article>
+			<time>16 May 2019</time>
+		
+		
+		
+			<h3><a class="article-link" href="/blog/2019/05/13/web-workers-in-the-real-world.html">Web Workers in the Real World</a></h3>
+			<article><p>I wrote this article whilst building a demo website which uses both expensive physics and an expensive SVG filter. It was important that it felt really tactile on mobile devices, so it had to run very smoothly.</p></article>
+			<time>13 May 2019</time>
+		
+		
+		
+			<h3><a class="article-link" href="/blog/2019/02/13/speed-up-your-work-flow-by-turning-command-line-tools-into-interactive-dashboards.html">Speed up your work flow by turning command line tools into interactive dashboards</a></h3>
+			<article><p>Ever feel like you live in a terminal? This guide is to show how you can make your commandline apps more friendly.</p></article>
+			<time>13 Feb 2019</time>
+		
+		
+		
+			<h3><a class="article-link" href="/blog/2018/12/06/web-development-on-a-phone-updated-for-linux-on-dex.html">Web Development on a Phone. Updated for Linux on DeX.</a></h3>
+			<article><p>Last year I wrote about how you can use a phone for web development using an Android Linux Terminal and a simple editor I’d made as a Progressive Web App. It worked pretty well but had some drawbacks, for example you couldn’t debug Samsung Internet on the DeX you had to use an external laptop.</p></article>
+			<time>06 Dec 2018</time>
+		
+		
+		
+			<h3><a class="article-link" href="https://ada.is/three-paint/" target="_blank" rel="noopener">Example of running Three.js in a Houdini Paint Worklet</a> <span title="External Link" style="font-size: 80%; color: #aaa;"></span></h3>
+				<article><p>This example shows what can be accomplished with the canvas like powers the Houdini paint methods by using Three.js to render 3D text as the background image of a DOM element.</p></article>
+			<time>27 Jul 2018</time>
+		
+		
+		
+			<h3><a class="article-link" href="https://youtu.be/kSWHSY3BjSM" target="_blank" rel="noopener">[Video] Ada's Twitch Tech Talks, Episode 2</a> <span title="External Link" style="font-size: 80%; color: #aaa;">🔗 youtube.com </span></h3>
+				<article><p>A nice chat with Jo Balletti about what it's like mentoring at Codebar and experimenting with CSS.</p></article>
+			<time>26 Jul 2018</time>
+		
+		
+		
+			<h3><a class="article-link" href="https://www.youtube.com/watch?v=KeYv7BSn4N4&index=19&list=PLNYkxOF6rcIC60856GnLEV5GQXMxc9ByJ&linkId=54775416" target="_blank" rel="noopener">[Video] Designing a WebVR game with A-Frame - Designer vs. Developer #18</a> <span title="External Link" style="font-size: 80%; color: #aaa;">🔗 youtube.com </span></h3>
+				<article><p>In this episode, Ada Rose Canon tells us how she built a WebVR game in a week for the “Games Done Quick” event. She explains how she used A-Frame, Twinery, Archilogic, Glitch, Google Poly, binary, and a bit of JavaScript to create a game engine and a responsive virtual environment.</p></article>
+			<time>25 Jul 2018</time>
+		
+		
+		
+			<h3><a class="article-link" href="/blog/2018/06/15/isomorphic-es-modules.html">Isomorphic ES Modules</a></h3>
+			<article><p>Earlier I demonstrated how to build a Single Page App which shares templates with the Server Side Code. We share the web app’s templates to enable the first page load to be pre-rendered on the server. This practice lets Web Apps start faster and be more resilient to network failure.</p></article>
+			<time>15 Jun 2018</time>
+		
+		
+		
+			<h3><a class="article-link" href="https://www.youtube.com/watch?v=DCRN1cG7sOA&list=PLGUWTxqQHq52UYQJVPrDBI7YOZNWlp1en&index=14&t=0s" target="_blank" rel="noopener">[Video] DeltaV talk - A Rube Goldberg machine and new Web APIs</a> <span title="External Link" style="font-size: 80%; color: #aaa;">🔗 youtube.com </span></h3>
+				<article><p>There are some exciting new developments happening in the web platform right now. New APIs such as CSS Grid, Web Components, Custom CSS Properties and the Web Animation API. Each on their own is a complex topic worth getting to grips with but what this talk aims to show is how they can be used with each other when used together the result is greater than the sum of its parts.</p></article>
+			<time>12 Jun 2018</time>
+		
+		
+		
+			<h3><a class="article-link" href="https://www.youtube.com/watch?v=fe6-HQLBJh8&t=34s" target="_blank" rel="noopener">[Video] Ada's Twitch Tech Talks, Episode 1</a> <span title="External Link" style="font-size: 80%; color: #aaa;">🔗 youtube.com </span></h3>
+				<article><p>Live Coding a Single Page App with Server Side Rendering making use of ES Modules and HyperHTML for importing templates in the browser and in the node server.</p></article>
+			<time>06 Jun 2018</time>
+		
+		
+		
+			<h3><a class="article-link" href="/blog/2018/04/16/help-someone-has-pointed-out-my-conference-has-diversity-issues.html">“Help! someone has pointed out my conference has diversity issues!</a></h3>
+			<article><p>I get asked this question a lot. I hope to give some advice in this article.</p></article>
+			<time>16 Apr 2018</time>
+		
+		
+		
+			<h3><a class="article-link" href="/blog/2018/02/12/how-i-built-a-game-in-a-week.html">How I built a game in a week</a></h3>
+			<article><p>I tried to make a game mostly using tools available on the web. This is a guide to how I integrated these tools together to allow me to create a 3D RPG in a short period of time. With Twinery and AFrame.</p></article>
+			<time>12 Feb 2018</time>
+		
+		
+		
+			<h3><a class="article-link" href="https://medium.com/samsung-internet-dev/lessons-learned-making-our-app-with-web-components-bf55379cfcda" target="_blank" rel="noopener">Lessons Learned, making our app with Web Components</a> <span title="External Link" style="font-size: 80%; color: #aaa;">🔗 medium.com </span></h3>
+				<article><p>This is based on a case study where we built a suite of web components to allow anyone to make music visualisations and VJ for nightclubs. Introductory article to this project.</p></article>
+			<time>23 Jan 2018</time>
+		
+		
+		
+			<h3><a class="article-link" href="https://ada-game-engine.glitch.me" target="_blank" rel="noopener">I made a game! 'I Wake Up With Anxiety'</a> <span title="External Link" style="font-size: 80%; color: #aaa;">🔗 ada-game-engine.glitch.me </span></h3>
+				<article><p>Check out my very short game! No download, play it right in the browser. I made it to demonstrate integrating Twine with A-Frame to make a 3D visual novel in the web.</p></article>
+			<time>22 Jan 2018</time>
+		
+		
+		
+			<h3><a class="article-link" href="/blog/2017/12/12/raindrops-on-roses-whiskers-on-kittens-declarative-web-apis-and-truly-serverless-web-endpoints.html">Raindrops on roses, whiskers on kittens, declarative web APIs and truly serverless web endpoints</a></h3>
+			<article><p>This article introduces some cool things I have been playing with recently that have excited me. The thread which ties them together is getting communities of sites to work together across domains, but powered by the front end.</p></article>
+			<time>12 Dec 2017</time>
+		
+		
+		
+			<h3><a class="article-link" href="https://www.smashingmagazine.com/2017/09/guide-virtual-reality-web-developers/" target="_blank" rel="noopener">Virtual Reality for Web Developers</a> <span title="External Link" style="font-size: 80%; color: #aaa;">🔗 smashingmagazine.com </span></h3>
+				<article><p>Recently, there has been a proliferation of virtual reality (VR) web browsers and VR capabilities added to traditional browsers. In this article, we’ll look at the state of browsers in VR and the state of VR on the web via the WebVR APIs.</p></article>
+			<time>04 Sep 2017</time>
+		
+		
+		
+			<h3><a class="article-link" href="https://samsunginter.net/rube-goldberg-article/" target="_blank" rel="noopener">A Rube Goldberg Machine</a> <span title="External Link" style="font-size: 80%; color: #aaa;">🔗 samsunginter.net </span></h3>
+				<article><p>An introduction of upcoming web APIs, CSS Grid, Web Animation and Custom Properties. These new APIs when used together can bring a new way to use the web paltform to develop websites without the need for frameworks.</p></article>
+			<time>01 Sep 2017</time>
+		
+		
+		
+			<h3><a class="article-link" href="/blog/2017/08/24/human-friendly-colours-using-hsl.html">Human Friendly Colours using HSL</a></h3>
+			<article><p>(If you are already familiar with HSL jump to the end for some fun tips.)</p></article>
+			<time>24 Aug 2017</time>
+		
+		
+		
+			<h3><a class="article-link" href="/blog/2017/07/19/being-fast-and-light-using-binary-data-to-optimise-libraries-on-the-client-and-the-server.html">[Guide] Being fast and light: Using binary data to optimise libraries on the client and the server.</a></h3>
+			<article><p>The Web has Native support for parsing and editing Binary data. This can be very efficient for example this is how I sync the state of 170 Virtual Reality users in the same venue without bringing down the network.</p></article>
+			<time>19 Jul 2017</time>
+		
+		
+		
+			<h3><a class="article-link" href="https://skillsmatter.com/skillscasts/9947-virtual-reality-and-the-future-of-the-web" target="_blank" rel="noopener">[Video] Virtual Reality and the Future of the Web</a> <span title="External Link" style="font-size: 80%; color: #aaa;">🔗 skillsmatter.com </span></h3>
+				<article><p>New Virtual Reality browsers means we need to consider how the web platform is going to need evolve to take advantage of the benefits that Virtual Reality can bring.</p></article>
+			<time>12 Jul 2017</time>
+		
+		
+		
+			<h3><a class="article-link" href="https://vimeo.com/channels/cssday/228688495" target="_blank" rel="noopener">[Video] Ada Rose Cannon | WebVR | Browser API Special, CSS Day 2017</a> <span title="External Link" style="font-size: 80%; color: #aaa;">🔗 vimeo.com </span></h3>
+				<article><p>VR is here, there are VR web browsers and new APIs to enable VR across a wide range of devices. The WebVR APIs rely on WebGL to render an immersive environment. This interactive talk aims to introduce a way of writing and controlling WebGL scenes with just HTML, accessible to web developers of all skills; no knowledge of 3D rendering required!!</p></article>
+			<time>14 Jun 2017</time>
+		
+		
+		
+			<h3><a class="article-link" href="https://medium.com/samsung-internet-dev/writing-software-using-a-phone-e71976f1f18d" target="_blank" rel="noopener">[Guide] Writing software using a phone!</a> <span title="External Link" style="font-size: 80%; color: #aaa;">🔗 medium.com </span></h3>
+				<article><p>On setting an Android phone as a Desktop computer and using it for Web Development.</p></article>
+			<time>29 May 2017</time>
+		
+		
+		
+			<h3><a class="article-link" href="https://ada.is/pages/hello-metaverse.html" target="_blank" rel="noopener">Simple WebVR Demo, Hello Metaverse</a> <span title="External Link" style="font-size: 80%; color: #aaa;"></span></h3>
+				<article><p>WebVR demo built with A-Frame</p></article>
+			<time>09 Apr 2017</time>
+		
+		
+		
+			<h3><a class="article-link" href="https://medium.com/samsung-internet-dev/wow-that-was-some-night-in-vr-ba091be38794#.svl8vqodj" target="_blank" rel="noopener">Over 100 people in the same Virtual Reality experience!!</a> <span title="External Link" style="font-size: 80%; color: #aaa;">🔗 medium.com </span></h3>
+				<article><p>At the recent LDNWebPerf I had the entire audience sharing the same Virtual Reality being able to see virtual reality slides where I dynamically added content to demonstrate capabilities of VR.</p></article>
+			<time>23 Jan 2017</time>
+		
+		
+		
+			<h3><a class="article-link" href="http://12devsofxmas.co.uk/2016/12/day-4-a-christmas-carol-for-the-web-future/" target="_blank" rel="noopener">Virtual Reality and the Future of the Web</a> <span title="External Link" style="font-size: 80%; color: #aaa;">🔗 12devsofxmas.co.uk </span></h3>
+				<article><p>New Virtual Reality browsers means we need to consider how the web platform is going to need evolve to take advantage of the benefits that Virtual Reality can bring.</p></article>
+			<time>03 Jan 2017</time>
+		
+		
+		
+			<h3><a class="article-link" href="http://www.thedotpost.com/2016/12/ada-rose-edwards-realities-of-doing-vr-on-the-web" target="_blank" rel="noopener">Doing VR on the Web - Presented at Dot JS</a> <span title="External Link" style="font-size: 80%; color: #aaa;">🔗 thedotpost.com </span></h3>
+				<article><p>Virtual reality has come to the web! There are now browsers which work inside Virtual Reality headsets. Ada explores how VR can make our websites better and what do we need to take into account to make immersive experiences on the Web. - Paris, 2016</p></article>
+			<time>21 Dec 2016</time>
+		
+		
+		
+			<h3><a class="article-link" href="https://www.youtube.com/watch?v=5ylZbXelPMA" target="_blank" rel="noopener">Putting the Progressive Web into Progresive Web Apps - Presented at FFConf</a> <span title="External Link" style="font-size: 80%; color: #aaa;">🔗 youtube.com </span></h3>
+				<article><p>With new web technologies enabling a new generation of install-able app-like websites it is important to ensure the web carries on working for everyone. This talk will discuss the P in PWA, progressive web apps should work for everyone and should not let their app-like approach divorce them from the web.</p></article>
+			<time>25 Nov 2016</time>
+		
+		
+		
+			<h3><a class="article-link" href="http://blog.decodedshow.com/2016/11/17/decoded-chats-ada-rose-edwards-on-progressive-web-apps/" target="_blank" rel="noopener">Decoded Chats – Ada Rose Edwards on Progressive Web Apps</a> <span title="External Link" style="font-size: 80%; color: #aaa;">🔗 deodedshow.com </span></h3>
+				<article><p>We invited Ada to chat with Chris Heilmann about the concept of Progressive Web Apps, what new technologies like Service Worker mean for the web and a few more of the technologies she explained in her article “The Building Blocks of Progressive Web Apps“. She had a lot of great insights into application development for the web and tips and tricks how to make them work for everybody.</p></article>
+			<time>17 Nov 2016</time>
+		
+		
+		
+			<h3><a class="article-link" href="https://medium.com/samsung-internet-dev/w3c-webvr-workshop-follow-up-bcfe6558ccba#.g38qkzeym" target="_blank" rel="noopener">W3C WebVR Workshop Follow Up</a> <span title="External Link" style="font-size: 80%; color: #aaa;">🔗 medium.com </span></h3>
+				<article><p>The W3C WebVR workshop, in in San Jose, was the first workshop on WebVR and was an incredible experience, many of the leaders in VR for the web took part to discuss how WebVR will evolve in the future. This covers some of the points raised and the direction WebVR is growing in the future.</p></article>
+			<time>31 Oct 2016</time>
+		
+		
+		
+			<h3><a class="article-link" href="/blog/2016/10/10/the-web-is-unfashionable.html">The Web is not Fashionable.</a></h3>
+			<article><p>or: How I Learned to Love the Web.<br />  On giving vanilla web tech a go and how there is more to the web than knowing JS frameworks. Encouraging a focus on <b>Progressive Enhancement</b></p></article>
+			<time>10 Oct 2016</time>
+		
+		
+		
+			<h3><a class="article-link" href="https://medium.com/samsung-internet-dev/optimising-a-frame-assets-for-faster-starts-4ec3bd35c6fc#.enl2ovedg" target="_blank" rel="noopener">Loading A-Frame scenes faster by optimising image assets.</a> <span title="External Link" style="font-size: 80%; color: #aaa;">🔗 medium.com </span></h3>
+				<article><p>One can greatly make reduce the load time of A-Frame textures by using imageOpim a CDN backed image service to optimise resources on the web which can dramatically reduce filesize and  loading time.</p></article>
+			<time>18 Sep 2016</time>
+		
+		
+		
+			<h3><a class="article-link" href="https://ada.is/webvr/talk-view-source.html" target="_blank" rel="noopener">A-Frame Introduction - From view source conf, talk notes.</a> <span title="External Link" style="font-size: 80%; color: #aaa;"></span></h3>
+				<article><p>A talk to <b>get started building VR in the web</b> A-Frame lowers the barrier for entry to Virtual Reality in the web for the developer AND end user. Rapidly prototype and have fun with Web VR.</p></article>
+			<time>13 Sep 2016</time>
+		
+		
+		
+			<h3><a class="article-link" href="https://www.smashingmagazine.com/2016/09/the-building-blocks-of-progressive-web-apps/" target="_blank" rel="noopener">The Building Blocks Of Progressive Web Apps</a> <span title="External Link" style="font-size: 80%; color: #aaa;">🔗 smashingmagazine.com </span></h3>
+				<article><p>Web apps can replace all of the functions of native apps and websites at once. They are coming more and more to the fore these days, but still not enough people are familiar with them or adopting them. Here, you will be able to find some <b>do’s and dont’s on how to make a progressive web app</b>, as well as resources for further research. I’ll also go into the various components and support issues surrounding web apps.</p></article>
+			<time>05 Sep 2016</time>
+		
+		
+		
+			<h3><a class="article-link" href="https://medium.com/samsung-internet-dev/a-frame-scene-to-equirectangular-image-e0c2965945aa#.8ttrrqh9s" target="_blank" rel="noopener">How to make Sky Boxes from A-Frame Scenes</a> <span title="External Link" style="font-size: 80%; color: #aaa;">🔗 medium.com </span></h3>
+				<article><p>Equirectangular images can be used as sky boxes and reflection maps. This is a how-to and a bookmarklet for generating Equirectangular 360 <b>image maps from A-Frame scenes</b>.</p></article>
+			<time>30 Aug 2016</time>
+		
+		
+		
+			<h3><a class="article-link" href="https://medium.com/samsung-internet-dev/i-made-my-first-pr-to-a-frame-3675d596a2d8#.ntno1b9dh" target="_blank" rel="noopener">Adding physical rendering options to A-Frame's Standard Material</a> <span title="External Link" style="font-size: 80%; color: #aaa;">🔗 medium.com </span></h3>
+				<article><p>I made my first PR to <b>A-Frame</b>, this to add support for Normal, Displacement and Ambient Occlusion maps, as well as support to allow one to use their sky sphere as an environment map.</p></article>
+			<time>25 Aug 2016</time>
+		
+		
+		
+			<h3><a class="article-link" href="/blog/2016/06/01/yet-another-progressive-webapp-post.html">Yet another blog about the state and future of Progressive Web App</a></h3>
+			<article><p><b>Progressive Web Apps</b> are in flux at the moment, these are the opinions of someone who has been working on web apps before they got conflated with <b>Service Workers</b> and new web tech.</p></article>
+			<time>01 Jun 2016</time>
+		
+		
+		
+			<h3><a class="article-link" href="https://javascriptair.com/episodes/2016-05-25/" target="_blank" rel="noopener">[Video or Audio] JavaScript Air on Progressive Web Apps</a> <span title="External Link" style="font-size: 80%; color: #aaa;">🔗 javascriptair.com </span></h3>
+				<article><p>A Progressive Web App "uses modern web capabilities to deliver an app-like user experience. They evolve from pages in browser tabs to immersive, top-level apps, leveraging the web's low friction." with Ben Kelly, Nolan Lawson, Henrik Joreteg, Kent C. Dodds and Ada Rose Cannon.</p></article>
+			<time>25 May 2016</time>
+		
+		
+		
+			<h3><a class="article-link" href="https://ftlabs.github.io/three-sixty-video" target="_blank" rel="noopener">360 Degree Video in the Web</a> <span title="External Link" style="font-size: 80%; color: #aaa;">🔗 ftlabs.github.io </span></h3>
+				<article><p>360 degree video spheres in the Web with Web VR. New cameras and the advent of VR heralds a new era of immersive video experiences.</p></article>
+			<time>15 May 2016</time>
+		
+		
+		
+			<h3><a class="article-link" href="https://ada.is/progressive-web-apps-talk/" target="_blank" rel="noopener">[Notes & Slide Deck] - Push Notifications and Progressive Web Apps</a> <span title="External Link" style="font-size: 80%; color: #aaa;"></span></h3>
+				<article><p>Notes from talk at SDC, Introducing setting up progressive Web Apps with the Web App manifest, service workers & push notifications.</p></article>
+			<time>26 Apr 2016</time>
+		
+		
+		
+			<h3><a class="article-link" href="https://81.ada.is/" target="_blank" rel="noopener">Messaging App for sending Emoji.</a> <span title="External Link" style="font-size: 80%; color: #aaa;">🔗 81.ada.is </span></h3>
+				<article><p>Push messaging powered messaging web app.</p></article>
+			<time>25 Apr 2016</time>
+		
+		
+		
+			<h3><a class="article-link" href="/blog/2016/02/12/contrast-bookmarklet.html">Accessibility and Contrast Bookmarklet</a></h3>
+			<article><p><p>This is a bookmarklet to run on any page to analyse the contrast of the text on a page and highlight elements which may have readability issues.</p>
+</p></article>
+			<time>12 Feb 2016</time>
+		
+		
+		
+			<h3><a class="article-link" href="https://ada.is/starsword" target="_blank" rel="noopener">Starsword Web App</a> <span title="External Link" style="font-size: 80%; color: #aaa;"></span></h3>
+				<article><p>Swing your phone around to make sounds with the Web Audio API, install with 'Add to homescreen'</p></article>
+			<time>02 Feb 2016</time>
+		
+		
+		
+			<h3><a class="article-link" href="/blog/2016/02/01/progressive-web-apps.html">Sci-Fi swords and Progressive Web Apps</a></h3>
+			<article><p><p>A major Science Fiction blockbuster, in a Franchise I am a big fan of, hit cinemas a short while ago.
+In a furore of brand fan-girl-ism and being unable to afford to buy a Force-Effect lightsabre of my own, I did what any reasonable developer would do and I built my own.
+This was a quick one afternoon project and I wanted to break down what went into it.</p>
+</p></article>
+			<time>01 Feb 2016</time>
+		
+		
+		
+			<h3><a class="article-link" href="/blog/2016/01/08/number.html">What's in a Number?</a></h3>
+			<article><p><h3 id="more-accurately-what-can-be-represented-by-a-javascript-number-object">More accurately, what can be represented by a JavaScript Number object?</h3>
+</p></article>
+			<time>08 Jan 2016</time>
+		
+		
+		
+			<h3><a class="article-link" href="/blog/2015/09/15/sotb-talk.html">[Video & Notes] State of the Browser 5 - Animation Performance</a></h3>
+			<article><p><p>This talk was initially based upon the talk I gave at the Extensible Web Summit but I have expanded it to encompass animation performance in general.</p>
+</p></article>
+			<time>15 Sep 2015</time>
+		
+		
+		
+			<h3><a class="article-link" href="/blog/2015/07/13/immutable.html">Const & Immutable Objects</a></h3>
+			<article><p><p>ES6 introduces the <code class="language-plaintext highlighter-rouge">const</code> keyword. One issue I’ve seen raised a few times by people who are skilled with Javascript but unfamiliar with ES6 is confusion because when an object is defined using const it is not immutable.</p>
+</p></article>
+			<time>13 Jul 2015</time>
+		
+		
+		
+			<h3><a class="article-link" href="/blog/2015/04/29/animation-perf-follow-up.html">Animation Performance - Follow Up</a></h3>
+			<article><p><p>I and someone from slack tried implementing an accordion with the techniques discussed in my <a href="/blog/2015/04/26/animation-perf/">previous post</a>.</p>
+</p></article>
+			<time>29 Apr 2015</time>
+		
+		
+		
+			<h3><a class="article-link" href="/blog/2015/04/26/slides.html">How I rolled my own presentation solution in a couple of hours with es6</a></h3>
+			<article><p><p>For my <a href="/blog/2015/04/26/slides/">talk at the Extensible Web Summit</a> I had limiited time because I had put off working on it until the last minute. I also wanted to run and pause javascript in the slides and because of these constraints, I figured it would be quicker to roll my own solution than to use a pre-existing presentation framework such as <a href="https://slid.es">slid.es</a>.</p>
+</p></article>
+			<time>26 Apr 2015</time>
+		
+		
+		
+			<h3><a class="article-link" href="/blog/2015/04/26/animation-perf.html">Animation Performance</a></h3>
+			<article><p><p>On Monday 20/04/2015 I gave a ligtning talk at the extensible on animation performance in the browser.
+These are the notes from the talk prose-ified.<br />
+<a href="https://www.1am.club/~ada/ews-slides/">Link to the talk</a>. Talk notes are displayed on mobile.</p>
+</p></article>
+			<time>26 Apr 2015</time>
+		
+		
+		
+			<h3><a class="article-link" href="/blog/2014/11/29/cardboard.html">Audio visualisation in WebGL</a></h3>
+			<article><p><p><a href="https://ada.is/SoundThing/">[Glitch Bunny]</a> is an audio visualisation. It uses input from the microphone via webaudio and maps it onto a bunny.</p>
+</p></article>
+			<time>29 Nov 2014</time>
+		
+		
+	</main>
+</body>
+</html>

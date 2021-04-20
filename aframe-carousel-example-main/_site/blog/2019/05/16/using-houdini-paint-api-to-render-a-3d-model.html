@@ -1,0 +1,203 @@
+<h1 id="using-the-css-houdini-paint-api-to-show-a-3d-model">Using the CSS Houdini Paint API to show a 3D Model!</h1>
+
+<p>Using Houdini Paint API to Render a 3D Model</p>
+<blockquote>
+  <blockquote>
+    <p>That’s f*cked up<br />
+— Daniel Appelquist, co-chair of the W3C Technical Architecture Group</p>
+  </blockquote>
+</blockquote>
+
+<p>The demo in this article uses the <a href="https://developer.mozilla.org/en-US/docs/Web/API/PaintWorklet">Houdini paint</a> API, which is a part of the larger Houdini spec. <a href="https://ishoudinireadyyet.com/">Houdini is still coming to browsers</a> but is ready to try out.</p>
+
+<p>In this article I hope to inspire you to try out the Houdini Paint API. It’s really fun, and you can see just how powerful it is. Here I do something which looks cool but isn’t the most optimal way to show 3D models in the Web, but I hope it inspires you to see how far you can take the Houdini APIs.</p>
+
+<p>What I made here was a stupid idea that went too far, but it worked! My thought process went like so:</p>
+
+<ol>
+  <li>
+    <p>The Houdini Paint APIs are kind of like the Canvas 2D APIs</p>
+  </li>
+  <li>
+    <p>THREE.js used to have a canvas renderer</p>
+  </li>
+  <li>
+    <p>With tree shaking the Houdini Paint Worklet won’t be so big.</p>
+  </li>
+  <li>
+    <p>I can control it with CSS Custom Properties!</p>
+  </li>
+</ol>
+
+<p>Amazingly it worked:</p>
+
+<div class="glitch-embed-wrap" style="height: 420px; width: 100%;">
+  <iframe allow="geolocation; microphone; camera; midi; vr; encrypted-media" src="https://glitch.com/embed/#!/embed/houdini-camp?path=README.md&amp;previewSize=100" alt="houdini-camp on Glitch" style="height: 100%; width: 100%; border: 0;">
+  </iframe>
+</div>
+
+<h3 id="why-is-it-a-bad-idea">Why is it a bad idea?</h3>
+
+<p>The Houdini paint worklet uses the CPU to render to the canvas, rendering a full 3D model is an expensive process to do without a graphics card. Fortunately worklets run on a seperate CPU thread so shouldn’t slow down the website too much, but if you repaint the object too much it may make the device’s fans spin up.</p>
+
+<p>If you want to render 3D models in the Web use WebGL, it is what it is there for. WebGL is a lot more performant for rendering 3D scenes and will give a lot neater results.</p>
+
+<p>Worklets can’t fetch resources from the network, so everything including the 3D model has to be baked into the Worklet script itself so can’t be changed on the fly.</p>
+
+<p>The final worklet including the 3D model was 1100kb after minification!! It would be more efficient over the network to just use a video tag.</p>
+
+<h3 id="constraints-of-the-houdini-paint-worklet">Constraints of the Houdini Paint Worklet</h3>
+
+<p>Everything in the PaintWorklet happens synchronously. It can’t access the state of the document nor can it use the network to asynchronously load resources. It also can’t import scripts either, everything has to be inlined.</p>
+
+<p>So if you wanted to use a different 3D model you would have to recompile the whole script again.</p>
+
+<p>Rendering is tied to the paint callback function of the worklet and cannot be called from within the worklet. So no setTimeout or requestAnimationFrame, or animation.</p>
+
+<h3 id="breaking-down-how-it-works">Breaking down how it works</h3>
+
+<p>The key element which makes this project work is the JavaScript bundler <a href="https://rollupjs.org/guide/en">rollup</a>. Rollup is a package bundler for JavaScript files which use ecmascript modules (es-modules). Rollup allowed me to combine packages from npm, json files and local packages with tree shaking to remove unused modules keeping the size smaller.</p>
+
+<p>Fortunately newer builds of Three.js are built using ecmascript modules to allow developers to take advantage of this tree shaking behaviour. Unfortunately the old Three.js PaintRenderer used to do 3D graphics on a HTML Canvas had been removed before then.</p>
+
+<p>To get around this I ported PaintRenderer and another module from an older THREE.js to use es-modules which allowed me to use only the bits I needed with a newer build of THREE.js to render the scene to canvas. Which was about ~500kb, whilst still large it is a significant saving compared to the full THREE.js.</p>
+
+<h3 id="importing-the-3d-model">Importing the 3D Model</h3>
+
+<p>This was tricky to get right and took some trial and error with different 3D model formats to get right. This was my final technique:</p>
+
+<ul>
+  <li>
+    <p>Download a Low Polygon 3D model from Google Blocks as a Triangulated OBJ. I used this model by Linus Ekenstam: <a href="https://poly.google.com/view/4PazXqve8xz">https://poly.google.com/view/4PazXqve8xz</a></p>
+  </li>
+  <li>
+    <p>Add it to a new scene on <a href="https://clara.io">https://clara.io</a></p>
+  </li>
+  <li>
+    <p>Export the scene as a Three.js JSON</p>
+  </li>
+</ul>
+
+<p><img src="https://cdn-images-1.medium.com/max/3438/1*J7ledLdxP1vlSN6SlotP4g.png" alt="Export All Interface in Clara.io" /><em>Export All Interface in Clara.io</em></p>
+
+<ul>
+  <li>I then imported this JSON file using the Rollup json loader.</li>
+</ul>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="o">*</span> <span class="k">as</span> <span class="nx">campfire</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./scene.json</span><span class="dl">'</span><span class="p">;</span>
+</code></pre></div></div>
+
+<ul>
+  <li>Then I parsed this with Three.js and it was ready to use</li>
+</ul>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">loader</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ObjectLoader</span><span class="p">();</span>
+<span class="kd">const</span> <span class="nx">camp</span> <span class="o">=</span> <span class="nx">loader</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span> <span class="nx">campfire</span> <span class="p">);</span>
+</code></pre></div></div>
+
+<ul>
+  <li>I had to tweak it a little bit to make it to look good</li>
+</ul>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">floorName</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">mesh1292612855</span><span class="dl">"</span><span class="p">;</span>
+<span class="kd">const</span> <span class="nx">floor</span> <span class="o">=</span> <span class="nx">camp</span><span class="p">.</span><span class="nx">getObjectByName</span><span class="p">(</span> <span class="nx">floorName</span><span class="p">,</span> <span class="kc">true</span> <span class="p">);</span>
+<span class="nx">floor</span><span class="p">.</span><span class="nx">renderOrder</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+<span class="nx">camp</span><span class="p">.</span><span class="nx">position</span><span class="p">.</span><span class="nx">y</span> <span class="o">=</span> <span class="o">-</span><span class="mi">3</span><span class="p">;</span>
+<span class="nx">camp</span><span class="p">.</span><span class="nx">rotation</span><span class="p">.</span><span class="nx">y</span> <span class="o">=</span> <span class="o">-</span><span class="nb">Math</span><span class="p">.</span><span class="nx">PI</span><span class="o">/</span><span class="mi">2</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Now everything is imported we are ready to render it.</p>
+
+<h3 id="setting-up-the-houdini-pain-worklet">Setting up the Houdini Pain Worklet</h3>
+
+<p>To register a paint worklet in the worklet use the registerPaint function. Below we register a paint function called “three”.</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">registerPaint</span><span class="p">(</span> <span class="dl">"</span><span class="s2">three</span><span class="dl">"</span><span class="p">,</span>
+  <span class="kd">class</span> <span class="p">{</span>
+    <span class="kd">static</span> <span class="kd">get</span> <span class="nx">inputProperties</span><span class="p">()</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="p">[];</span>
+    <span class="p">}</span>
+
+    <span class="nx">paint</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">size</span><span class="p">,</span> <span class="nx">props</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">camera</span><span class="p">.</span><span class="nx">aspect</span> <span class="o">=</span> <span class="nx">size</span><span class="p">.</span><span class="nx">width</span> <span class="o">/</span> <span class="nx">size</span><span class="p">.</span><span class="nx">height</span><span class="p">;</span>
+      <span class="nx">camera</span><span class="p">.</span><span class="nx">updateProjectionMatrix</span><span class="p">();</span>
+      <span class="nx">renderer</span><span class="p">.</span><span class="nx">setContext</span><span class="p">(</span><span class="nx">ctx</span><span class="p">);</span>
+      <span class="nx">renderer</span><span class="p">.</span><span class="nx">setSize</span><span class="p">(</span><span class="nx">size</span><span class="p">.</span><span class="nx">width</span><span class="p">,</span> <span class="nx">size</span><span class="p">.</span><span class="nx">height</span><span class="p">);</span>
+      <span class="nx">renderer</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span><span class="nx">scene</span><span class="p">,</span> <span class="nx">camera</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<p>In the paint method we have 3 arguments. ctx is a drawing context very similar to the CanvasRenderingContext2D you would get from a Canvas, although some methods are missing. size provides the width and height of the element you are drawing to. props is a map which provides access to the CSS custom properties requested from inputProperties.</p>
+
+<p>In the paint function each render I update the camera to handle the new width and height of the element. I set the context of the renderer to the ctx to tell THREE.js to render there.</p>
+
+<p>Now this is added we are ready to use the Worklet in CSS. This is how we apply it to an element:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">main</span> <span class="p">{</span>
+  <span class="nx">background</span><span class="o">-</span><span class="nx">image</span><span class="p">:</span> <span class="nx">paint</span><span class="p">(</span><span class="nx">three</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>We use paint(<em>workletName</em>) to draw tell CSS to use this worklet for the background image.</p>
+
+<h3 id="controlling-the-scene-in-realtime">Controlling the Scene in Realtime</h3>
+
+<p>Even though all the assets have to be baked in we can provide the user some amount of control by responding to certain custom CSS properties.</p>
+
+<p>In this example we will listen for rotations in the X,Y and Z axis. To do this add the CSS properties to the inputProperties array:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">static</span> <span class="kd">get</span> <span class="nx">inputProperties</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="p">[</span><span class="dl">"</span><span class="s2">--rotate-x</span><span class="dl">"</span><span class="p">,</span> <span class="dl">"</span><span class="s2">--rotate-y</span><span class="dl">"</span><span class="p">,</span> <span class="dl">"</span><span class="s2">--rotate-z</span><span class="dl">"</span><span class="p">];</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>You can register properties to define their type but to keep these simple we won’t do that here, because they are unregistered they get exposed as strings because CSS does not know how to handle them.</p>
+
+<p>We will use them to rotate the 3D model, here I convert each rotation from a string in degrees to a number in radians so it can be used with THREE.js.</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">group</span><span class="p">.</span><span class="nx">rotation</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span>
+  <span class="nb">Math</span><span class="p">.</span><span class="nx">PI</span> <span class="o">*</span> <span class="nb">Number</span><span class="p">(</span><span class="nx">props</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="dl">"</span><span class="s2">--rotate-x</span><span class="dl">"</span><span class="p">))</span><span class="o">/</span><span class="mi">180</span><span class="p">,</span>
+  <span class="nb">Math</span><span class="p">.</span><span class="nx">PI</span> <span class="o">*</span> <span class="nb">Number</span><span class="p">(</span><span class="nx">props</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="dl">"</span><span class="s2">--rotate-y</span><span class="dl">"</span><span class="p">))</span><span class="o">/</span><span class="mi">180</span><span class="p">,</span>
+  <span class="nb">Math</span><span class="p">.</span><span class="nx">PI</span> <span class="o">*</span> <span class="nb">Number</span><span class="p">(</span><span class="nx">props</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="dl">"</span><span class="s2">--rotate-z</span><span class="dl">"</span><span class="p">))</span><span class="o">/</span><span class="mi">180</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<p>I can then set these properties to change the rotation in CSS:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">main</span> <span class="p">{</span>
+  <span class="o">--</span><span class="nx">rotate</span><span class="o">-</span><span class="nx">x</span><span class="p">:</span> <span class="mi">10</span><span class="p">;</span>
+  <span class="o">--</span><span class="nx">rotate</span><span class="o">-</span><span class="nx">y</span><span class="p">:</span> <span class="mi">90</span><span class="p">;</span>
+  <span class="o">--</span><span class="nx">rotate</span><span class="o">-</span><span class="nx">z</span><span class="p">:</span> <span class="o">-</span><span class="mi">50</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>I can even set them dynamically with JavaScript:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">document</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">'</span><span class="s1">mousemove</span><span class="dl">'</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+
+  <span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">setProperty</span><span class="p">(</span>
+    <span class="dl">'</span><span class="s1">--rotate-y</span><span class="dl">'</span><span class="p">,</span>
+    <span class="mi">30</span> <span class="o">*</span> <span class="p">((</span><span class="nx">e</span><span class="p">.</span><span class="nx">screenX</span> <span class="o">/</span> <span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">clientWidth</span><span class="p">)</span> <span class="o">-</span> <span class="mf">0.5</span><span class="p">)</span>
+  <span class="p">)</span>
+
+  <span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">setProperty</span><span class="p">(</span>
+    <span class="dl">'</span><span class="s1">--rotate-x</span><span class="dl">'</span><span class="p">,</span>
+    <span class="mi">30</span> <span class="o">*</span> <span class="p">((</span><span class="nx">e</span><span class="p">.</span><span class="nx">screenY</span> <span class="o">/</span> <span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">clientHeight</span><span class="p">)</span> <span class="o">-</span> <span class="mf">0.5</span><span class="p">)</span>
+  <span class="p">)</span>
+
+<span class="p">})</span>
+</code></pre></div></div>
+
+<h3 id="be-careful-with-animations">Be careful with animations</h3>
+
+<p>Animating the worklet like this is fun but it causes an expensive repaint every time. In fact animating any thing on this element <a href="https://csstriggers.com/">which triggers paint</a> will cause an expensive paint operation.</p>
+
+<h3 id="have-fun">Have fun!</h3>
+
+<p>I hope this article inspires you to have a play with Houdini paint. It is fun to do and is one of a number of Houdini APIs allowing us to extend CSS to make it even more powerful.</p>
+
+<p>By Ada Rose Cannon on May 16, 2019.</p>
+
+<p><a href="https://medium.com/samsung-internet-dev/using-the-css-houdini-paint-api-to-show-a-3d-model-79b2a4e69255">Canonical link</a></p>

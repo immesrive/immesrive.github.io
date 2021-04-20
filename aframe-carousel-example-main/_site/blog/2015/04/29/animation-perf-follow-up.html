@@ -1,0 +1,80 @@
+<p>I and someone from slack tried implementing an accordion with the techniques discussed in my <a href="/blog/2015/04/26/animation-perf/">previous post</a>.</p>
+
+<p>This did not work as expected. It had a kind of bouncy effect. This seems to be especially noticable in the accordion case because the change of height is very large.</p>
+
+<p>Example:</p>
+
+<p><a href="http://jsbin.com/becudutuxe/4/embed?output" target="_blank">http://jsbin.com/becudutuxe/4/embed?output</a></p>
+
+<p>The reason for this error is that as the transition progresses, from the start (<code class="language-plaintext highlighter-rouge">t=1</code>) to the end (<code class="language-plaintext highlighter-rouge">t=0</code>), I had made the assumption that at <code class="language-plaintext highlighter-rouge">t=0.5</code> the shrinking element would be as proportionally small as the growing one is large.</p>
+
+<p>This is not the case. To illustrate this with an example.</p>
+
+<p>The outer element has grown to <code class="language-plaintext highlighter-rouge">scaleY(5)</code> it’s height and so the inverse transform is applied to the child element to shrink it <code class="language-plaintext highlighter-rouge">scaleY(0.2)</code>, these will have their transforms removed to animate back to scaleY(1). (This example is the case of an accordion collapsing)</p>
+
+<p>In order to maintain the scale of the child elements the product of the scaleY of both the inner and outer should be 1.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>| Beginning `t=1` | Middle  `t=0.5`   | End  `t=0`    |
+|-----------------|-------------------|---------------|
+| `5 × 0.2 = 1` ✓ | `3 × 0.6 = 1.8` X | `1 × 1 = 1` ✓ |
+</code></pre></div></div>
+
+<p>In the middle it’s too large because the inner element should not scale anti-linearly but scaled inversely. My naive initial attempt was to reproduce the inverse curve as an easing function. This was very flaky and would not match exactly. It also required a different curve for shrinking and growing. It would also vary depending on both the start and end values.</p>
+
+<p>What I did instead was to tween the scale in javascript using request animation frame and apply the inverse scale to the children. This worked marvelously.</p>
+
+<p>It is also still just as performant since there are no DOM reads in the tween only updating a transform which composite only.</p>
+
+<p>This is an edited version of what I did in some proprietary code from habit I iterate <code class="language-plaintext highlighter-rouge">t</code> from <code class="language-plaintext highlighter-rouge">1</code> to <code class="language-plaintext highlighter-rouge">0</code> but you may probably want to do it the other way round for clarity:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">modules</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="nx">module</span> <span class="o">=&gt;</span> <span class="p">{</span>
+	<span class="kd">let</span> <span class="nx">newM</span> <span class="o">=</span> <span class="nx">module</span><span class="p">.</span><span class="nx">el</span><span class="p">.</span><span class="nx">getBoundingClientRect</span><span class="p">();</span>
+	<span class="kd">let</span> <span class="nx">oldM</span> <span class="o">=</span> <span class="nx">oldModuleMeasurements</span><span class="p">[</span><span class="nx">module</span><span class="p">.</span><span class="nx">_fmid</span><span class="p">];</span>
+	<span class="kd">let</span> <span class="nx">scale</span> <span class="o">=</span> <span class="p">{</span>
+		<span class="na">x</span><span class="p">:</span> <span class="nx">oldM</span><span class="p">.</span><span class="nx">width</span><span class="o">/</span><span class="nx">newM</span><span class="p">.</span><span class="nx">width</span><span class="p">,</span>
+		<span class="na">y</span><span class="p">:</span> <span class="nx">oldM</span><span class="p">.</span><span class="nx">height</span><span class="o">/</span><span class="nx">newM</span><span class="p">.</span><span class="nx">height</span>
+	<span class="p">};</span>
+	<span class="kd">let</span> <span class="nx">offset</span> <span class="o">=</span> <span class="p">{</span>
+		<span class="na">x</span><span class="p">:</span> <span class="nx">oldM</span><span class="p">.</span><span class="nx">left</span> <span class="o">-</span> <span class="nx">newM</span><span class="p">.</span><span class="nx">left</span><span class="p">,</span>
+		<span class="na">y</span><span class="p">:</span> <span class="nx">oldM</span><span class="p">.</span><span class="nx">top</span> <span class="o">-</span> <span class="nx">newM</span><span class="p">.</span><span class="nx">top</span><span class="p">,</span>
+	<span class="p">};</span>
+
+	<span class="c1">// If the height has changed inverse scale the children.</span>
+	<span class="kd">const</span> <span class="nx">childEls</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">slice</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">module</span><span class="p">.</span><span class="nx">el</span><span class="p">.</span><span class="nx">children</span><span class="p">);</span>
+	<span class="k">if</span> <span class="p">(</span><span class="nx">newM</span><span class="p">.</span><span class="nx">height</span> <span class="o">!==</span> <span class="nx">oldM</span><span class="p">.</span><span class="nx">height</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">childEls</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="nx">el</span> <span class="o">=&gt;</span> <span class="p">{</span>
+			<span class="kd">let</span> <span class="nx">elDimensions</span> <span class="o">=</span> <span class="nx">el</span><span class="p">.</span><span class="nx">getBoundingClientRect</span><span class="p">();</span>
+			<span class="kd">let</span> <span class="nx">offsetFromParent</span> <span class="o">=</span> <span class="p">{</span>
+				<span class="na">x</span><span class="p">:</span> <span class="nx">newM</span><span class="p">.</span><span class="nx">left</span> <span class="o">-</span> <span class="nx">elDimensions</span><span class="p">.</span><span class="nx">left</span><span class="p">,</span>
+				<span class="na">y</span><span class="p">:</span> <span class="nx">newM</span><span class="p">.</span><span class="nx">top</span> <span class="o">-</span> <span class="nx">elDimensions</span><span class="p">.</span><span class="nx">top</span>
+			<span class="p">};</span>
+			<span class="nx">el</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">transformOrigin</span> <span class="o">=</span> <span class="s2">`</span><span class="p">${</span><span class="nx">offsetFromParent</span><span class="p">.</span><span class="nx">x</span><span class="p">}</span><span class="s2">px </span><span class="p">${</span><span class="nx">offsetFromParent</span><span class="p">.</span><span class="nx">y</span><span class="p">}</span><span class="s2">px 0`</span><span class="p">;</span>
+			<span class="nx">childEls</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">el</span><span class="p">);</span>
+		<span class="p">});</span>
+	<span class="p">}</span>
+	<span class="nx">module</span><span class="p">.</span><span class="nx">el</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">transformOrigin</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">0 0 0</span><span class="dl">"</span><span class="p">;</span>
+
+	<span class="c1">// Tween the module and it's children.</span>
+	<span class="kd">let</span> <span class="nx">t</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+	<span class="kd">let</span> <span class="nx">duration</span> <span class="o">=</span>  <span class="mi">2000</span><span class="p">;</span>
+	<span class="kd">function</span> <span class="nx">tween</span><span class="p">()</span> <span class="p">{</span>
+		<span class="kd">let</span> <span class="nx">tScaleX</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="p">(</span><span class="nx">scale</span><span class="p">.</span><span class="nx">x</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="nx">t</span><span class="p">;</span>
+		<span class="kd">let</span> <span class="nx">tScaleY</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="p">(</span><span class="nx">scale</span><span class="p">.</span><span class="nx">y</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="nx">t</span><span class="p">;</span>
+		<span class="kd">let</span> <span class="nx">tOffsetX</span> <span class="o">=</span> <span class="nx">offset</span><span class="p">.</span><span class="nx">x</span> <span class="o">*</span> <span class="nx">t</span><span class="p">;</span>
+		<span class="kd">let</span> <span class="nx">tOffsetY</span> <span class="o">=</span> <span class="nx">offset</span><span class="p">.</span><span class="nx">y</span> <span class="o">*</span> <span class="nx">t</span><span class="p">;</span>
+		<span class="nx">module</span><span class="p">.</span><span class="nx">el</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">transform</span> <span class="o">=</span> <span class="s2">`scale(</span><span class="p">${</span><span class="nx">tScaleX</span><span class="p">}</span><span class="s2">, </span><span class="p">${</span><span class="nx">tScaleY</span><span class="p">}</span><span class="s2">) translate(</span><span class="p">${</span><span class="nx">tOffsetX</span><span class="p">}</span><span class="s2">px, </span><span class="p">${</span><span class="nx">tOffsetY</span><span class="p">}</span><span class="s2">px)`</span><span class="p">;</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">newM</span><span class="p">.</span><span class="nx">height</span> <span class="o">!==</span> <span class="nx">oldM</span><span class="p">.</span><span class="nx">height</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">childEls</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="nx">el</span> <span class="o">=&gt;</span> <span class="p">{</span>
+				<span class="nx">el</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">transform</span> <span class="o">=</span> <span class="s2">`scale(</span><span class="p">${</span><span class="mi">1</span><span class="o">/</span><span class="nx">tScaleX</span><span class="p">}</span><span class="s2">, </span><span class="p">${</span><span class="mi">1</span><span class="o">/</span><span class="nx">tScaleY</span><span class="p">}</span><span class="s2">)`</span><span class="p">;</span>
+			<span class="p">});</span>
+		<span class="p">}</span>
+		<span class="nx">t</span> <span class="o">-=</span> <span class="mi">16</span><span class="o">/</span><span class="nx">duration</span><span class="p">;</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">t</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">requestAnimationFrame</span><span class="p">(</span><span class="nx">tween</span><span class="p">);</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+	<span class="nx">tween</span><span class="p">();</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>The css transform is still a good solution in many cases and does not require as much javascript work.</p>

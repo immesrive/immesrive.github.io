@@ -1,0 +1,50 @@
+<h1 id="improve-device-integration-for-your-web-app-in-just-a-few-minutes">Improve device integration for your Web App in just a few minutes</h1>
+
+<p>Improve device integration for your Web App in just a few minutes</p>
+
+<h3 id="make-your-app-a-web-share-target-to-enable">Make your app a Web Share Target to enable</h3>
+
+<p>This was a feature I had set aside an afternoon to implement but in the end it only needed a moment and made the experience significantly better.</p>
+
+<p>Web Share Target allows your Web App to receive URLs from the operating systems just like native apps do.</p>
+
+<p>In the video below I use the share button in Samsung Internet to share the website’s URL with my Web App, which then retrieves and displays the associated feed information from the website.</p>
+
+<center><iframe width="560" height="315" src="https://www.youtube.com/embed/IfOkuPSdUvg" frameborder="0" allowfullscreen=""></iframe></center>
+
+<p>You add a Web Share target by adding the information into the Web App Manifest:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+ <span class="dl">"</span><span class="s2">share_target</span><span class="dl">"</span><span class="p">:</span> <span class="p">{</span>
+   <span class="dl">"</span><span class="s2">action</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">/feed/</span><span class="dl">"</span><span class="p">,</span>
+   <span class="dl">"</span><span class="s2">method</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">GET</span><span class="dl">"</span><span class="p">,</span>
+   <span class="dl">"</span><span class="s2">params</span><span class="dl">"</span><span class="p">:</span> <span class="p">{</span>
+     <span class="dl">"</span><span class="s2">title</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">title</span><span class="dl">"</span><span class="p">,</span>
+     <span class="dl">"</span><span class="s2">text</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">text</span><span class="dl">"</span><span class="p">,</span>
+     <span class="dl">"</span><span class="s2">url</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">url</span><span class="dl">"</span>
+   <span class="p">}</span>
+ <span class="p">},</span>
+</code></pre></div></div>
+
+<p>When it’s shared, it will open your WebApp at the following URL /feed/?url=[share url]&amp;text=[share text]&amp;title=[share title]. Not all of these get filled out, depending on what is being shared and what is sharing it.</p>
+
+<p>When sharing web pages to the app sometimes, the URL was in the text field rather than the URL field. So if you are expecting a URL you should probably check there as well.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="kd">const</span> <span class="p">{</span> <span class="nx">search</span> <span class="p">}</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">URL</span><span class="p">(</span><span class="nx">req</span><span class="p">.</span><span class="nx">url</span><span class="p">,</span> <span class="dl">"</span><span class="s2">[http://example.com](http://example.com)</span><span class="dl">"</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">params</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">URLSearchParams</span><span class="p">(</span><span class="nx">search</span><span class="p">);</span>
+
+<span class="kd">const</span> <span class="nx">sharedURL</span> <span class="o">=</span>
+  <span class="nx">params</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="dl">"</span><span class="s2">url</span><span class="dl">"</span><span class="p">)</span> <span class="o">||</span>
+  <span class="nx">params</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="dl">"</span><span class="s2">text</span><span class="dl">"</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>There are more options you can add to the share_target, for advanced features like sharing files, you can find out more information in the great article on web.dev:
+<a href="https://web.dev/web-share-target/"><strong>Receiving shared data with the Web Share Target API</strong>
+<em>On a mobile device, sharing should be as simple as clicking the Share button, choosing an app, then choosing who to…</em>web.dev</a></p>
+
+<p><em>Note</em>: At this writing, the Web Share Target API is implemented in some browsers (notably Chromium-based browsers like Samsung Internet) but it is still considered experimental and in “incubation” <a href="https://w3c.github.io/web-share-target/">within the W3C</a>. Make sure you take this into account when incorporating Web Share Target into your development plans.</p>
+
+<p>By Ada Rose Cannon on August 25, 2020.</p>
+
+<p><a href="https://medium.com/samsung-internet-dev/improve-device-integration-for-your-web-app-in-just-a-few-minutes-cca413c4f0f">Canonical link</a></p>

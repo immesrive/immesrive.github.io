@@ -1,0 +1,116 @@
+@import url('https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bowlby+One+SC&display=swap');
+
+:root {
+	--shadow: drop-shadow(0 0 50px rgba(0,0,0,0.5));
+	--bg: #eee;
+	--dark: #333;
+}
+
+html, body {
+	margin: 0;
+	font-family: 'PT Sans', sans-serif;
+	font-display: optional;
+	background: var(--bg);
+	color: var(--dark);
+}
+
+.carousel-controls {
+	z-index: 1;
+	pointer-events: none;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.carousel-controls > button {
+	pointer-events: auto;
+	font-size: 2em;
+    appearance: none;
+    border: 0.15em solid;
+    border-radius: 1em;
+    padding: 0.1em 0.5em;
+    color: white;
+    cursor: pointer;
+    background-color: rgba(0,0,0,0.4);
+	backdrop-filter: blur(10px);
+	font-weight: bolder;
+	font-family: helvetica, sans-serif;
+	background: transparent;
+	color: var(--dark);
+	margin: 0.5em;
+}
+
+[aria-label="XR Demo Reel"] {
+	position: relative;
+	width: 100%;
+	height: 100vh;
+	max-height: 56.56vw;
+	top: 0;
+	overflow: hidden;
+}
+
+.demo-content, .carousel-controls, .carousel-items {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+}
+
+.demo-content > * {
+	width: 100%;
+	height: 100%;
+}
+
+.carousel-caption {
+    position: absolute;
+    bottom: 0;
+    padding: 0.5em 1.5em;
+    background: rgba(255,255,255,0.5);
+    margin: 2em;
+    border: 2px solid #c4c4c4;
+    backdrop-filter: blur(10px);
+}
+
+.carousel-item  {
+	display: none;
+}
+
+.carousel-item:last-child {
+	display: inline-block;
+}
+
+.carousel-item:target {
+	display: inline-block;
+}
+
+.carousel-item:target + .carousel-item:last-child {
+	display: none;
+}
+
+header {
+	z-index: 1;
+	padding: 0.5em;
+	width: 100%;
+}
+
+main {
+	padding: 0.5em;
+}
+
+h1, h2 {
+	margin: 0;
+}
+
+h1 {
+	font-size: 8vw;
+}
+
+h2 {
+	font-family: 'Bowlby One SC';
+	font-size: 10vw;
+	text-align: right;
+	padding-right: 0.5em;
+	transform-origin: right center;
+	transform: rotate(-3deg);
+	color: #ca5e98;
+}

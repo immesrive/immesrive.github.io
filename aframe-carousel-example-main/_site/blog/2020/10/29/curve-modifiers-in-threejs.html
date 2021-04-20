@@ -1,0 +1,143 @@
+<h1 id="curve-modifiers-in-threejs">Curve Modifiers in Three.js</h1>
+
+<p>Curve Modifiers in Three.js</p>
+
+<h3 id="my-first-major-pr-to-threejs">My first major PR to Three.js</h3>
+
+<p>I recently made a relaxing <a href="https://koi-garden.glitch.me">koi garden</a> demo, where koi fish swim around a VR environment. The two most notable parts of the scene are the <a href="https://medium.com/samsung-internet-dev/audio-on-the-web-for-games-and-vr-efcd523a3d58">3D positioned audio which I wrote about previously</a> and the 100s of fish which appear to organically swim around the trees.</p>
+
+<p>The 3D models of the fish bend as they turn tight corners. This effect is great for organic models that travel along fixed paths such as birds or fish.</p>
+
+<p>For my fish scene I had found a <a href="https://github.com/zz85/threejs-path-flow">really cool demo</a> which could be adapted for my needs. <a href="https://github.com/mrdoob/three.js/issues/13553">The author was willing to make a THREE.js example,</a> but hadn’t got around to it. When I adapted it for myself I made it a general purpose module which can be brought in to abstract away lots of the complexities. <a href="https://github.com/mrdoob/three.js/pull/20538">I then submitted this to THREE.js as an example to be used by anyone.</a></p>
+
+<h3 id="how-it-works">How it works</h3>
+
+<p>This technique works by encoding the curves into a texture. A special shader then distorts the vertices as the model moves around the curve.</p>
+
+<p>The technique relies on floating point values in the texture. In WebGL 1 this is an optional feature for implementors, so if you use the first WebGL it may not work on many devices, but certain android phones don’t have this feature available. You can get around this by using WebGL2. <a href="https://caniuse.com/webgl2">WebGL2 has pretty good browser support now</a>.</p>
+
+<p>You can use WebGL2 in THREEjs by explicitly getting the WebGL2 context and passing it to the renderer:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">canvas</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">querySelector</span><span class="p">(</span><span class="dl">'</span><span class="s1">canvas</span><span class="dl">'</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">context</span> <span class="o">=</span> <span class="nx">canvas</span><span class="p">.</span><span class="nx">getContext</span><span class="p">(</span> <span class="dl">'</span><span class="s1">webgl2</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span> <span class="na">antialias</span><span class="p">:</span> <span class="kc">true</span> <span class="p">}</span> <span class="p">);</span>
+<span class="kd">const</span> <span class="nx">renderer</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">WebGLRenderer</span><span class="p">({</span> <span class="nx">canvas</span><span class="p">,</span> <span class="nx">context</span> <span class="p">});</span>
+</code></pre></div></div>
+
+<p>If you want to optimize support you could detect whether WebGL2 is supported, and use it if it is available.</p>
+
+<p>This is an expensive technique, so if you want to have many of the same objects you need to take advantage of instancing to render the same object many times along the curve.</p>
+
+<p>The code example I made for Three.js is designed to take advantage of instancing. Instancing lets you have many copies of the same object rendered in a single draw call. This allows you to define multiple curves in the texture and each instance of a model, set which curve it is on as well as set its position on the curve. This can let you have a very large amount of objects that get rendered in a single draw call.</p>
+
+<p>In the demo I made with the fish you can control the number of fish by setting the ?fish=300 query parameter. On mobile devices it can render almost 100 fish whilst maintaining a 60fps frame rate. On laptops it can do 1000s of fish and on powerful desktop computers it can do over 10000 fish!</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/2000/1*QbMbO8H5H-DfW5T3FV6Nqw.gif" alt="The Koi Garden demo with 300 fish" /><em>The Koi Garden demo with 300 fish</em>
+<a href="https://koi-garden.glitch.me/?fish=300"><strong>XR Koi Garden</strong>
+<em>A beautiful VR garden with peaceful music. Listen with headphones for the full effect.</em> koi-garden.glitch.me</a></p>
+
+<h3 id="using-the-threejs-example">Using the Three.js Example</h3>
+
+<p>The simplified demonstrations I made for Three.js have a mesh with complex geometry, generated using the Three.js TextGeometry which travels round the curves.</p>
+
+<p>The <a href="https://threejs.org/examples/#webgl_modifier_curve">first example</a> has a single object, which is not instanced, traveling around a single curve.</p>
+
+<p>The <a href="https://threejs.org/examples/#webgl_modifier_curve_instanced">second example</a> has a single object instanced 8 times traveling around 2 separate curves.</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/2000/1*D_UmP3vAp-SiyQTFOHp7Sg.gif" alt="3D text duplicated 8 times traveling along two paths." /><em>3D text duplicated 8 times traveling along two paths.</em></p>
+
+<p><strong>The not-instanced method</strong> is the simpler method for having a single object.</p>
+
+<ul>
+  <li>
+    <p>Pick your mesh</p>
+  </li>
+  <li>
+    <p>Define the curve to use</p>
+  </li>
+  <li>
+    <p>Create a new flow from the mesh</p>
+  </li>
+  <li>
+    <p>Add the curve to the mesh at index 0</p>
+  </li>
+  <li>
+    <p>Add the curves object to the scene</p>
+  </li>
+</ul>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">Flow</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">three/examples/jsm/modifiers/CurveModifier.js</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">points</span> <span class="o">=</span> <span class="p">[</span>
+ <span class="k">new</span> <span class="nx">Vector3</span><span class="p">(</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">z</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span> <span class="p">),</span>
+ <span class="k">new</span> <span class="nx">Vector3</span><span class="p">(</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">z</span><span class="p">:</span> <span class="mi">1</span> <span class="p">),</span>
+ <span class="k">new</span> <span class="nx">Vector3</span><span class="p">(</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">z</span><span class="p">:</span> <span class="mi">1</span> <span class="p">),</span>
+ <span class="k">new</span> <span class="nx">Vector3</span><span class="p">(</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">z</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span> <span class="p">),</span>
+<span class="p">];</span>
+
+<span class="kd">const</span> <span class="nx">curve</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">CatmullRomCurve3</span><span class="p">(</span><span class="nx">points</span><span class="p">);</span>
+<span class="nx">curve</span><span class="p">.</span><span class="nx">curveType</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">centripetal</span><span class="dl">"</span><span class="p">;</span>
+<span class="nx">curve</span><span class="p">.</span><span class="nx">closed</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">mesh</span> <span class="o">=</span> <span class="c1">// some mesh I made earlier;</span>
+
+<span class="c1">// You may need to tweak the geometry beforehand to get it to</span>
+<span class="c1">// Display with the orientation you expect.</span>
+<span class="nx">mesh</span><span class="p">.</span><span class="nx">geometry</span><span class="p">.</span><span class="nx">rotateX</span><span class="p">(</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">PI</span> <span class="p">);</span>
+
+<span class="kd">const</span> <span class="nx">flow</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Flow</span><span class="p">(</span> <span class="nx">objectToCurve</span> <span class="p">);</span>
+<span class="nx">flow</span><span class="p">.</span><span class="nx">updateCurve</span><span class="p">(</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">curve</span> <span class="p">);</span>
+<span class="nx">scene</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span> <span class="nx">flow</span><span class="p">.</span><span class="nx">object3D</span> <span class="p">);</span>
+</code></pre></div></div>
+
+<p>Note: you do not need to add the mesh to the scene. The flow object clones one from the mesh.</p>
+
+<p><strong>The instanced method</strong> is how to performantly have many many objects drawn in a single draw call.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">InstancedFlow</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">three/examples/jsm/modifiers/CurveModifier.js</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">material</span> <span class="o">=</span> <span class="c1">// some material</span>
+<span class="kd">const</span> <span class="nx">geometry</span> <span class="o">=</span> <span class="c1">// some geometry</span>
+
+<span class="kd">const</span> <span class="nx">curve1</span> <span class="o">=</span> <span class="c1">// A curve</span>
+<span class="kd">const</span> <span class="nx">curve2</span> <span class="o">=</span> <span class="c1">// A curve</span>
+<span class="kd">const</span> <span class="nx">curve3</span> <span class="o">=</span> <span class="c1">// A curve</span>
+<span class="kd">const</span> <span class="nx">curve4</span> <span class="o">=</span> <span class="c1">// A curve</span>
+
+<span class="nx">geometry</span><span class="p">.</span><span class="nx">rotateX</span><span class="p">(</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">PI</span> <span class="p">);</span>
+
+<span class="kd">const</span> <span class="nx">numberOfInstances</span> <span class="o">=</span> <span class="mi">8</span><span class="p">;</span>
+<span class="kd">const</span> <span class="nx">numberOfCurves</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">flow</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">InstancedFlow</span><span class="p">(</span> <span class="nx">numberOfInstances</span><span class="p">,</span> <span class="nx">numberOfCurves</span><span class="p">,</span> <span class="nx">geometry</span><span class="p">,</span> <span class="nx">material</span> <span class="p">);</span>
+
+<span class="c1">// Add the flow object to the scene</span>
+<span class="nx">scene</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span> <span class="nx">flow</span><span class="p">.</span><span class="nx">object3D</span> <span class="p">);</span>
+
+<span class="nx">flow</span><span class="p">.</span><span class="nx">updateCurve</span><span class="p">(</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">curve1</span> <span class="p">);</span>
+<span class="nx">flow</span><span class="p">.</span><span class="nx">updateCurve</span><span class="p">(</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">curve2</span> <span class="p">);</span>
+<span class="nx">flow</span><span class="p">.</span><span class="nx">updateCurve</span><span class="p">(</span> <span class="mi">2</span><span class="p">,</span> <span class="nx">curve3</span> <span class="p">);</span>
+<span class="nx">flow</span><span class="p">.</span><span class="nx">updateCurve</span><span class="p">(</span> <span class="mi">3</span><span class="p">,</span> <span class="nx">curve4</span> <span class="p">);</span>
+
+<span class="c1">// Do each step below for each numberOfInstances</span>
+
+<span class="c1">// Set the first instance to be on the first curve</span>
+<span class="nx">flow</span><span class="p">.</span><span class="nx">setCurve</span><span class="p">(</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span> <span class="p">);</span>
+
+<span class="c1">// Move the first instance along the curve by a random amount</span>
+<span class="nx">flow</span><span class="p">.</span><span class="nx">moveIndividualAlongCurve</span><span class="p">(</span> <span class="mi">0</span><span class="p">,</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span> <span class="p">);</span>
+
+<span class="c1">// Give the first instance a random Color</span>
+<span class="nx">flow</span><span class="p">.</span><span class="nx">object3D</span><span class="p">.</span><span class="nx">setColorAt</span><span class="p">(</span> <span class="mi">0</span><span class="p">,</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Color</span><span class="p">(</span> <span class="mh">0xffffff</span> <span class="o">*</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span> <span class="p">)</span> <span class="p">);</span>
+</code></pre></div></div>
+
+<p>By calling updateCurve() at a later point you can change the curves on the fly. This is an expensive operation, especially if you have many curves — try to avoid changing it every frame if it can be avoided.</p>
+
+<p>If you need more curves or instanced objects than you had allocated for, you will have to make a new curve instance with space for the new assets.</p>
+
+<p>If you are a very advanced developer then you don’t need to use the Flow instances, they are just to make your life easier. The helper functions they use are exported as well so you can use them to create your own shaders and materials. Here is the source code for those interested in diving in and learning more:
+<a href="https://github.com/mrdoob/three.js/blob/master/examples/jsm/modifiers/CurveModifier.js"><strong>mrdoob/three.js</strong>
+<em>You can’t perform that action at this time. You signed in with another tab or window. You signed out in another tab or…</em> github.com</a></p>
+
+<p>By Ada Rose Cannon on October 29, 2020.</p>
+
+<p><a href="https://medium.com/samsung-internet-dev/curve-modifiers-in-three-js-1ada72c61677">Canonical link</a></p>

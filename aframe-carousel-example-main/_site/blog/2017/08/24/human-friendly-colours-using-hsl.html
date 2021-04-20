@@ -1,0 +1,128 @@
+<h1 id="human-friendly-colours-using-hsl">Human Friendly Colours using HSL</h1>
+
+<p>(If you are already familiar with HSL jump to the end for some fun tips.)</p>
+
+<p>If you are a web developer you are probably accustomed to colours which look like this:</p>
+
+<ul>
+  <li>
+    <p>#ff0000</p>
+  </li>
+  <li>
+    <p>red</p>
+  </li>
+  <li>
+    <p>rgba(255, 255, 255, 1)</p>
+  </li>
+</ul>
+
+<p>The hexadecimal colours and the rgba colours use amounts of Red Blue Green to describe colours. This is a nice analogue to how the pixels in the screen are lighting up but it makes picking a colour not very human friendly.</p>
+
+<p>A human way to think of colour asks questions like:</p>
+
+<ul>
+  <li>
+    <p>Is it light or dark?</p>
+  </li>
+  <li>
+    <p>What colour is it?</p>
+  </li>
+  <li>
+    <p>Is it vibrantly coloured?</p>
+  </li>
+</ul>
+
+<p>E.g. Dark Vibrant Blue or Light Pale Pink</p>
+
+<p>There is a way of defining colours based on these propertiess which helps us adjust a colour lighter or darker or more colourful. Or more red or more blue.</p>
+
+<p>This is HSL. In CSS it looks like this:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>hsl(280deg, 80%, 80%)
+</code></pre></div></div>
+
+<p><img src="https://cdn-images-1.medium.com/max/2000/1*3uIcQQhDMwMBeA9c56Pqrw.png" alt="hsl(280deg, 80%, 80%)" /><em>hsl(280deg, 80%, 80%)</em></p>
+
+<ul>
+  <li>
+    <p>H is hue, the colour it is described by an Angle between 0 and 360 degrees. Where 0 degrees is red, 120 degress is green, 240 degrees is blue. It is written like “[Number]deg”</p>
+  </li>
+  <li>
+    <p>S is Saturation, it is how colourful it is. 0% is grey, 100% is maximum.</p>
+  </li>
+  <li>
+    <p>L is lightness, 100% is white, 0% is black. 50% is the middle and has the most intense colour.</p>
+  </li>
+</ul>
+
+<p>HSLA is similar, with an additional value between 0 and 1 for how transparent the colour is. E.g.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>hsla(280deg, 0%, 50%, 0.8)
+</code></pre></div></div>
+
+<p>Brandon Mathis’s great HSL Color picker is a fun way to play with HSL colours: <a href="http://hslpicker.com/">http://hslpicker.com/</a> (Thanks <a href="undefined">Matthew Graybosch</a> for the tip!!)</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/2000/1*Q255aGoO2-MCgbesFtXx5Q.png" alt="" /></p>
+
+<h2 id="where-it-is-handy">Where it is handy</h2>
+
+<p>HSL is great for describing gradients!!</p>
+
+<p>e.g. A gradient where instead of going from light to dark it goes from one colour to another by increasing the Hue by 30 degrees.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>div {
+  background: linear-gradient(hsl(220deg, 80%, 80%), hsl(250deg, 80%, 80%))
+}
+</code></pre></div></div>
+
+<p><img src="https://cdn-images-1.medium.com/max/2000/1*W6s6zl_IQKuCf1_jOE9D0A.png" alt="linear-gradient(hsl(220deg, 80%, 80%), hsl(250deg, 80%, 80%))" /><em>linear-gradient(hsl(220deg, 80%, 80%), hsl(250deg, 80%, 80%))</em></p>
+
+<p>It is great for having consistent colours that relate to eachother. In the example The type has the same hue as the body but just a very pale version.</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/2000/1*jRAQYyvNUtyQN70BV3jvrA.png" alt="" /></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>div {
+  background-color: hsl(200deg, 100%, 32%);
+  color: hsl(200deg, 50%, 92%);
+}
+</code></pre></div></div>
+
+<p>These two tips were taken from @UX_Grant on twitter’s amazing twitter moment full of little design tips:</p>
+
+<iframe src="https://medium.com/media/daa1f17ef640670f56f4142e8aee2227" frameborder="0"></iframe>
+
+<h3 id="generating-colors">Generating colors</h3>
+
+<p><img src="https://cdn-images-1.medium.com/max/2000/1*DG-03t17jdGfeKb9kdmCzQ.png" alt="Increasing the Hue by 10 degrees per box." /><em>Increasing the Hue by 10 degrees per box.</em></p>
+
+<p>A nice property is that you can get colours of many hues which have a similar feel because they share the same saturation and lightness.</p>
+
+<p>You can generate a set of nice distinct colours by rotating through the hue. In the example above we increase the hue by 10 degrees.</p>
+
+<p>This has a nice rainbow effect.</p>
+
+<p><strong>Generating random colors</strong></p>
+
+<p>By setting the hue to a random angle between 0 and 360 degrees we will get a random selection of colors, this can be useful but sometimes you get the same colours close together which does not look so good.</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/2000/1*aiqgub24aaVUrWp2xQXg3w.png" alt="Random Hues" /><em>Random Hues</em></p>
+
+<p>A neat maths trick allows us to <strong>generate random appearing colours</strong> with fewer collisions.</p>
+
+<p>Multiples of the golden angle (~137.6 degrees) has a nice property of landing on visually distinct points on the colour wheel where colours seldom colide.</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/2000/1*jRLlGQTfyaNZ7i8UAVaMAA.png" alt="Increasing the Hue by 137.5 degrees per box" /><em>Increasing the Hue by 137.5 degrees per box</em></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>function (el, i) {
+  el.style.background = 'hsl(' + 137.50 * i + 'deg, 80%, 80%)';
+}
+</code></pre></div></div>
+
+<p>Of course this property is maintained if you shift it round the colour wheel:</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/2000/1*t83SE2vS2wCcVKvvmlDvxg.png" alt="Same as before but the hue is roated by an additional 120 degrees." /><em>Same as before but the hue is roated by an additional 120 degrees.</em></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>'hsl(' + 120 + (137.50 * i) + 'deg, 80%, 80%)'
+</code></pre></div></div>
+
+<p>Hope this helps you make some nice colours!!</p>

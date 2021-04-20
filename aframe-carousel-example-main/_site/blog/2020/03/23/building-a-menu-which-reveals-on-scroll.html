@@ -1,0 +1,149 @@
+<h1 id="building-a-menu-which-reveals-on-scroll">Building a menu which reveals on scroll.</h1>
+
+<p>I built this demo as a quick experiment when we were working on an Internal Samsung product. One feature I implemented was the menu where items reveal themselves as you scroll down.</p>
+
+<p>This is a perfect use case for IntersectionObserver, the API which tells you when things enter the screen.</p>
+
+<p>You can try <a href="https://slide-on-scroll.glitch.me/">this demo live on glitch</a>, and I have pasted a GIF below:</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/2000/1*4FDEnrezCUGy6kEX9UJDnQ.gif" alt="The final demo" /><em>The final demo</em></p>
+
+<h3 id="writing-the-demo">Writing the Demo</h3>
+
+<p>First build the HTML and CSS, which in this case is a list:</p>
+
+<p><strong>HTML</strong></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;ul&gt;
+  &lt;li&gt;Black&lt;/li&gt;
+  &lt;li&gt;Navy&lt;/li&gt;
+  &lt;li&gt;DarkBlue&lt;/li&gt;
+  &lt;li&gt;MediumBlue&lt;/li&gt;
+  &lt;li&gt;Blue&lt;/li&gt;
+  &lt;li&gt;DarkGreen&lt;/li&gt;
+  ...
+&lt;/ul&gt;
+</code></pre></div></div>
+
+<p><strong>CSS</strong></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+li {
+  padding: 3em 1em;
+  margin: 0.5em 0;
+  border-radius: 1em;
+  background: white;
+}
+</code></pre></div></div>
+
+<h3 id="intersection-observer">Intersection Observer</h3>
+
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API">Intersection observer</a> works by detecting when an element enters the screen, yet these elements appear to slide in from off the right of the screen, so how does IntersectionObserver detect them?</p>
+
+<p>The secret is before they are detected, they are in their final position but invisible with visibility:hidden; items with this property effect the layout of the page as usual but are not painted by the browser so are pretty efficient.</p>
+
+<p>When the IntersectionObserver detects them it makes it visible and at the same time begin an animation. This animation is on the transform css property so that it slides in, transform is a very efficient property to animate compared to animating the margin-left or left property for example, so the animation is smooth even on low power devices.</p>
+
+<p>We then stop the IntersectionObserver from observing them since we don not want the animation to trigger again.</p>
+
+<h3 id="in-code-it-looks-like-this">In code it looks like this,</h3>
+
+<ol>
+  <li>
+    <p>first make each li invisible:</p>
+
+    <p>Array.from(document.querySelectorAll(‘li’)).forEach(li =&gt; {
+   li.style.visibility = ‘hidden’;
+ });</p>
+    <blockquote>
+      <p><strong>NB</strong> It would be simpler to make them invisible in our css file <strong>BUT **if we did that then if the JavaScript failed to load then nothing would ever be visible. It’s important so that it only becomes invisible if we know it can be revealed later.
+The techniques of building robust sites which are not broken when JS fails is known as **progressive enhancement</strong>.</p>
+    </blockquote>
+  </li>
+</ol>
+
+<p><strong>2.</strong> Set up the <a href="https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API">Intersection Observer</a></p>
+
+<p>The intersection observer is set to trigger once 25% of the element has been revealed using threshold: 0.25 , it returns an array of entries which have had their amount of intersection changed, when it changes and lets us know if they are intersecting, if they are we will do something (in the next step).</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>const observer = new **IntersectionObserver**(entries =&gt; entries.forEach(function onIntersection({
+  **isIntersecting**,
+  target
+}) {
+  if (**isIntersecting**) {
+
+    // Do something
+
+  }
+}), {
+  **threshold: 0.25**
+});
+
+Array.from(document.querySelectorAll('li')).forEach(li =&gt; {
+  **observer.observe**(li);
+});
+</code></pre></div></div>
+
+<p><strong>3.</strong> Make it visible, Do the animation, Stop observing:</p>
+
+<p>We use the <a href="https://developer.mozilla.org/en-US/docs/Web/API/Animation">Web Animation API</a> for the animation, it’s not yet supported in Safari so you can either include <a href="https://github.com/web-animations/web-animations-js#quick-start">the polyfill</a> or use a fallback method such as CSS animations. Currently if we do nothing the element will just become visible then error on the animation so it will still be usable even if it is broken.</p>
+
+<p>We animate the transform property which only effects compositing, it does not cause the page to be laid out or trigger repaint so is very efficient, giving us smooth animation.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// Make it visible
+target.style.visibility = '';
+
+// stop observing the element
+observer.unobserve(target);
+
+// Do the animation with the Web Animation API
+target.animate(
+  {'**transform**': ['translateX(100vw)','translateX(0)']},
+  {
+    easing: 'cubic-bezier(0.550, 0.055, 0.675, 0.190)',
+    duration: 700,
+    fill: 'forwards'
+  }
+);
+</code></pre></div></div>
+
+<p>If you want to make an exciting reveal animation, try experimenting with using 3D transforms like rotate3d in the transform with the <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/perspective">perspective</a> CSS property set to get a 3D animation as it reveals.</p>
+
+<h3 id="final-code">Final code:</h3>
+
+<p>I hope you found this guide handy please share if you liked it.</p>
+
+<p>In the final code I combined the part where I do observer.observe() and where I set the visibility to hidden into the same loop.</p>
+
+<p>At this point I also do a check to ensure that the user is okay with having animation enabled. If the user has set prefers-reduced-motion then we will not make anything invisible, nor shall we set up the observer.</p>
+
+<p>Thank you <a href="https://twitter.com/handcoding">Ashley Bischoff (@handcoding</a>) for bringing this to my attention.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+if (prefersReducedMotion === true) {
+  Array.from(document.querySelectorAll('li')).forEach(li =&gt; {
+    observer.observe(li);
+    li.style.visibility = 'hidden';
+  });
+}
+</code></pre></div></div>
+
+<iframe src="https://cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fglitch.com%2Fembed%2F%23%21%2Fembed%2Fslide-on-scroll%3FpreviewSize%3D100%26attributionHidden%3Dfalse%26sidebarCollapsed%3Dfalse%26path%3Dscript.js%26previewFirst%3Dfalse&amp;dntp=1&amp;display_name=Glitch&amp;url=https%3A%2F%2Fglitch.com%2Fembed%2F%23%21%2Fembed%2Fslide-on-scroll&amp;image=https%3A%2F%2Fglitch.com%2Fedit%2Fimages%2Flogos%2Fglitch%2Fsocial-card%402x.png&amp;key=a19fcc184b9711e1b4764040d3dc5c07&amp;type=text%2Fhtml&amp;schema=glitch" allowfullscreen="" frameborder="0" scrolling="no"></iframe>
+
+<p><img src="https://cdn-images-1.medium.com/max/2000/1*7qJTWPouMUzkKUYir50J2g.gif" alt="" /></p>
+
+<p>If you want another IntersectionObserver example I wrote about using it for tracking what page the user is reading in <a href="https://medium.com/samsung-internet-dev/enhancing-multi-pane-single-page-web-apps-with-intersection-observer-5929e2c0c6b">my previous article</a>:
+<a href="https://medium.com/samsung-internet-dev/enhancing-multi-pane-single-page-web-apps-with-intersection-observer-5929e2c0c6b"><strong>Using Intersection Observer for updating page navigation and history.</strong>
+<em>Using progressive enhancement, to add features to HTML and CSS only layouts.</em>medium.com</a></p>
+
+<p>For more Web Developer articles from the team follow this medium publication or <a href="http://twitter.com/samsunginternet">@SamsungInternet on twitter</a>.</p>
+
+<p>By Ada Rose Cannon on March 23, 2020.</p>
+
+<p><a href="https://medium.com/samsung-internet-dev/building-a-menu-which-reveals-on-scroll-557f92909fd8">Canonical link</a></p>

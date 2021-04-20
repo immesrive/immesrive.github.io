@@ -1,0 +1,184 @@
+<p>ES6 introduces the <code class="language-plaintext highlighter-rouge">const</code> keyword. One issue I’ve seen raised a few times by people who are skilled with Javascript but unfamiliar with ES6 is confusion because when an object is defined using const it is not immutable.</p>
+
+<p>The goal of this blog post is to go into detail about const and cover some ways ES6 handles immutability.</p>
+
+<p>One question I’ve been asked a few times recently is in the following situation:</p>
+
+<div>
+```javascript
+// This Array will be populated later
+const myArray = [];
+
+// this Object too:
+const myObject = {};
+```
+</div>
+
+<blockquote>
+  <blockquote>
+    <p>If myArray and myObject are const how can you populate them later?</p>
+  </blockquote>
+</blockquote>
+
+<h2 id="what-is-const-how-is-it-different-from-var">What is const, how is it different from var?</h2>
+
+<p>The <code class="language-plaintext highlighter-rouge">const</code> keyword declares a constant variable.
+Like its mutable counterpart <code class="language-plaintext highlighter-rouge">let</code>, const is block scoped (i.e. the variable will be defined only within its enclosing block as indicated by curly brackets, <code class="language-plaintext highlighter-rouge">if</code>, <code class="language-plaintext highlighter-rouge">for</code>, <code class="language-plaintext highlighter-rouge">while</code> etc).
+This prevents variables being <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/var#var_hoisting">hoisted</a> outside of their block statement. You can read about <a href="#block-scoping">Block scoping at the bottom of this article</a>.</p>
+
+<h2 id="the-immutability-of-const">The Immutability of Const</h2>
+
+<p>The property of const that differentiates it from <code class="language-plaintext highlighter-rouge">let</code> is that the value assigned to it will not change if it is updated. For example:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">myVar</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+<span class="c1">// undefined</span>
+<span class="nx">myVar</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+<span class="c1">// 3</span>
+<span class="nx">myVar</span>
+<span class="c1">// 2</span>
+</code></pre></div></div>
+
+<div class="notebene">
+When trying to overwrite a const variable the variable is left unchanged.
+It does NOT throw an error unless you are in strict mode.
+</div>
+
+<h4 id="but-what-about-with-arrays-and-other-objects">But what about with Arrays and other Objects?</h4>
+
+<p>A well known subtlety of JavaScript is that, much like other C based languages, when a new <code class="language-plaintext highlighter-rouge">Array</code>, <code class="language-plaintext highlighter-rouge">Object</code>, <code class="language-plaintext highlighter-rouge">Function</code> or another object is declared, what is returned is not the value itself but a reference to what we just created.</p>
+
+<p>In the case of Arrays, it is not the array itself which cannot change but the reference to the array.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">myArray</span> <span class="o">=</span> <span class="p">[];</span>
+<span class="c1">// undefined</span>
+
+<span class="c1">// Array can be modified in place</span>
+<span class="nx">myArray</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>
+<span class="c1">// 1</span>
+<span class="nx">myArray</span>
+<span class="c1">// [3]</span>
+
+<span class="c1">// Array cannot be overwritten</span>
+<span class="nx">myArray</span> <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">];</span>
+<span class="c1">// [5, 6]</span>
+<span class="nx">myArray</span>
+<span class="c1">// [3]</span>
+</code></pre></div></div>
+
+<p>This is good because it allows us to declare that this array should not be overridden and will maintain the same memory space. This is a good property because we will not be creating new Arrays and Objects and using up lots of memory needlessly.</p>
+
+<div class="notebene">
+In JavaScript strings are primitives, not objects like arrays. So like other primitive types, they are immutable if const. This behaviour differs from other C-like languages where strings are usually passed via reference.
+
+```javascript
+const myString = "Hello World";
+// undefined
+myString[0] = "'";
+// "'"
+myString
+// "Hello World"
+```
+</div>
+
+<h2 id="what-do-i-do-if-i-want-my-object-to-be-immutable">What do I do if I want my object to be immutable?</h2>
+
+<p>The two new ES6 Object properties Seal and Freeze are for this purpose.</p>
+
+<p><span class="gallery-item align-right"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Pusa_hispida_pup.jpg/1023px-Pusa_hispida_pup.jpg" alt="Pun Alert: Seal and Freeze!" /><br /> <em>Pun Alert: Seal and Freeze!</em></span></p>
+
+<p><code class="language-plaintext highlighter-rouge">Object.seal(myObject)</code> stops properties being added to or deleted from the object, but you can update the existing properties.</p>
+
+<p><code class="language-plaintext highlighter-rouge">Object.freeze(myObject)</code> makes the object totally immutable. Like seal, new properties cannot not be added or removed but also they cannot be changed.
+It is important to remember that as with <code class="language-plaintext highlighter-rouge">const</code>, child Arrays and Objects are just references so although they cannot be replaced they can still be modified.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">myObject</span> <span class="o">=</span> <span class="p">{</span><span class="na">a</span><span class="p">:</span> <span class="p">{</span><span class="na">b</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span> <span class="na">c</span><span class="p">:</span> <span class="mi">2</span><span class="p">};</span>
+
+<span class="nb">Object</span><span class="p">.</span><span class="nx">freeze</span><span class="p">(</span><span class="nx">myObject</span><span class="p">);</span>
+<span class="c1">// note myObject is changed in place</span>
+<span class="c1">// so the object is still frozen even though it is defined with const</span>
+
+<span class="nx">myObject</span><span class="p">.</span><span class="nx">c</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+<span class="c1">// fails silently if not in strict mode,</span>
+<span class="c1">// in strict mode it throws an error.</span>
+
+<span class="nx">myObject</span>
+<span class="c1">// {a: {b: 1}, c: 2}</span>
+
+<span class="nx">myObject</span><span class="p">.</span><span class="nx">a</span><span class="p">.</span><span class="nx">d</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span> <span class="c1">// child object is not frozen</span>
+
+<span class="nx">myObject</span>
+<span class="c1">// {a: {b: 1, d: 2}, c: 2}</span>
+</code></pre></div></div>
+
+<h2 id="block-scoping">Block scoping of let and const</h2>
+
+<p>The two new variable declaration keywords introduced in ES6, <code class="language-plaintext highlighter-rouge">let</code> and <code class="language-plaintext highlighter-rouge">const</code>, are both block scoped.
+This means that they only have scope in their block (i.e. between the innermost <code class="language-plaintext highlighter-rouge">{}</code>).
+This is great because it allows variables to be declared in only the smallest possible block of code in which they are used.
+<code class="language-plaintext highlighter-rouge">const</code> and <code class="language-plaintext highlighter-rouge">let</code> also allow for more explicit code as one can infer what the developer’s intentions are with regards to the mutabilty of these variables.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span> <span class="p">(</span><span class="kc">true</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">myVar</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+  <span class="kd">const</span> <span class="nx">myFunc</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">a</span><span class="p">)</span> <span class="p">{</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span> <span class="p">};</span>
+  <span class="nx">myFunc</span><span class="p">(</span><span class="nx">myVar</span><span class="p">);</span>
+  <span class="c1">// 1</span>
+<span class="p">}</span>
+<span class="nx">myFunc</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+<span class="c1">// ReferenceError: myFunc is not defined</span>
+
+<span class="nx">myVar</span><span class="p">;</span>
+<span class="c1">// ReferenceError: myVar is not defined</span>
+</code></pre></div></div>
+
+<p>In ES5, declaring functions and variables can leave the scope (and memory) cluttered with declared variables not relevant to all the parts of the code they are made available.
+The hoisted variables have the value <code class="language-plaintext highlighter-rouge">undefined</code> before they are initialized and linger after they are used.</p>
+
+<p>If you wanted to further restrict the scope of a variable in ES5 one would use an Immediately-Invoked Function Expression (IIFE).</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="nx">myVar</span><span class="p">;</span>
+<span class="c1">// undefined</span>
+<span class="c1">// note: undefined not reference error because</span>
+<span class="c1">// myVar has been hoisted from the if block</span>
+
+<span class="nx">myFunc</span><span class="p">();</span>
+<span class="c1">// TypeError: undefined is not a function</span>
+<span class="c1">// note: the myFunc declaration has been hoisted</span>
+<span class="c1">// giving us a not very useful error here</span>
+
+<span class="k">if</span> <span class="p">(</span><span class="kc">true</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">myVar</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+  <span class="kd">function</span> <span class="nx">myFunc</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span> <span class="p">{</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span> <span class="p">};</span>
+  <span class="nx">myFunc</span><span class="p">(</span><span class="nx">myVar</span><span class="p">);</span>
+  <span class="c1">// 1</span>
+<span class="p">}</span>
+
+<span class="nx">myVar</span><span class="p">;</span>
+<span class="c1">// 1</span>
+<span class="c1">// this variable is still hanging around even though we should be done with it</span>
+
+<span class="nx">myFunc</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+<span class="c1">// 2</span>
+<span class="c1">// this function is also still around even though we should be done with it.</span>
+
+<span class="c1">// To restrict scope in ES5 one would use an IIFE</span>
+<span class="c1">// (Immediately-Invoked Function Expression)</span>
+
+<span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+	<span class="kd">var</span> <span class="nx">scopedVar</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+	<span class="nx">scopedVar</span><span class="p">;</span>
+	<span class="c1">// 2</span>
+<span class="p">})();</span>
+
+<span class="nx">scopedVar</span><span class="p">;</span>
+<span class="c1">// ReferenceError: scopedVar is not defined</span>
+
+</code></pre></div></div>
+
+<h2 id="use-these-today">Use these today</h2>
+
+<p>ES6 provides us with numerous tools to improve developer expressiveness and to make our code cleaner. <code class="language-plaintext highlighter-rouge">const</code>, <code class="language-plaintext highlighter-rouge">let</code>, <code class="language-plaintext highlighter-rouge">Object.seal</code> and <code class="language-plaintext highlighter-rouge">Object.freeze</code> can all be used today in recent versions of Chrome and Firefox, also IE11.</p>
+
+<blockquote>
+  <p>I use <code class="language-plaintext highlighter-rouge">const</code> by default, <code class="language-plaintext highlighter-rouge">let</code> only where it is required and <code class="language-plaintext highlighter-rouge">var</code> to identify code which needs to be refactored.</p>
+</blockquote>

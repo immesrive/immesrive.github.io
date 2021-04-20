@@ -1,0 +1,212 @@
+<h3 id="a-mistake-consistently-made-by-some-of-the-biggest-websites-shows-they-are-thinking-about-responsive-web-design-incorrectly">A mistake consistently made by some of the biggest websites shows they are thinking about responsive web design incorrectly.</h3>
+
+<p>On this Samsung Internet blog we often talk about building progressive web apps, one cornerstone of building web apps is responsive design. Responsive websites can behave correctly regardless of screen size. It is the recommended behavior for website’s from the UK governments digital service team:</p>
+
+<blockquote>
+  <p><a href="https://www.gov.uk/service-manual/technology/working-with-mobile-technology"><strong>Making sure your service works well on mobile</strong>
+<em>Your service should work well on all mobile devices. Evaluate your options carefully to find the most suitable solution</em>… www.gov.uk</a></p>
+</blockquote>
+
+<p>Here at Samsung as we innovate on hardware we often introduce new devices. These new devices frequently break some websites in interesting ways but one of the most common and avoidable ways websites break is the website not fitting the device correctly.</p>
+
+<p>This often occurs when website developers make too many assumptions about the devices which people will use to view the website.</p>
+
+<blockquote>
+  <blockquote>
+    <p>“I support both form factors: My iPhoneX and Chrome on a 15” Macbook pro.”</p>
+  </blockquote>
+</blockquote>
+
+<p>This article won’t be a technical deep dive into Responsive Web Design but instead we will discuss some false assumptions developers often make which will make websites brittle:</p>
+
+<h3 id="its-okay-to-build-separate-sites-for-mobile-and-desktop"><strong>“It’s okay to build separate sites for mobile and desktop”</strong></h3>
+
+<p>URLs should relate to content not form factor. To assign a different URL to content for different devices violates the <a href="https://www.w3.org/TR/mobile-bp/#OneWeb">One Web Principle</a>. A URL shared from one device should work great on another.</p>
+
+<blockquote>
+  <p><a href="https://www.w3.org/TR/mobile-bp/#tc"><strong>Mobile Web Best Practices 1.0</strong>
+<em>1 Introduction 1.1 Purpose of the Document 1.2 How the Best Practices are Organized 1.3 Audience 1.4 Scope 1.4.1</em>… www.w3.org</a></p>
+</blockquote>
+
+<h3 id="mobile-and-desktop-are-the-only-two-form-factors">“Mobile and Desktop are the Only Two Form Factors.”</h3>
+
+<p>Web Browsers are implemented on a wide variety of devices. There are a wide variety of hand held devices beyond mobile phones such as feature phones, e-readers, tablets and phablets. Which come in a huge variety of screen sizes and aspect ratios.</p>
+
+<p>On top of that there are devices meant to be viewed at other distances such as browsers built into TVs or Refrigerators.</p>
+
+<p>Desktop users have the most variation from users on giant 4K screens to users on tiny pocket laptops. In addition desktop users are likely to change size on the fly or prefer to use a smaller or vertical window.</p>
+
+<h3 id="mobile-devices-have-fixed-sizes-or-aspect-ratios">“Mobile devices have fixed sizes or aspect ratios.”</h3>
+
+<p>Frequently website designers will set breakpoints to accommodate the size and aspect ratios of the popular Apple iPhones. Unfortunately this doesn’t reflect the reality of device sizes.</p>
+
+<p>What makes it really tricky is that phone sizes evolve. A web page based around a singular generation of devices is not going to be future proof. You could make rules for every known device available and tomorrow a device could be made which you didn’t expect could break everything.</p>
+
+<p>I have seen situations where each device which breaks the layout becomes a new edge case handled in the CSS until there are so many edge cases the CSS becomes difficult to make changes to. By making the CSS truely responsive from the start the CSS should be a lot more manageable.</p>
+
+<h3 id="window-size-on-mobile-devices-doesnt-change">“Window size on mobile devices doesn’t change.”</h3>
+
+<p><img src="https://cdn-images-1.medium.com/max/2800/0*no_TDgqEm9RlY9Dl.jpg" alt="Samsung DeX" /><em>Samsung DeX</em></p>
+
+<p>It’s not just desktop users which change the window size though. A couple of years ago we released Samsung DeX to let phones be used as desktop computers. When the phone is attached to a computer monitor it behaves as a Desktop computer, our web browser Samsung Internet would seamlessly continue where the user left off on the phone.</p>
+
+<p>This capability was only possible because of responsive design. Unfortunately some sites which had mobile only pages on a separate URL gave a poor user experience when they were resized to become a full desktop web site.</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/2000/0*GT6qIBjKPumukmRv.png" alt="Samsung Galaxy Fold" /><em>Samsung Galaxy Fold</em></p>
+
+<p>We still see these issues today, recently with the release of the Galaxy Fold series, the folding phones.</p>
+
+<p>These phones have two screens a thin outside one and an almost square folded screen.</p>
+
+<p>When testing with this device we discovered many websites can’t handle changing shape from the small screen to the large or break on the thinner than usual outside screen or the wide unfolded screen.</p>
+
+<p>On large screen devices such as the Note 9, or S10+ the user of the device may choose to split the screen vertically or run the browser in a floating window.</p>
+
+<h3 id="real-work-gets-done-on-desktop-computers-or-in-apps">“Real work gets done on desktop computers or in apps.”</h3>
+
+<p>One issue I see is that frequently websites which otherwise do responsive design very well hide essential functionality such as the ability login on mobile with the assumption that real work will be done on the desktop site. This forces users who don’t have a desktop available to use the browsers force desktop mode which will probably be an awkward experience compared to one optimised for mobile.</p>
+
+<h3 id="i-can-infer-whether-the-user-is-using-touch-interface-or-mouse-from-the-screen-size">“I can infer whether the user is using touch interface or mouse from the screen size.”</h3>
+
+<p>You cannot.</p>
+
+<p>Some laptop screens are smaller than my phone screen. Some phone users use a mouse and keyboard. Laptop users may swap from mouse and keyboard to using it like a laptop by rotating the screen. Desktop users may have an external touch input screen they are doing their browsing on.</p>
+
+<p>To handle this, treat all users like they are using touch devices; make touchable areas large and clear with plenty of space.</p>
+
+<h3 id="sigh-so-youve-read-this-whole-article-and-still-want-to-specifically-target-the-samsung-galaxy-fold-folding-phone">Sigh… so you’ve read this whole article and still want to specifically target the Samsung Galaxy Fold Folding Phone?</h3>
+
+<p>Use this information for testing your site only, don’t build these dimensions into your CSS file as break points! Make sure it works at these sizes but don’t handle them as an edge case.</p>
+
+<p>Here are the CSS pixel dimensions of the browser in each different mode:</p>
+
+<ul>
+  <li>
+    <p>Closed: 320x747px</p>
+  </li>
+  <li>
+    <p>Open: 586×820px</p>
+  </li>
+</ul>
+
+<p>But please bear in mind that future devices may change the screen size or the phone user may choose to move the browser into a window which only takes up part of the screen.</p>
+
+<h2 id="what-to-focus-on-when-building-a-responsive-website">What to focus on when building a responsive website</h2>
+
+<p>(By responsive website, I just mean website, all websites should be doing this.)</p>
+
+<p>Responsive design should allow you to resize the browser window to any size or aspect ratio and still maintain a good browsing experience.</p>
+
+<p>Don’t use the hardware to determine the layout. You can’t control that. Instead base the layout of your pages on your content so that your content makes sense no matter what device it is in.</p>
+
+<p>The points at which we change the layout at different sizes are known as ‘breakpoints’, a common mistake is to use a breakpoint for each device you want to support. This is a mistake because each breakpoint you add counter-intuitively makes your design less flexible and more likely to break on devices you haven’t anticipated.</p>
+
+<p>Ideally we wouldn’t use any breakpoints and have a single layout which can handle all screen sizes well but often this is impractical. We use CSS media queries to define how the page behaves at various sizes. Having one or two breakpoints will allow changing the layout radically at different screen sizes without introducing too much inflexibility.</p>
+
+<p>A neat way to have certain properties be screen size dependent without introducing more breakpoints is to use the viewport units vh and vw which are ¹/₁₀₀ of the height and width respectively. When combined with calc() in CSS they can be very powerful.</p>
+
+<p>Recent CSS APIs mean that building responsive designs is no longer an arduous task. The CSS grid API lets you design multiple layouts which make sense and the content will then fit that grid. To learn more about CSS grid check out these demos by <a href="https://twitter.com/ThisIsJoFrank">@thisisjofrank</a>, which explain how common layouts can be created with CSS Grid:</p>
+
+<blockquote>
+  <p><a href="https://hub.samsunginter.net/Common-Responsive-Layouts-with-CSS-Grid--and-some-without--/"><strong>Common Responsive Layouts with CSS Grid (and some without!) - Samsung Internet Dev Hub - Resources…</strong>
+<em>Example code for you to try out, change and make your own CSS grid is now supported in Samsung internet v6.2 and many</em>… hub.samsunginter.net</a></p>
+</blockquote>
+
+<p><a href="https://caniuse.com/#feat=css-grid">CSS Grid has near universal support</a> in browsers, for the users still stuck in old version of IE use a simple flexbox layout fall back. Websites don’t look the same to every user, that is one of the powers of the web. Find more info on <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Grid_Layout">CSS Grid</a> and <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Flexible_Box_Layout/Basic_Concepts_of_Flexbox">Flexbox</a> on MDN.</p>
+
+<p>You can use the @supports CSS rule to provide the correct styles to each browser.</p>
+<blockquote>
+  <p>Note regarding pinch zoom, some app developers choose to disable pinch zoom on their site to speed up touch-clicks or to control the user experience. In modern browsers you can have both fast touch-clicks and pinch-to-zoom. Disabling it just means that users with accessibility requirements will find it harder to use your website.</p>
+</blockquote>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;!--
+Meta tag which enables responsive design
+has fast clicks and allows pinch to zoom.
+--&gt;
+&lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+</code></pre></div></div>
+
+<p>Thank you so much Amy Dickens and Daniel Appelquist for your feedback to this article.</p>
+
+<h3 id="bonus-some-of-my-favourite-css-grid-tricks">(Bonus) Some of my favourite CSS Grid tricks</h3>
+
+<p>Layout becomes a lot easier when built with CSS Grid, it’s essentially a very powerful layout framework built into the browser.</p>
+<blockquote>
+  <blockquote>
+    <p>You don’t need a framework to use CSS Grid. 
+CSS Grid <em>is</em> a framework.
+— Rachel Andrew (@rachelandrew)</p>
+  </blockquote>
+</blockquote>
+
+<p>Custom CSS Properties make doing Responsive design very clean. By only using custom properties in media queries you can make it very explicit what is changing as the screen size changes.</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">:root</span> <span class="p">{</span>
+    <span class="py">--padding</span><span class="p">:</span> <span class="m">15px</span><span class="p">;</span>
+    <span class="py">--grid-columns</span><span class="p">:</span> <span class="m">5</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nc">.my-grid</span> <span class="p">{</span>
+    <span class="nl">display</span><span class="p">:</span> <span class="n">grid</span><span class="p">;</span>
+    <span class="py">grid-template-columns</span><span class="p">:</span> <span class="nb">repeat</span><span class="p">(</span><span class="n">var</span><span class="p">(</span><span class="n">--grid-columns</span><span class="p">),</span> <span class="m">1</span><span class="n">fr</span><span class="p">);</span>
+    <span class="py">grid-gap</span><span class="p">:</span> <span class="n">var</span><span class="p">(</span><span class="n">--padding</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="o">[</span><span class="k">@media</span><span class="p">](</span><span class="n">http</span><span class="p">://</span><span class="n">twitter</span><span class="p">.</span><span class="n">com</span><span class="p">/</span><span class="n">media</span><span class="p">)</span> <span class="n">only</span> <span class="n">screen</span> <span class="n">and</span> <span class="p">(</span><span class="n">max-width</span><span class="p">:</span> <span class="m">1000px</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nd">:root</span> <span class="p">{</span>
+        <span class="py">--padding</span><span class="p">:</span> <span class="m">10px</span><span class="p">;</span>
+        <span class="py">--grid-columns</span><span class="p">:</span> <span class="m">3</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="o">[</span><span class="k">@media</span><span class="p">](</span><span class="n">http</span><span class="p">://</span><span class="n">twitter</span><span class="p">.</span><span class="n">com</span><span class="p">/</span><span class="n">media</span><span class="p">)</span> <span class="n">only</span> <span class="n">screen</span> <span class="n">and</span> <span class="p">(</span><span class="n">max-width</span><span class="p">:</span> <span class="m">600px</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nd">:root</span> <span class="p">{</span>
+        <span class="py">--padding</span><span class="p">:</span> <span class="m">20px</span><span class="p">;</span>
+        <span class="py">--grid-columns</span><span class="p">:</span> <span class="m">1</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Another nice use of custom properties is to store complex properties in a single easy to edit place.</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">//</span> <span class="nt">Each</span> <span class="nt">emoji</span> <span class="nt">represents</span> <span class="nt">a</span> <span class="nt">grid</span> <span class="nt">area</span><span class="o">,</span> <span class="nt">e</span><span class="nc">.g</span><span class="o">.</span> <span class="err">🍱</span> <span class="nt">is</span> <span class="nt">the</span> <span class="nt">header</span>
+<span class="nd">:root</span> <span class="p">{</span>
+  <span class="py">--layout-big</span><span class="p">:</span> <span class="s1">"🍱 🍱"</span> <span class="n">min-content</span>
+        <span class="s1">"🌯 🐠"</span> <span class="n">min-content</span>
+        <span class="s1">"🍭 🐠"</span> <span class="m">1</span><span class="n">fr</span>
+        <span class="s1">"🏖️ 🏖️"</span> <span class="n">min-content</span>
+        <span class="p">/</span><span class="m">300px</span> <span class="m">1</span><span class="n">fr</span><span class="p">;</span>
+
+  <span class="py">--layout-small</span><span class="p">:</span> <span class="s1">"🍱 🍱"</span> <span class="n">min-content</span>
+        <span class="s1">"🌯 🍭"</span> <span class="n">min-content</span>
+        <span class="s1">"🐠 🐠"</span> <span class="n">minmax</span><span class="p">(</span><span class="n">min-content</span><span class="p">,</span> <span class="m">1</span><span class="n">fr</span><span class="p">)</span>
+        <span class="s1">"🏖️ 🏖️"</span> <span class="n">min-content</span>
+        <span class="p">/</span><span class="m">1</span><span class="n">fr</span> <span class="m">1</span><span class="n">fr</span><span class="p">;</span>
+
+  <span class="py">--active-layout</span><span class="p">:</span> <span class="n">var</span><span class="p">(</span><span class="n">--layout-small</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="nt">header</span> <span class="p">{</span>
+  <span class="py">grid-area</span><span class="p">:</span> <span class="err">🍱</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nc">.my-grid</span> <span class="p">{</span>
+  <span class="nl">display</span><span class="p">:</span> <span class="n">grid</span><span class="p">;</span>
+  <span class="nl">grid-template</span><span class="p">:</span> <span class="n">var</span><span class="p">(</span><span class="n">--active-layout</span><span class="p">);</span>
+  <span class="py">grid-gap</span><span class="p">:</span> <span class="m">1em</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="o">[</span><span class="k">@media</span><span class="p">](</span><span class="n">http</span><span class="p">://</span><span class="n">twitter</span><span class="p">.</span><span class="n">com</span><span class="p">/</span><span class="n">media</span><span class="p">)</span> <span class="n">only</span> <span class="n">screen</span> <span class="n">and</span> <span class="p">(</span><span class="n">min-width</span><span class="p">:</span> <span class="m">600px</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nc">.my-grid</span> <span class="p">{</span>
+    <span class="py">--active-layout</span><span class="p">:</span> <span class="n">var</span><span class="p">(</span><span class="n">--layout-big</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This allows for complex statements such as these grid-template properties to be kept at the top of the document or even imported from a separate CSS file, they can be changed by updating the –active-layout custom property.</p>
+
+<p>I hope you find that CSS Grid makes it less complicated to produce clear, robust, responsive layouts which will not break on future devices.</p>
+
+<p>By Ada Rose Cannon on June 11, 2019.</p>
+
+<p><a href="https://medium.com/samsung-internet-dev/six-assumptions-which-could-break-your-website-7a51b6950693">Canonical link</a></p>

@@ -1,0 +1,103 @@
+<h1 id="speed-up-your-work-flow-by-turning-command-line-tools-into-interactive-dashboards">Speed up your work flow by turning command line tools into interactive dashboards</h1>
+
+<p>Ever feel like you live in a terminal?</p>
+
+<p>I don’t mean an airport terminal (I’m stuck in the SFO terminal whilst I type this.)</p>
+
+<p>I ‘m talking about the computer terminal, to run command line applications. When I am doing development it feels like I run the same few commands over and over again.</p>
+
+<p>If you are a terminal power user you probably run multiple windows or a terminal multiplexer like tmux (pictured) to compartmentalise your work into different sessions in each one you will probably run the same few commands, one to view the state of something and others to modify it.</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/4000/0*1t4HX79oa6-UpZRX" alt="My TMUX configuration on ChromeOS." /><em>My TMUX configuration on ChromeOS.</em></p>
+
+<p>One of these tools I keep in it’s own session is a <a href="https://github.com/gammons/ultralist">command line to-do-list tool</a> to keep track of what I am currently working on. It’s really handy and I can sync it across my computers, but it can be a little cumbersome for quick usage. I have to do a lot of typing to make use of it. E.g.</p>
+
+<ul>
+  <li>
+    <p>todolist l to view my todo list</p>
+  </li>
+  <li>
+    <p>todolist a “write blog post” to add an item to the list</p>
+  </li>
+  <li>
+    <p>todolist c 1 to complete an item on the list</p>
+  </li>
+</ul>
+
+<p>Each time I have to retype todolist and remember to use quotes around the entries. To reduce this bottle neck I used BASH to create a small interface to display my up-to-date todo list and use single button presses to interact with it.</p>
+
+<p>Fortunately bash is an ideal tool for making interfaces for this, here is the code for the interface in the bottom left of the picture above, and in this post I will explain how it works, so you can make your own.</p>
+
+<script src="https://gist.github.com/AdaRoseCannon/1165e64d83ccf85f2f8638d0629bf4b3.js"></script>
+
+<h2 id="breaking-down-the-script">Breaking down the script</h2>
+
+<p>The first things we do in the bash script are to use tput smcup to save the terminal state so we don’t fill the terminal our old output as we refresh the output, when the user exits to restore the terminal again we use tput rmcup to restore what was previously there. We also use stty -echo to hide the cursor until the user is inputting some text.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+
+tput smcup
+
+<span class="nb">stty</span> <span class="nt">-echo</span>
+</code></pre></div></div>
+
+<p>The display function is used to draw the interface. The important thing to notice is that we render everything into a buffer then echo the buffer to the screen, this reduces flickering by reducing the time between refreshes.</p>
+
+<p>tput is the command which does a lot of the magic for controlling writing the output in the terminal. tput clear is used to clear the screen. I then write out what I want to be displayed. tput cup $[$(tput lines)-1] 0 is used to move the cursor to the bottom of the screen so we can write instructions \e[7m \e[27m are used to invert the colours and then return them normal so we can highlight the first character of each word.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>display<span class="o">()</span> <span class="o">{</span>
+  <span class="nv">BUFFER</span><span class="o">=</span><span class="si">$(</span>
+    tput clear
+    todolist l | <span class="nb">sed</span> <span class="s1">'/./,$!d'</span>
+    <span class="nb">echo</span> <span class="nt">-ne</span> <span class="s2">"</span><span class="se">\n\n</span><span class="s2">"</span>
+    tput cup <span class="nv">$[</span><span class="si">$(</span>tput lines<span class="si">)</span><span class="nt">-1</span><span class="o">]</span> 0
+    <span class="nb">echo</span> <span class="nt">-ne</span> <span class="s1">' \e[7ma\e[27mdd \e[7mc\e[27momplete \e[7mr\e[27memove \e[7mq\e[27muit'</span>
+  <span class="si">)</span>
+  <span class="nb">echo</span> <span class="nt">-ne</span> <span class="s2">"</span><span class="nv">$BUFFER</span><span class="s2">"</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<p>We use signal traps to work out when we need to redraw and to clean up when the user quits by killing the process.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">trap </span>display WINCH
+<span class="nb">trap</span> <span class="s1">'tput sgr0; tput cnorm; tput rmcup || clear; exit 0'</span> SIGINT
+</code></pre></div></div>
+
+<p>The at start of the main loop tput civis is used to make the cursor invisible whilst were waiting for a command to be entered. We then wait for a character to be pressed and then use tput cnorm to restore the cursor. We timeout the read statement every 2 seconds so that the interface can update automatically. This way if I edit my todolist on a different computer it gets synced and updated.</p>
+
+<p>Next we hide the instructions by moving the cursor to the last line, clearing the line with <code class="language-plaintext highlighter-rouge">echo -en "\\033[2K"</code> and move the cursor back to the second to last line for text input in case the command needs some interaction.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">while</span> :
+<span class="k">do
+  </span>display
+
+  tput civis
+  tput cup <span class="nv">$[</span><span class="si">$(</span>tput lines<span class="si">)</span><span class="nt">-2</span><span class="o">]</span> 0
+  <span class="nb">read</span> <span class="nt">-sen</span> 1 <span class="nt">-t</span> 2 ACTION
+  tput cnorm
+
+  <span class="o">[[</span> <span class="nt">-z</span> <span class="s2">"</span><span class="nv">$ACTION</span><span class="s2">"</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="k">continue
+
+  </span>tput cup <span class="nv">$[</span><span class="si">$(</span>tput lines<span class="si">)</span><span class="nt">-1</span><span class="o">]</span> 0
+  <span class="nb">echo</span> <span class="nt">-en</span> <span class="s2">"</span><span class="se">\\</span><span class="s2">033[2K"</span>
+
+  tput cup <span class="nv">$[</span><span class="si">$(</span>tput lines<span class="si">)</span><span class="nt">-2</span><span class="o">]</span> 0
+</code></pre></div></div>
+
+<p>Finally we use the case statement to respond to the different inputs, remember to turn stty echo back on if you are reading input from the user during this step and to turn it off again after.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>a<span class="o">)</span> <span class="c"># Add an item for a</span>
+  <span class="nb">stty echo
+  read</span> <span class="nt">-e</span> <span class="nt">-p</span> <span class="s2">"Add Item: "</span> ACTION
+  <span class="nb">stty</span> <span class="nt">-echo</span>
+  <span class="o">[[</span> <span class="nt">-z</span> <span class="s2">"</span><span class="nv">$ACTION</span><span class="s2">"</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="k">continue
+  </span><span class="nb">eval</span> <span class="s2">"todolist a </span><span class="se">\"</span><span class="nv">$ACTION</span><span class="se">\"</span><span class="s2">"</span> <span class="o">&gt;</span> /dev/null
+<span class="p">;;</span>
+</code></pre></div></div>
+
+<p>After this it loops back to the beginning and awaits more input from the user. Adding new case statements lets me add more functionality so now I can build little dashboards for the things I do most frequently.</p>
+
+<p>I hope this inspires you to start building your own dashboards in the terminal.</p>
+
+<p>By Ada Rose Cannon on February 13, 2019.</p>
+
+<p><a href="https://medium.com/samsung-internet-dev/speed-up-your-work-flow-by-turning-command-line-tools-into-interactive-dashboards-7ebfd7333340">Canonical link</a></p>

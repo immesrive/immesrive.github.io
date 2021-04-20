@@ -1,0 +1,375 @@
+<h1 id="making-an-ar-game-with-aframe">Making an AR Game with AFrame</h1>
+
+<p>Using AFRAME, THREE.js and WebXR to build a game during a 4.5hr live stream.</p>
+
+<p>Here is a .gif (jiff?) of the final game, <a href="https://ada.is/basketball-demo/">click here to play the game</a>. It uses the <a href="https://github.com/immersive-web/dom-overlays/blob/master/explainer.md">WebXR DOM Overlay API</a>, and the <a href="https://github.com/immersive-web/hit-test/blob/master/hit-testing-explainer.md">WebXR Hit Test API</a>. So right now the best way to play it is in Mobile Chrome or <a href="https://play.google.com/store/apps/details?id=com.sec.android.app.sbrowser.beta&amp;hl=en_GB&amp;gl=US">Samsung Internet Beta</a>.</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/2092/1*uxubAT7y_4V7U0cUCtEiQg.gif" alt="A virtual ball being shot into a virtual basketball hoop." /><em>A virtual ball being shot into a virtual basketball hoop.</em></p>
+
+<p>If you want to watch all four-plus hours of the live stream the URLs are here:</p>
+
+<ul>
+  <li>
+    <p>Part 1: <a href="https://t.co/oDXGh3jtJc?amp=1">https://youtu.be/ee7PPDmPuqY</a></p>
+  </li>
+  <li>
+    <p>Part 2: <a href="https://t.co/YLcBGMvRs4?amp=1">https://youtu.be/RWFQ2FqEMi4</a></p>
+  </li>
+  <li>
+    <p>Part 3: <a href="https://t.co/ulYQbGTudB?amp=1">https://youtu.be/5XTDOcMU3Vg</a></p>
+  </li>
+</ul>
+
+<p>If you want to just look through the source code here it is:
+<a href="https://github.com/AdaRoseCannon/basketball-demo"><strong>AdaRoseCannon/basketball-demo</strong>
+<em>Playbasket ball in AR with Aframe and the WebXR device API GitHub is home to over 50 million developers working…</em> github.com</a></p>
+
+<p>This was my first time live streaming a whole project from start to finish. It was fun I think I would do it again for small projects like this. In this blog post I will talk about what tools I used to make it and some of the tricks that went into it.</p>
+
+<h3 id="setting-up-aframe">Setting up AFrame</h3>
+
+<p>First thing first is to create a new HTML file. index.html and put in some HTML boilerplate. I do this in VSCode using the <a href="https://docs.emmet.io/abbreviations/">Emmet Abbreviation</a> ! to auto-fill some basic HTML.</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="nt">&lt;html</span> <span class="na">lang=</span><span class="s">"en"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;head&gt;</span>
+  <span class="nt">&lt;meta</span> <span class="na">charset=</span><span class="s">"UTF-8"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;meta</span> <span class="na">name=</span><span class="s">"viewport"</span> <span class="na">content=</span><span class="s">"width=device-width, initial-scale=1.0"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;title&gt;</span>My AR Game<span class="nt">&lt;/title&gt;</span>
+<span class="nt">&lt;/head&gt;</span>
+<span class="nt">&lt;body&gt;</span>
+  
+<span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
+</code></pre></div></div>
+
+<p>Next to add the AFrame script I copy and paste the script tag from the <a href="https://aframe.io/docs/1.1.0/introduction/">AFrame docs</a>.</p>
+
+<pre><code class="language-hmtl">&lt;script src="[https://aframe.io/releases/1.1.0/aframe.min.js](https://aframe.io/releases/1.1.0/aframe.min.js)"&gt;&lt;/script&gt;
+</code></pre>
+
+<p>And paste the AFrame hello world into the body:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&lt;</span><span class="nx">a</span><span class="o">-</span><span class="nx">scene</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="nx">a</span><span class="o">-</span><span class="nx">box</span> <span class="nx">position</span><span class="o">=</span><span class="dl">"</span><span class="s2">-1 0.5 -3</span><span class="dl">"</span> <span class="nx">rotation</span><span class="o">=</span><span class="dl">"</span><span class="s2">0 45 0</span><span class="dl">"</span> <span class="nx">color</span><span class="o">=</span><span class="dl">"</span><span class="s2">#4CC3D9</span><span class="dl">"</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="sr">/a-box</span><span class="err">&gt;
+</span>  <span class="o">&lt;</span><span class="nx">a</span><span class="o">-</span><span class="nx">sphere</span> <span class="nx">position</span><span class="o">=</span><span class="dl">"</span><span class="s2">0 1.25 -5</span><span class="dl">"</span> <span class="nx">radius</span><span class="o">=</span><span class="dl">"</span><span class="s2">1.25</span><span class="dl">"</span> <span class="nx">color</span><span class="o">=</span><span class="dl">"</span><span class="s2">#EF2D5E</span><span class="dl">"</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="sr">/a-sphere</span><span class="err">&gt;
+</span>  <span class="o">&lt;</span><span class="nx">a</span><span class="o">-</span><span class="nx">cylinder</span> <span class="nx">position</span><span class="o">=</span><span class="dl">"</span><span class="s2">1 0.75 -3</span><span class="dl">"</span> <span class="nx">radius</span><span class="o">=</span><span class="dl">"</span><span class="s2">0.5</span><span class="dl">"</span> <span class="nx">height</span><span class="o">=</span><span class="dl">"</span><span class="s2">1.5</span><span class="dl">"</span> <span class="nx">color</span><span class="o">=</span><span class="dl">"</span><span class="s2">#FFC65D</span><span class="dl">"</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="sr">/a-cylinder</span><span class="err">&gt;
+</span>  <span class="o">&lt;</span><span class="nx">a</span><span class="o">-</span><span class="nx">plane</span> <span class="nx">position</span><span class="o">=</span><span class="dl">"</span><span class="s2">0 0 -4</span><span class="dl">"</span> <span class="nx">rotation</span><span class="o">=</span><span class="dl">"</span><span class="s2">-90 0 0</span><span class="dl">"</span> <span class="nx">width</span><span class="o">=</span><span class="dl">"</span><span class="s2">4</span><span class="dl">"</span> <span class="nx">height</span><span class="o">=</span><span class="dl">"</span><span class="s2">4</span><span class="dl">"</span> <span class="nx">color</span><span class="o">=</span><span class="dl">"</span><span class="s2">#7BC8A4</span><span class="dl">"</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="sr">/a-plane</span><span class="err">&gt;
+</span>  <span class="o">&lt;</span><span class="nx">a</span><span class="o">-</span><span class="nx">sky</span> <span class="nx">color</span><span class="o">=</span><span class="dl">"</span><span class="s2">#ECECEC</span><span class="dl">"</span><span class="o">&gt;&lt;</span><span class="sr">/a-sky</span><span class="err">&gt;
+</span><span class="o">&lt;</span><span class="sr">/a-scene</span><span class="err">&gt;
+</span></code></pre></div></div>
+
+<h3 id="testing">Testing</h3>
+
+<p>To test it I start a local http server to let me display it on my computer. I use the node <a href="https://www.npmjs.com/package/http-server">http-server module</a>. If you don’t have node environment to hand a couple of other options are <a href="https://chrome.google.com/webstore/detail/web-server-for-chrome/ofhbbkphhbklhfoeikjpcbhemlocgigb?hl=en">the Chrome Web Server extension</a> or building it on a website like <a href="https://glitch.com">glitch.com</a></p>
+
+<p>WebXR requires a secure origin to run. Secure origins usually begin with https:// a special secure origin is http://localhost which lets you access local a http server.</p>
+
+<p>If you are using Glitch you can just open the URL on the your phone to test it.</p>
+
+<p>Unfortunately the requirement for a secure origin makes things tricky for testing a local server on external devices. Normally I would access the server on my development computer via IP address like so: http://192.168.0.10:8080 but since it’s not a secure origin it can’t be used for WebXR.</p>
+
+<p>To test it on my phone there are two options which work well, the most convenient option is to plug in my phone using USB and use Chrome’s remote debugging to forward the port of the http server. Open chrome://inspect in Chrome to access this feature:</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/2000/1*Ss-HR1WZoUBXdahUHCsLzw.png" alt="chrome://inspect" /><em>chrome://inspect</em></p>
+
+<p>Once that is set up you can then open up http://localhost:8080 (replace 8080 with whatever port you are using) on your phone and test like you would on your computer.</p>
+
+<p>During my live streams I couldn’t get this working since I was using my phone’s USB-C port to capture the HDMI. So I used <a href="https://ngrok.com/">https://ngrok.com/</a> to get a real https: enabled URL for my local server.</p>
+
+<h3 id="enabling-ar-features">Enabling AR features</h3>
+
+<p>The first thing to notice when you try AR in our AFRame scene is that you’ll see through the device camera briefly before it gets obscured when the scene gets shown. This is because the <a-sky> element covers the whole scene.</a-sky></p>
+
+<p>To solve this we’ll add a new AFrame component to hide objects when the scene goes into AR. This code is from work done by <a href="https://github.com/aframevr/aframe/pull/4356/files">Klaus Weidner in one of the AFrame demos</a>:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">AFRAME</span><span class="p">.</span><span class="nx">registerComponent</span><span class="p">(</span><span class="dl">'</span><span class="s1">hide-in-ar-mode</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
+  <span class="na">init</span><span class="p">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">el</span><span class="p">.</span><span class="nx">sceneEl</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">'</span><span class="s1">enter-vr</span><span class="dl">'</span><span class="p">,</span> <span class="p">(</span><span class="nx">ev</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">el</span><span class="p">.</span><span class="nx">sceneEl</span><span class="p">.</span><span class="nx">is</span><span class="p">(</span><span class="dl">'</span><span class="s1">ar-mode</span><span class="dl">'</span><span class="p">))</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">el</span><span class="p">.</span><span class="nx">setAttribute</span><span class="p">(</span><span class="dl">'</span><span class="s1">visible</span><span class="dl">'</span><span class="p">,</span> <span class="kc">false</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="p">});</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">el</span><span class="p">.</span><span class="nx">sceneEl</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">'</span><span class="s1">exit-vr</span><span class="dl">'</span><span class="p">,</span> <span class="p">(</span><span class="nx">ev</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">el</span><span class="p">.</span><span class="nx">setAttribute</span><span class="p">(</span><span class="dl">'</span><span class="s1">visible</span><span class="dl">'</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+    <span class="p">});</span>
+  <span class="p">}</span>
+<span class="p">})</span>
+</code></pre></div></div>
+
+<p>I included this snippet in a little library of useful components I copy from project to project. As well as some other useful parts so I will just add that script to the page:</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"[https://ada.is/basketball-demo/ar-components.js](https://ada.is/basketball-demo/ar-components.js)"</span><span class="nt">&gt;&lt;/script&gt;</span>
+</code></pre></div></div>
+
+<p>This adds a hide-in-ar-mode component and an ar-hit-test we can use in Aframe. We add the hide-in-ar-mode component to HTML elements I want to hide in AR such as the <a-sky> so it now looks like this:</a-sky></p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;a-sky</span> <span class="na">color=</span><span class="s">"#ECECEC"</span> <span class="na">hide-in-ar-mode</span><span class="nt">&gt;&lt;/a-sky&gt;</span>
+</code></pre></div></div>
+
+<p>The other issue is the scale. The AFrame hello world example is designed for VR. In VR where physically large scenes work well because you can take advantage of the unlimited space. In the AFrame Hello World Example the content is placed 5 meters from the user and is 2.5m tall. This is very large and looks impressive in VR but in AR is much too big to fit in many people’s real environment.</p>
+<blockquote>
+  <h1 id="when-designing-ar-scenes-try-to-avoid-having-the-content-larger-than-05m-to-enable-people-to-fit-it-in-their-environment">When designing AR scenes, try to avoid having the content larger than 0.5m to enable people to fit it in their environment.</h1>
+</blockquote>
+
+<p>When designing AR scenes, try to avoid having the content larger than 0.5m to enable people to fit it in their environment. I say this as someone who lives in a small apartment.</p>
+
+<p>The times when you want to break this rule is when the AR scene is designed to only be used outside where space is more available or when the virtual object is a stand in for a real object which has specific dimensions. Such as if they are buying a particular piece of furniture and want to see how well it fits in their house.</p>
+
+<p>To update the scene I made all the objects in the scene 10% of their original size. All of the units in WebXR and AFrame are in meters so I turned 1.25m into 0.125m (12.5cm or about 6 inches.)</p>
+
+<h3 id="adding-hit-testing">Adding hit testing</h3>
+
+<p>Hit testing allows you cast rays from the virtual content into the real world. So you can place virtual objects inline with real world objects such as the floor, tables and walls.</p>
+
+<p>It will get you both the position and normal of where it hits letting objects be placed on services both vertical and horizontal.</p>
+
+<p>The hit-test feature is one which is not available by default in WebXR because it lets you get additional information about a user’s environment.</p>
+
+<p>But you can request it when the XR session is started in AFrame you add it to your <a-scene> element using the webxr component like so:</a-scene></p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;a-scene</span> <span class="na">webxr=</span><span class="s">"optionalFeatures: hit-test;"</span><span class="nt">&gt;</span>
+</code></pre></div></div>
+
+<p>To assist in how it’s used I made a component to help with it in the library I mentioned earlier:</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"[https://ada.is/basketball-demo/ar-components.js](https://ada.is/basketball-demo/ar-components.js)"</span><span class="nt">&gt;&lt;/script&gt;</span>
+</code></pre></div></div>
+
+<p>The ar-hit-test component will continuously do hit-testing using the most relevant user input available assisting you to build something which works on a variety of hardware. Such as it will default from using the headset position but will use a VR controller or hand tracking if it is available.</p>
+
+<p>Wherever the hit lands it will place the object. This makes it handy for being a targeting reticle in AR.</p>
+
+<p>We’ll make a 20cm square to use for the guiding reticle:</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;a-plane</span>
+ <span class="na">rotation=</span><span class="s">"-90 0 0"</span>
+ <span class="na">width=</span><span class="s">"0.2"</span>
+ <span class="na">height=</span><span class="s">"0.2"</span>
+ <span class="na">src=</span><span class="s">"./arrow.png"</span>
+ <span class="na">material=</span><span class="s">"transparent:true;"</span>
+<span class="nt">&gt;&lt;/a-plane&gt;</span>
+</code></pre></div></div>
+
+<p><img src="https://cdn-images-1.medium.com/max/2000/1*apen6MoiJxGX4BeNUjNNlw.png" alt="arrow.png" /><em>arrow.png</em></p>
+
+<p>Like <code class="language-plaintext highlighter-rouge">&lt;div&gt;</code> is for HTML for AFrame it is <code class="language-plaintext highlighter-rouge">&lt;a-entity&gt;</code>. This is a plain element with no additional properties such as 3D models. We will make a new <a-entity> which uses the ar-hit-test component to be positioned by hit-testing.</a-entity></p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;a-entity</span> <span class="na">ar-hit-test=</span><span class="s">"doHitTest:false"</span> <span class="na">visible=</span><span class="s">"false"</span><span class="nt">&gt;</span>
+
+Reticle HTML goes here ...
+
+<span class="nt">&lt;/a-entity&gt;</span>
+</code></pre></div></div>
+
+<p>We’ve also made it invisible since the ar-hit-test component will make it visible again when it’s able to do hit-testing.</p>
+
+<h3 id="creating-the-basketball-hoop">Creating the Basketball Hoop</h3>
+
+<p>Now we have some way of getting the position of real world objects we want to create the hoop to go on the wall.</p>
+
+<p>Objects placed on surfaces using hit testing have their y-axis (the up and down axis) aligned with the <a href="https://en.wikipedia.org/wiki/Normal_(geometry)">normal</a> of the surface they are being placed on. This means that objects placed on the floor should appear pretty normal but on surfaces like walls or ceilings they will get rotated. The objects are usually also rotated around this normal to face the hit-test source but this behaviour is not in the spec and so may vary.</p>
+
+<p>Since an object placed on the wall will be rotated 90 degrees we will start it off with some initial rotation as we design it. So the encapsulating entity #hoop will have rotation=”90 0 0” which is similar to an object placed on a wall. If we were placing it on the floor a rotation of 0 0 0 would suffice. This rotation will be reset when we place the object against the wall to what ever the orientation of the normal of the wall is.</p>
+
+<p>The hoop will be made of 3 simple shapes, a plane for the back board a torus for the hoop and an open ended cone for the net:</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;a-entity</span> <span class="na">id=</span><span class="s">"hoop"</span> <span class="na">rotation=</span><span class="s">"90 0 0"</span> <span class="na">position=</span><span class="s">"0 2 -1.8"</span><span class="nt">&gt;</span> 
+
+    <span class="nt">&lt;a-torus</span> <span class="na">scale=</span><span class="s">"0.6 0.6 0.6"</span> <span class="na">position=</span><span class="s">"0 0.173 -0.1"</span> <span class="na">color=</span><span class="s">"#43A367"</span> <span class="na">radius=</span><span class="s">"0.25"</span> <span class="na">radius-tubular=</span><span class="s">"0.005"</span><span class="nt">&gt;&lt;/a-torus&gt;</span>
+
+    <span class="nt">&lt;a-plane</span>
+     <span class="na">scale=</span><span class="s">"0.6 0.6 0.6"</span>
+     <span class="na">position=</span><span class="s">"0 0 -0.3"</span>
+     <span class="na">rotation=</span><span class="s">"-90 0 0"</span>
+     <span class="na">width=</span><span class="s">"0.9"</span>
+     <span class="na">height=</span><span class="s">"0.9"</span>
+     <span class="na">material=</span><span class="s">"transparent: true; side: double;"</span>
+     <span class="na">src=</span><span class="s">"./backboard.png"</span>
+    <span class="nt">&gt;&lt;/a-plane&gt;</span>
+
+    <span class="nt">&lt;a-cone</span> <span class="na">scale=</span><span class="s">"0.6 0.6 0.6"</span> <span class="na">position=</span><span class="s">"0 0.173 -0.010"</span> <span class="na">color=</span><span class="s">"tomato"</span> <span class="na">radius-bottom=</span><span class="s">"0.25"</span> <span class="na">radius-top=</span><span class="s">"0.3"</span> <span class="na">material=</span><span class="s">"side: double; opacity:0.5; transparent: true;"</span> <span class="na">geometry=</span><span class="s">"height: 0.29; openEnded: true"</span> <span class="na">rotation=</span><span class="s">"90 0 0"</span><span class="nt">&gt;&lt;/a-cone&gt;</span>
+
+<span class="nt">&lt;/a-entity&gt;</span>
+</code></pre></div></div>
+
+<p>The end result is simple but should be clear what is.</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/2000/1*5TaP9YnC8N6TLK4lHyLKrA.png" alt="The basketball hoop created by the code earlier" /><em>The basketball hoop created by the code earlier</em></p>
+
+<h3 id="positioning-the-hoop">Positioning the hoop</h3>
+
+<p>We want the player to be able to position the hoop on their wall. We can get their chosen position by copying the location from the reticle:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">reticle</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">querySelector</span><span class="p">(</span><span class="dl">"</span><span class="s2">[ar-hit-test]</span><span class="dl">"</span><span class="p">);</span>
+
+<span class="kd">function</span> <span class="nx">positionHoop</span><span class="p">()</span> <span class="p">{</span>
+
+    <span class="nx">hoop</span><span class="p">.</span><span class="nx">setAttribute</span><span class="p">(</span><span class="dl">"</span><span class="s2">visible</span><span class="dl">"</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+    <span class="nx">hoop</span><span class="p">.</span><span class="nx">setAttribute</span><span class="p">(</span><span class="dl">"</span><span class="s2">position</span><span class="dl">"</span><span class="p">,</span> <span class="nx">reticle</span><span class="p">.</span><span class="nx">getAttribute</span><span class="p">(</span><span class="dl">"</span><span class="s2">position</span><span class="dl">"</span><span class="p">));</span>
+    <span class="nx">hoop</span><span class="p">.</span><span class="nx">setAttribute</span><span class="p">(</span><span class="dl">"</span><span class="s2">rotation</span><span class="dl">"</span><span class="p">,</span> <span class="nx">reticle</span><span class="p">.</span><span class="nx">getAttribute</span><span class="p">(</span><span class="dl">"</span><span class="s2">rotation</span><span class="dl">"</span><span class="p">));</span>
+<span class="p">}</span>
+
+<span class="nx">reticle</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">'</span><span class="s1">select</span><span class="dl">'</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">positionHoop</span><span class="p">();</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>This very simple function will make the hoop visible and position the hoop at the same position and rotation as the reticle when a select is made. This naive function will often make the hoop a bit crooked though as it will be tilted to face the hit-test origin but lining it up is hard. So we will need to do some Vector Math to ensure the z direction of the hoop lines up with the y-axis.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">upVector</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Vector3</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">tempVector</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Vector3</span><span class="p">();</span>
+<span class="kd">const</span> <span class="nx">tempQuaternion</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Quaternion</span><span class="p">();</span>
+
+<span class="kd">function</span> <span class="nx">positionHoop</span><span class="p">()</span> <span class="p">{</span>
+
+    <span class="nx">hoop</span><span class="p">.</span><span class="nx">setAttribute</span><span class="p">(</span><span class="dl">"</span><span class="s2">position</span><span class="dl">"</span><span class="p">,</span> <span class="nx">reticle</span><span class="p">.</span><span class="nx">getAttribute</span><span class="p">(</span><span class="dl">"</span><span class="s2">position</span><span class="dl">"</span><span class="p">));</span>
+    <span class="nx">hoop</span><span class="p">.</span><span class="nx">setAttribute</span><span class="p">(</span><span class="dl">"</span><span class="s2">visible</span><span class="dl">"</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+
+    <span class="nx">tempVector</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span> <span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">);</span>
+    <span class="nx">tempVector</span><span class="p">.</span><span class="nx">applyQuaternion</span><span class="p">(</span><span class="nx">reticle</span><span class="p">.</span><span class="nx">object3D</span><span class="p">.</span><span class="nx">quaternion</span><span class="p">);</span>
+    <span class="nx">tempQuaternion</span><span class="p">.</span><span class="nx">setFromUnitVectors</span><span class="p">(</span><span class="nx">tempVector</span><span class="p">,</span> <span class="nx">upVector</span><span class="p">);</span>
+    <span class="nx">hoop</span><span class="p">.</span><span class="nx">object3D</span><span class="p">.</span><span class="nx">quaternion</span><span class="p">.</span><span class="nx">multiplyQuaternions</span><span class="p">(</span><span class="nx">tempQuaternion</span><span class="p">,</span> <span class="nx">reticle</span><span class="p">.</span><span class="nx">object3D</span><span class="p">.</span><span class="nx">quaternion</span><span class="p">);</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>This slightly more complicated function will work out the Quaternion rotation needed to rotate the reticle into an upright position. It will then set the quaternion rotation of the hoop to multiplication of that rotation with the reticle’s rotation. Resulting in a hoop that is facing the right way but twisted slightly so that it points up.</p>
+
+<h3 id="adding-physics-to-the-scene">Adding physics to the scene</h3>
+
+<p>Physics is handled by the very useful <a href="https://github.com/n5ro/aframe-physics-system">aframe-physics-system</a> this allows you to make the objects in the scene behave in physically realistic ways.</p>
+
+<p>There are two types of physics objects:</p>
+
+<ol>
+  <li>
+    <p>Static Bodies, these do not move or react to being hit by other objects they effectively have infinite mass and are unaffected by gravity. They are cheap to use but cannot move. Anything that should not move should be a static body such as Floors and Walls and in our case the basketball hoop.</p>
+  </li>
+  <li>
+    <p>Dynamic Bodies, these have mass and will fall with constant acceleration under gravity. They can bounce off static bodies or collide with other dynamic bodies. The only dynamic body in the scene is the ball itself.</p>
+  </li>
+</ol>
+
+<p>To set up the physics system we will include the script after the A-Frame script and add the physics component to our scene element:</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"https://cdn.jsdelivr.net/gh/n5ro/aframe-physics-system@v4.0.1/dist/aframe-physics-system.min.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+
+...
+
+<span class="nt">&lt;a-scene</span> <span class="na">physics=</span><span class="s">"debug: false"</span><span class="nt">&gt;</span>
+</code></pre></div></div>
+
+<p>To help setting up your scene it can be worth while to set debug to true so that you can see the shapes it has made outlined in red.</p>
+
+<p>Next we add a sphere with the dynamic-body component to be the ball:</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;a-sphere</span> <span class="na">id=</span><span class="s">"ball"</span> <span class="na">dynamic-body</span> <span class="na">radius=</span><span class="s">"0.1"</span> <span class="na">color=</span><span class="s">"orange"</span> <span class="na">position=</span><span class="s">"0.1 2.36 -1.5"</span><span class="nt">&gt;&lt;/a-sphere&gt;</span>
+</code></pre></div></div>
+
+<p>If we reload the page the ball should fall indefinitely.</p>
+
+<p>The next step is to add static-body to the floor plane so that something can stop the ball, I also made it much larger as the ball will roll when it hits it.</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;a-plane</span>
+    <span class="na">rotation=</span><span class="s">"-90 0 0"</span>
+    <span class="na">width=</span><span class="s">"20"</span>
+    <span class="na">height=</span><span class="s">"20"</span>
+    <span class="na">color=</span><span class="s">"#43A367"</span>
+    <span class="na">static-body</span>
+    <span class="na">hide-in-ar-mode</span>
+<span class="nt">&gt;&lt;/a-plane&gt;</span>
+</code></pre></div></div>
+
+<p>When we play the game we want to interact with the hoop. So next we will add static-body to the backboard plane.</p>
+
+<p>What do we do about the hoop? This is a lot more complicated. The hoop is a convex object it has a pretty complex topology and the 3D model has many vertices which makes the physics very expensive.</p>
+
+<p>The trick here is to have an invisible torus with as few polygons as we can manage, we make it a static body but make it invisible and place it on top of the high resolution model. This is a common trick in video games to have the physics objects with much simpler geometry than the visible objects.</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;a-torus</span> <span class="na">scale=</span><span class="s">"0.6 0.6 0.6"</span> <span class="na">static-body=</span><span class="s">"shape: mesh;"</span> <span class="na">position=</span><span class="s">"0 0.173 -0.1"</span> <span class="na">visible=</span><span class="s">"false"</span> <span class="na">radius=</span><span class="s">"0.27"</span> <span class="na">radius-tubular=</span><span class="s">"0.02"</span> <span class="na">geometry=</span><span class="s">"radius: 0.29; segmentsRadial: 5; segmentsTubular: 12"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;/a-torus&gt;</span>
+</code></pre></div></div>
+
+<p>By having the static objects of the hoop inside the hoop entity they will be kept inline with the visible objects.</p>
+
+<p>AFrame Physics System also has a JavaScript API for detecting when two objects collide or setting velocities of objects. It is available on the body property of the entity we want to control as long it is a static or dynamic body.</p>
+
+<p>If we want to set the position and velocity of an object such as the ball we use this method. Here is how we launch the ball from the currently active controller:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">ball</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="dl">'</span><span class="s1">ball</span><span class="dl">'</span><span class="p">);</span>
+
+  <span class="nx">reticle</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">'</span><span class="s1">select</span><span class="dl">'</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+
+  <span class="c1">// Set the ball location to the controller position</span>
+  <span class="kd">const</span> <span class="nx">pose</span> <span class="o">=</span> <span class="nx">e</span><span class="p">.</span><span class="nx">detail</span><span class="p">.</span><span class="nx">pose</span><span class="p">;</span>
+  <span class="nx">ball</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">position</span><span class="p">.</span><span class="nx">copy</span><span class="p">(</span><span class="nx">pose</span><span class="p">.</span><span class="nx">transform</span><span class="p">.</span><span class="nx">position</span><span class="p">);</span>  <span class="c1">// {x, y, z}</span>
+
+  <span class="c1">// Have an initial velocity vector of 5ms into the screen</span>
+  <span class="nx">tempVector</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span> <span class="p">,</span><span class="o">-</span><span class="mi">5</span><span class="p">);</span>
+
+  <span class="c1">// Set our velocity vector direction to the controller orientation</span>
+  <span class="c1">// {x, y, z, w}</span>
+  <span class="nx">tempVector</span><span class="p">.</span><span class="nx">applyQuaternion</span><span class="p">(</span><span class="nx">pose</span><span class="p">.</span><span class="nx">transform</span><span class="p">.</span><span class="nx">orientation</span><span class="p">);</span>
+
+  <span class="c1">// set the velocity of the ball to our velocity vector</span>
+  <span class="nx">ball</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">velocity</span><span class="p">.</span><span class="nx">copy</span><span class="p">(</span><span class="nx">tempVector</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<h3 id="dom-overlay">Dom Overlay</h3>
+
+<p>The last thing we need is to make some UI so that the user can say when they have set the hoop position and are ready to play. We can build a normal HTML interface for this:</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">"overlay"</span> <span class="na">class=</span><span class="s">"container"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;h1&gt;</span>Welcome To Basketball<span class="nt">&lt;/h1&gt;</span>
+  <span class="nt">&lt;section</span> <span class="na">class=</span><span class="s">"overlay-content"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;p</span> <span class="na">id=</span><span class="s">"instructions"</span><span class="nt">&gt;</span>Place the basket along a wall<span class="nt">&lt;/p&gt;</span>
+  <span class="nt">&lt;/section&gt;</span>
+  <span class="nt">&lt;div</span> <span class="na">style=</span><span class="s">"display: flex; justify-content: space-between; align-self: stretch;"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;button</span> <span class="na">id=</span><span class="s">"go-button"</span><span class="nt">&gt;</span>Ready to Play!<span class="nt">&lt;/button&gt;</span>
+    <span class="nt">&lt;button</span> <span class="na">id=</span><span class="s">"exit-button"</span><span class="nt">&gt;</span>Stop AR<span class="nt">&lt;/button&gt;</span>
+  <span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;/div&gt;</span>
+</code></pre></div></div>
+
+<p>Then you can use it by declaring it on the WebXR component on the scene object:</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;a-scene</span> <span class="na">webxr=</span><span class="s">"optionalFeatures: hit-test, dom-overlay; overlayElement:#overlay;"</span> <span class="nt">&gt;</span>
+</code></pre></div></div>
+
+<p>Using real HTML buttons and text has many benefits for the user such as working with accessibility tools, being more readable. It can be styled with regular CSS and can be coded with normal JavaScript.</p>
+
+<p>Something to bear in mind though is that when the user taps on DOM Overlay Elements they will fire input events such as ‘click’ ‘mousedown’ and ‘touchstart’ events as usual but in addition will fire WebXR ‘select’ events first!</p>
+
+<p>So you may need to use something like a setTimeout in your ‘select’ events to ensure that a button has not been pushed if you are waiting for input from the HTML buttons.</p>
+
+<p>You can detect support for DOM Overlay by looking for xrsession.domOverlayState.type . If domOverlayState is not set then domOverlay is not present in the browser. If type is not set then the current hardware/browser configuration does not support DOM Overlay so you can use the following function to detect it:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">hasDomOverlay</span><span class="p">(</span><span class="nx">xrsession</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">xrsession</span><span class="p">.</span><span class="nx">domOverlayState</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// DOM Overlay is not supported</span>
+    <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">xrsession</span><span class="p">.</span><span class="nx">domOverlayState</span><span class="p">.</span><span class="nx">type</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// DOM Overlay is not in use</span>
+    <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>If you are using DOM Overlay for essential paths through the code then you can use this to detect availability and provide fall back behaviors.</p>
+
+<h3 id="read-the-source-code-to-the-finished-demo">Read the source code to the finished demo</h3>
+
+<p>Here is the source code to the demo, I hope this guide helps you make sense of it and some of the decisions that were made. If you have further questions feel free to reach out to me through Twitter.</p>
+
+<p>Thank you so much for reading!
+<a href="https://github.com/AdaRoseCannon/basketball-demo/blob/main/index.html"><strong>AdaRoseCannon/basketball-demo</strong>
+<em>Playbasket ball in AR with Aframe and the WebXR device API - AdaRoseCannon/basketball-demo</em> github.com</a></p>
