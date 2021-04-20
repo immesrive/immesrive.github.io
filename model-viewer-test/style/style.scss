@@ -1,0 +1,59 @@
+* { 
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  display: flex;
+  flex-wrap: wrap;
+  background-color:blanchedalmond;
+}
+
+model-viewer {
+  width: 520px;
+  height: 350px;
+  border: 1px solid black;
+  border-radius: 10px;
+  margin: 10px;
+  box-shadow: 0 8px 12px 0 rgba(0, 0, 0, 0.2);
+  --poster-color: rgb(204, 61, 133); // before model is load
+  --progress-bar-color: rgb(251, 255, 0);
+  --progress-bar-height: 10px;
+  --progress-mask: rgb(55, 0, 255); // don't know what it is
+
+  .container {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    bottom: 0;
+  
+    button {
+      height: auto;
+      width: 100px;
+      padding: 10px;
+      color: black;
+      background-color: rgb(231, 199, 17);
+      padding: 10px;
+      text-align: center;
+      cursor: pointer;
+
+      &:focus {
+        outline: none;
+      }
+
+      &:hover {
+        color: rgb(231, 199, 17);
+        background-color: black;
+      }
+
+      &:active {
+        transform: scale(0.98);
+      }
+    }
+  }
+}
+
+
