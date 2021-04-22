@@ -1,0 +1,322 @@
+<h1 id="how-i-built-a-game-in-a-week">How I built a game in a week</h1>
+
+<p>I tried to make a game mostly using tools available on the web.</p>
+
+<p>Being so short on time I built it out of off the shelf parts carefully picking my tools to build it rapidly. This blog post will introduce the tools I used and the difficulties with joining them together to make a game.</p>
+
+<p>You can play it right now, in your browser with no download. It is very short, after all I only had a week to make it:
+<a href="https://ada-game-engine.glitch.me"><strong>I wake up with Anxiety</strong>
+<em>Test Game Engine for integrating A-Frame with Twinery. Guide the character around to answer the door.</em>ada-game-engine.glitch.me</a></p>
+
+<p>My goal for the game was to build a 3rd person rpg you explore either through interacting with the text or by exploring the 3D environment. Which works on phones and desktop computers.</p>
+
+<p>Having only a week of weekends and evenings to put it together (about 20 hours in total) I had to pick my battles very carefully.</p>
+
+<p>Firstly I picked the technologies I felt could help me build the scene fastest:</p>
+
+<ul>
+  <li>
+    <p>A-Frame — A 3D engine controlled through HTML</p>
+  </li>
+  <li>
+    <p><a href="https://spaces.archilogic.com/explore">3Dio</a>—An amazing tool for designing and exporting 3D architecture in the browser.</p>
+  </li>
+  <li>
+    <p>Twinery — A really fun narrative game engine designed for producing text games it exports to HTML.</p>
+  </li>
+  <li>
+    <p>Glitch — A service for building and hosting web software. Provides a developer environment and the capabilities for running a node server.</p>
+  </li>
+</ul>
+
+<p>Of these tools Twinery is the most prescriptive as it outputs the whole HTML file, which is what I will be publishing to Glitch. Because it is the most prescriptive it is what I will have to work with to add in my 3D features.</p>
+
+<p>Fortunately Twinery gives us good JavaScript injection abilities allowing me to pull in the other resources I need.</p>
+
+<p>You can explore full source code by saving the webpage as a .html file and opening it here: <a href="http://twinery.org/2/">http://twinery.org/2/</a></p>
+
+<p><img src="https://cdn-images-1.medium.com/max/2014/1*FDsrqQfM0W_tTvAWHUb-Pg.png" alt="The full source doed through the Twinery Interface ([http://twinery.org/](http://twinery.org/))" /><em>The full source doed through the Twinery Interface (<a href="http://twinery.org/">http://twinery.org/</a>)</em></p>
+
+<p>Now we have our scene I wanted to add the 3D abilities. This meant adding A-Frame. The nice thing about A-Frame is that it is controlled through HTML so I can add my scene by using JQuery to add the A-Frame JavaScript library and injecting some HTML to the top of the page.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$.getScript('[https://aframe.io/releases/0.7.1/aframe.min.js'](https://aframe.io/releases/0.7.1/aframe.min.js'))
+.then(function() {
+ document.body.insertAdjacentHTML('afterbegin', `
+    &lt;a-scene vr-mode-ui="enabled: false"&gt;
+      &lt;a-box position="-1 0.5 -3" rotation="0 45 0" color="#4CC3D9" shadow&gt;&lt;/a-box&gt;
+      &lt;a-sphere position="0 1.25 -5" radius="1.25" color="#EF2D5E" shadow&gt;&lt;/a-sphere&gt;
+      &lt;a-cylinder position="1 0.75 -3" radius="0.5" height="1.5" color="#FFC65D" shadow&gt;&lt;/a-cylinder&gt;
+      &lt;a-plane position="0 0 -4" rotation="-90 0 0" width="4" height="4" color="#7BC8A4" shadow&gt;&lt;/a-plane&gt;
+      &lt;a-sky color="#ECECEC"&gt;&lt;/a-sky&gt;
+    &lt;/a-scene&gt;
+`);
+});
+</code></pre></div></div>
+
+<p>A-Frame is designed to be used for virtual reality so it provides additional controls to use it with a VR headset. My game isn’t intended to be used with VR so I disable these controls by adding vr-mode-ui=”enabled: false;” to the <a-scene> element.</a-scene></p>
+
+<p>The A-Frame element I inject to the top of the page is by default hidden behind the Twinery story elements so I need to use some CSS to show the 3D scene. To do this I make the <tw-story> element transparent and ignore pointer-events. Also I move the <tw-passage> element to the bottom of the screen and let it scroll incase of long messages.</tw-passage></tw-story></p>
+
+<p><img src="https://cdn-images-1.medium.com/max/2000/1*4MRt-l5zZSDAOjrO3ZiKKQ.png" alt="" /></p>
+
+<p>Twinery has a place to enter CSS to do this I hide the tw-story I place the tw-passage at the bottom of the screen and make the a-scene fill the whole page.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>tw-story {
+ background: transparent; 
+ pointer-events: none;
+ padding: 0;
+}
+
+tw-passage {
+  background: black;
+  border: 4px double white;
+  font-size: 1.5em;
+  line-height: 1em;
+  pointer-events: auto;
+  margin: auto 1em 1em 1em;
+  padding: 1em;
+  max-height: 40vh;
+  overflow: auto;
+}
+
+a-scene {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: opacity ease 2s;
+}
+</code></pre></div></div>
+
+<p>Now we have the funamentals set up I want to be able to control the scene from the Twinery passages.</p>
+
+<p>The default scripting engine in Twinery is called Harlowe, it is designed to manage dynamic text and traversing between different passages. Here is the code in the first passage.</p>
+
+<ul>
+  <li>
+    <p>It displays some text and then some text the user can click on. If they press ‘Go back to sleep’ it replaces it with a new line of text urging the user to continue.</p>
+  </li>
+  <li>
+    <p>The text ‘Check it out’ is a link to anoter passage called ‘wake’</p>
+
+    <p>//Boom Boom Boom Boom// The banging echoes through my head.</p>
+
+    <p>Is it the door? Am I dreaming?</p>
+
+    <p>[Go back to sleep]&lt;gosleep|
+  [[Check it out-&gt;wake]]
+  (click-replace: ?gosleep)[//Boom Boom Boom Boom//, the unceasing poundings, echoes in my ears.</p>
+
+    <p>I’m probably imagining it but I should check it out.]</p>
+  </li>
+</ul>
+
+<p>If you put a script tag in here it gets executed as soon as it is written to the screen:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[Make the box green]&lt;green|
+(click-replace: ?gosleep)[The box is now green.
+&lt;script&gt;
+  document.querySelector('a-box').setAttribute('color', green');
+&lt;/script&gt;]
+</code></pre></div></div>
+
+<p>This can be used to control the 3D scene which is good enough for a one way binding in the scene where the 3D scene represents the game.</p>
+
+<p>This wasn’t quite enough for me I want a two way binding where the clicking the text can update the scene OR clicking the scene can update the game state.</p>
+
+<p>Normally the game engine doesn’t expose state or internal macros to the JavaScript but it is possible to hack access to these. This is not supported in the Harlowe game engine so I cannot garuntee it will always work:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(print: (function () {
+  window.harlowe = {
+   state: State,
+   macros: Macros
+  }
+  return JSON.stringify(State, null, '  ');
+ }()))
+</code></pre></div></div>
+
+<p>This accesses the State and Macro variables and attaches them to the window making them available from all of my JavaScript code as harlowe.state and harlowe.macros.</p>
+
+<p>I can use these objects to manipulate the internal state of the game engine.</p>
+
+<h2 id="building-the-environment">Building the Environment</h2>
+
+<p>I have seen some amazing A-Frame demos made with the Architecture tools of the great Archilogic team so I knew their tools would work with my scene.</p>
+
+<p>I spent a few hours building a scene. It was really fun, I felt like I was making it in the sims there was a wonderful selection of furniture.</p>
+
+<p>The most amazing feature in my opinion is the lightmap baking. Once i had built my scene it could automatically generate a baked light map which looks amazing!! This is normally something which is very time consuming to set up well so having it built in as a one button feature is wonderful!</p>
+
+<p>Look at the lights in the bathroom. The sunlight streaming through the shower curtain and being projected onto the wall!!</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/3840/1*LIueed6w5yq_j6o0_AiyTw.png" alt="" /></p>
+
+<p>It took me a while to figure out but I was able to embed it into A-Frame scene with a few lines of JavaScript, first I add the 3dio library with $.getScript then I use it:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// I can get the sceneId from the URL (not a real uuid)
+const sceneId = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
+
+$.getScript('[https://dist.3d.io/3dio-js/1.1.x/3dio.min.js'](https://dist.3d.io/3dio-js/1.1.x/3dio.min.js'))
+.then(function () {
+  return io3d.scene.getAframeElements(sceneID);
+})
+.then(function (els) {
+  const sceneEl = document.querySelector('a-scene');
+  sceneEl.querySelector('#scene-target').appendChild(els[0]);
+});
+</code></pre></div></div>
+
+<p>In this case the position of the scene was displaced by 40 units in the x direction making it a little awkward to use until I moved the camera starting point to compensate.</p>
+
+<h2 id="adding-interactivity">Adding interactivity</h2>
+
+<p>I added a 3D head to be the character it is a model I got commisioned a few months ago to use as avatar for me in VR experiences.</p>
+
+<p>I wanted to move it around the scene.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;a-entity obj-model="obj: #ada-obj; mtl: #ada-mtl" 
+ada-model="eyes:3; mouth: 3;" position="-43.615 0.6 -0.312"
+scale="0.08 0.08 0.08" shadow="cast: true; receive: false;"&gt;
+&lt;/a-entity&gt;
+</code></pre></div></div>
+
+<p>My first guess was to react to the use clicking on the floor and then moving the user there.</p>
+
+<p>Unfortunately this often resulted in the user walking in straight lines through geometry to get places. Fortunately this can be solved with a Navmesh.</p>
+
+<p>A Navmesh describes the areas of the scene a character can walk on. There are also tools to allow path finding around a Navmesh making it very useful for building explorable environments.</p>
+
+<p><a href="undefined">Don McCurdy</a>’s amazing article on creating Navmeshes was invaluable here:
+<a href="https://medium.com/@donmccurdy/creating-a-nav-mesh-for-a-webvr-scene-b3fdb6bed918"><strong>Creating a nav mesh for a WebVR scene</strong>
+<em>SUMMARY: This tutorial shows how to create a navigation mesh for a scene with Blender, and use it in A-Frame to do…</em>medium.com</a></p>
+
+<p>To generate the Navmesh for this scene I first downloaded it as an OBJ model from the Archilogic website. Unfortunately it did not download any of the furniture models with it. But it would do.</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/3840/1*kEVFZmDd-hp1gDS41_HLLA.png" alt="" /></p>
+
+<p><img src="https://cdn-images-1.medium.com/max/2000/1*6SwfU1ECCJbCH-u8XsvmJw.png" alt="Close up of the settings I used." /><em>Close up of the settings I used.</em></p>
+
+<p>I followed the tutorial and tweaked the settings to generate the Navmesh for the scene which I exported as Gltf.</p>
+
+<p>I also added the scripts for the Navmesh A-Frame components to my scene so that I could make the character walk around.</p>
+
+<p>As well I added a camera which would follow the user.</p>
+
+<p>The final HTML I add to the page looks like this:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;a-scene
+ io3d-lighting vr-mode-ui="enabled: false"&gt;
+
+&lt;a-assets&gt;
+  &lt;a-asset-item id="ada-obj" 
+src="[https://cdn.rawgit.com/AdaRoseEdwards/metaverse/master/static/models/ada/vr-ada.obj](https://cdn.rawgit.com/AdaRoseEdwards/metaverse/master/static/models/ada/vr-ada.obj)"&gt;&lt;/a-asset-item&gt;
+
+  &lt;a-asset-item id="ada-mtl" 
+src="[https://cdn.rawgit.com/AdaRoseEdwards/metaverse/master/static/models/ada/vr-ada.mtl](https://cdn.rawgit.com/AdaRoseEdwards/metaverse/master/static/models/ada/vr-ada.mtl)"&gt;&lt;/a-asset-item&gt;
+
+  &lt;a-asset-item id="navmesh" 
+src="[https://cdn.glitch.com/b4fd6fd6-484f-46a9-abd9-b602f64aa92a%2Fnavmesh.gltf](https://cdn.glitch.com/b4fd6fd6-484f-46a9-abd9-b602f64aa92a%2Fnavmesh.gltf)"&gt;&lt;/a-asset-item&gt;
+&lt;/a-assets&gt;
+
+  &lt;!-- Black background --&gt;
+  &lt;a-sky color="black"&gt;&lt;/a-sky&gt;
+
+  &lt;!-- character model has the id #target --&gt;
+  &lt;a-entity obj-model="obj: #ada-obj; mtl: #ada-mtl" 
+ada-model="eyes:3; mouth: 3;" position="-43.615 0.6 -0.312" id="target" 
+scale="0.08 0.08 0.08" shadow="cast: true; receive: false;" 
+nav-controller="speed: 1.5"&gt;&lt;/a-entity&gt;
+ 
+  &lt;!-- The Building Elements get injected here--&gt;
+  &lt;a-entity id="scene-target"&gt;
+  &lt;/a-entity&gt;
+ 
+  &lt;!-- navigation mesh for the floor --&gt;
+  &lt;a-entity gltf-model="#navmesh" nav-mesh 
+visible="false"&gt;&lt;/a-entity&gt;
+  
+  
+  &lt;!-- orbit cam looks at #target --&gt;
+  &lt;a-entity camera="fov: 50; zoom: 1;" position="-44 3 5" 
+orbit-controls="invertZoom: true; autoRotate: false; target: #target; 
+enableDamping: true; dampingFactor: 0.5; minDistance:4; maxDistance:20; 
+maxPolarAngle:1.0; minPolarAngle: 0.2; enableKeys: false; enablePan: 
+false;"&gt;&lt;/a-entity&gt;
+
+&lt;/a-scene&gt;
+</code></pre></div></div>
+
+<p>We are now ready to add mouse interactions. To do this we will use a raycaster to work out where the user is clicking on the scene.</p>
+
+<p>This functionality is added in a helper JavaScript file I wrote. <a href="https://glitch.com/edit/#!/ada-game-engine?path=static/interactions.js:2:0">Full source.</a></p>
+
+<p>It is a little complex so I will break down how it works.</p>
+
+<p>First I create a new rayCaster to use do the detection and I get a list of elements which I want to detect.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>const raycaster = new THREE.Raycaster();
+const scene = document.querySelector('a-scene');
+const furniture = Array.from(document.querySelectorAll('[nav-mesh],[io3d-furniture],[io3d-closet],[io3d-door]'));
+</code></pre></div></div>
+
+<p>Many of the objects in the Archilogic architecture are actually invisible and their geometry has been all joined into the scene. This breaks raycasting. Fortuantely the original objects are still present so first I have to make them all visible when I do a click. Once the raycasting is complete I hide them again so they don’t accidentially get rendered.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>const invis = furniture.filter(o =&gt; {
+  if (!o.getAttribute('visible')) {
+    o.setAttribute('visible', true);
+    return true;
+  } else {
+    return false;
+  }
+});
+</code></pre></div></div>
+
+<p>I then configure the raycaster based upon the mouse position and current view:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>const camera = scene.camera;
+const mouse = {
+  x: (e.offsetX / scene.offsetWidth) * 2 - 1,
+  y: -(e.offsetY / scene.offsetHeight) * 2 + 1
+};
+raycaster.setFromCamera(mouse, camera);
+</code></pre></div></div>
+
+<p>We can now do the raycasting.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>const intersects = raycaster.intersectObjects(furniture.map(o =&gt; o.object3D), true);
+</code></pre></div></div>
+
+<p>We then interate over the intersections and filter out any objects we don’t care about.</p>
+
+<p>If the user clicks on an object and that object’s name matches that of a passage we jump to that passage using the macros object we hacked access too earlier:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>window.harlowe.macros.get('go-to')(['', passageName]).TwineScript_Print();
+</code></pre></div></div>
+
+<p>If the user clicks on the floor we use the navmesh component to move the user to that location.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>const ctrlEl = scene.querySelector('[nav-controller]');
+ctrlEl.setAttribute('nav-controller', {
+  active: true,
+  destination: intersection.point
+});
+</code></pre></div></div>
+
+<h3 id="now-were-ready-to-write-some-story">Now we’re ready to write some story</h3>
+
+<p>We’re now ready to start writing some story. There is some additional functionality I added to handle some story elements.</p>
+
+<p>For example starting some passsages will trigger the character to move to walk to a new position.</p>
+
+<p>There is also some functionality for limiting the interactable elements to those in the room the user currently is.</p>
+
+<h3 id="hosting-and-publishing">Hosting and Publishing</h3>
+
+<p>The server is on Glitch. Unfortunately a bug in Glitch prevented me from uploading the large HTML file. Instead I rename it and uploaded it to the assets folder as a plain text file.</p>
+
+<p>To get around this I made a small custom server. When a request for the page is made it downloads the file from the CDN and injects metadata for SEO and social media before serving it to the user. It is not an optimal solution but it worked in the limited time I had.</p>
+
+<p>Here is the link again if you want to play the game:
+<a href="https://ada-game-engine.glitch.me"><strong>I wake up with Anxiety</strong>
+<em>Test Game Engine for integrating A-Frame with Twinery. Guide the character around to answer the door.</em>ada-game-engine.glitch.me</a></p>
+
+<p><img src="https://cdn-images-1.medium.com/max/2014/1*6Rhn4wF_iTnWo-bM-ftORA.png" alt="For Social Media Preview" /><em>For Social Media Preview</em></p>

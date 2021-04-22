@@ -1,0 +1,117 @@
+<h1 id="using-node-modules-in-deno">Using node modules in Deno</h1>
+
+<p>Using node modules in Deno</p>
+
+<h3 id="a-bad-practice-but-sometimes-there-is-no-alternative">A bad practice but sometimes there is no alternative.</h3>
+
+<p><a href="https://medium.com/samsung-internet-dev/hello-deno-ed1f8961be26">Last time we introduced about Deno</a> and discussed how it compares to node, like node, <a href="https://deno.land/">Deno</a> is a server side code-execution environment based on web technology.</p>
+
+<ul>
+  <li>
+    <p>Node uses JavaScript with commonjs modules and npm/yarn as it’s package manager.</p>
+  </li>
+  <li>
+    <p>Deno uses Typescript or JavaScript with modern javascript import statements. It does not need a package manager.</p>
+  </li>
+</ul>
+
+<p>To import a module as usual in deno you reference it by URL:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">serve</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">https://deno.land/std/http/server.ts</span><span class="dl">"</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>You can find many of the modules you may need in the <a href="https://deno.land/std">Deno standard library</a> or in the <a href="https://deno.land/x">Deno third party modules list</a> but they don’t have everything.</p>
+
+<p>Sometimes you need to use a module which the maintainers have only made available through the npm ecosystem. Here are some methods from most convenient to least:</p>
+
+<h3 id="1-if-the-module-already-uses-es-modules-importexport-syntax">1. If the module already uses ES modules import/export syntax.</h3>
+
+<p>The libraries you use from deno don’t have to come from the recommended Deno packages they can come from any URL, provided they use the modern import syntax. Using unpkg is a great way to access these files directly from inside an npm repo.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="k">import</span> <span class="nx">throttle</span> <span class="k">from</span> <span class="p">[</span><span class="nx">https</span><span class="p">:</span><span class="c1">//unpkg.com/lodash@4.17.19/throttle.js](https://unpkg.com/lodash@4.17.19/throttle.js)</span>
+</code></pre></div></div>
+
+<h3 id="2-if-the-module-itself-doesnt-use-imports-but-the-source-code-does">2. If the module itself doesn’t use imports but the source code does</h3>
+
+<p>If the module is compiled or in the wrong format though npm you may still have some luck if you take a look at the source code. Many popular libraries have moved away from using commonjs in their source code to the standards compliant es module import syntax.</p>
+
+<p>Some packages have a separate src/ and dist/ directory where the esmodule style code is in src/ which isn’t included in the package available through npm. In that case you can import from the source directly.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="k">import</span> <span class="nx">throttle</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">https://raw.githubusercontent.com/lodash/lodash/master/throttle.js</span><span class="dl">"</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>I got this URL by clicking on the “raw” button on github to get the raw JS file. It’s probably neater to use a <a href="https://raw.githack.com/">github cdn</a> or to see if the file is available through github pages, but this works.</p>
+
+<p>**NB: **Some libraries use esmodules with webpack, or a module loader which lets them import from node modules like this:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="o">**</span><span class="nx">Bad</span><span class="p">:</span><span class="o">**</span>
+
+<span class="k">import</span> <span class="p">{</span> <span class="nx">someFunction</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">modulename</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="k">import</span> <span class="p">{</span> <span class="nx">someOtherFunction</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">modulename/file.js</span><span class="dl">"</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>The standard for imports is that they need to start with ./ or be a URL to work</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="o">**</span><span class="nx">Good</span><span class="p">:</span><span class="o">**</span>
+
+<span class="k">import</span> <span class="p">{</span> <span class="nx">someOtherFunction</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">./folder/file.js</span><span class="dl">"</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>In that situation try the next method:</p>
+
+<h3 id="3-importing-commonjs-modules">3. Importing commonjs modules</h3>
+
+<p>Fortunately there is a service called <a href="https://jspm.org/">JSPM</a> which will resolve the 3rd party modules and compile the commonjs modules to work as esmodule imports. This tool is for using node modules in the browser without a build step. But we can use it here too.</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/2000/1*o58qtVB981PVm9XV67ZTJg.png" alt="The JSPM logo" /><em>The JSPM logo</em></p>
+
+<p>In my most recent project i wanted to do push notifications, which involves generating the credentials for VAPID, there is a deno crypto library which can do encryption but doing the full procedure is difficult and I’d rather use the popular <a href="https://www.npmjs.com/package/web-push">web-push</a> library. I can import it using the JSPM CDN using the URL like below:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="k">import</span> <span class="nx">webPush</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">https://dev.jspm.io/web-push</span><span class="dl">"</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>I can now use it like any other module in deno.</p>
+
+<p>This almost worked 100% some of the bits which relied on specific node behaviors such as making network requests failed in this situation I had to work around this to use the standardised fetch API deno uses.</p>
+
+<h3 id="getting-typescript-types-working">Getting Typescript types working</h3>
+
+<p>One nice feature of typescipt, which deno uses, is that it provides really good autocomplete for modules. The deno extension for my editor even can autocomplete for third part modules if it knows the type definitions.</p>
+
+<p>This isn’t essential to getting the code to work but can provide huge benefits for helping you maintain your code.</p>
+
+<p>When I was importing another module called <a href="https://www.npmjs.com/package/fast-xml-parser">fast-xml-parser</a> when I was looking through the source code I noticed it had a type definitions file which is a file which ends in .d.ts . These files describe the various interfaces and even work for even for JavaScript .js files. You can sometimes also find the type definitions files in the @types\somemodule repo.
+<a href="https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types"><strong>DefinitelyTyped/DefinitelyTyped</strong>
+<em>The repository for high quality TypeScript type definitions. - DefinitelyTyped/DefinitelyTyped</em>github.com</a></p>
+
+<p>Using this file typescript can auto complete on things imported from JavaScript files. Even for files imported using JSPM:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="c1">// Import the fast-xml-parser library</span>
+<span class="k">import</span> <span class="nx">fastXMLParser</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">https://dev.jspm.io/fast-xml-parser</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="c1">// Import the type definition file from the source code of fast-xml-parser</span>
+<span class="k">import</span> <span class="o">*</span> <span class="k">as</span> <span class="nx">FastXMLParser</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">https://raw.githubusercontent.com/NaturalIntelligence/fast-xml-parser/master/src/parser.d.ts</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="o">*</span><span class="c1">// Use the parser with the types</span>
+<span class="kd">const</span><span class="o">*</span> <span class="nx">parser</span> <span class="o">=</span> <span class="nx">fastXMLParser</span> <span class="k">as</span> <span class="k">typeof</span> <span class="nx">FastXMLParser</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>I import the type definitions from the definition files as FastXMLParser (note the uppercase F) this doesn’t contain any working code but is an object which has the same type as the code we want to import.</p>
+
+<p>I import the code from JSPM as fastXMLParser (lowercase f) which is the working code but has no types.</p>
+
+<p>Next I combine them together to make parser which is fastXMLParser with the type of FastXMLParser .</p>
+
+<p>Thank you for reading, I hope you give <a href="https://deno.land">deno</a> a go. The ability to use any module made for the web and even some which were made for node/npm really gives this new server side library ecosystem a good foundation to get started from. 🦕</p>
+
+<p>By Ada Rose Cannon on August 3, 2020.</p>
+
+<p><a href="https://medium.com/samsung-internet-dev/using-node-modules-in-deno-2885600ed7a9">Canonical link</a></p>

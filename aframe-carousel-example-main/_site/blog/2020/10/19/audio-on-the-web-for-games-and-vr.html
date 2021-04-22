@@ -1,0 +1,237 @@
+<h1 id="audio-on-the-web-for-games-and-vr">Audio on the Web, for Games and VR!</h1>
+
+<p>Audio on the Web, for Games and VR!</p>
+
+<h3 id="tips-tricks-and-getting-started">Tips, tricks and getting started.</h3>
+
+<p>Audio is a fundamental way of adding important theming and immersion to games and virtual reality experiences on the Web. It’s not too hard to add but can do wonders for giving the user a wonderful experience. Resources like <a href="https://freesound.org/browse/">Freesound</a> make it easier to find Creative Commons sound effects and music so there is no excuse to leave your experience silent.</p>
+
+<p>I recently created a <a href="https://ada.is/xrgarden">relaxing VR experience</a> which made use of 3D spatial audio for it’s procedurally generated music. This article covers some of the things I learned when building the audio aspects of that experience.
+<a href="https://ada.is/xrgarden"><strong>XR Koi Garden</strong>
+<em>A beautiful VR garden with peaceful music. Listen with headphones for the full effect.</em>ada.is</a></p>
+
+<p>The most fundamental way to play audio on the Web is the HTML <audio> element. This has some fantastic benefits such as being able to play audio as it streams in. So if you have a long background music track or ambient sound loop then this is perfect for you.</audio></p>
+<blockquote>
+  <h1 id="tip-1-dont-use-mp3-for-looping-audio">Tip 1. Don’t use MP3 for Looping Audio</h1>
+</blockquote>
+
+<p>This is the HTML code for playing some looping background sound:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="o">&lt;</span><span class="nx">audio</span> <span class="nx">loop</span> <span class="nx">preload</span> <span class="nx">id</span><span class="o">=</span><span class="dl">"</span><span class="s2">bgsound</span><span class="dl">"</span><span class="o">&gt;</span>
+   <span class="o">&lt;</span><span class="nx">source</span> <span class="nx">src</span><span class="o">=</span><span class="dl">"</span><span class="s2">assets/ambient/loop.ogg</span><span class="dl">"</span> <span class="nx">type</span><span class="o">=</span><span class="dl">"</span><span class="s2">audio/ogg</span><span class="dl">"</span> <span class="o">/&gt;</span>
+   <span class="o">&lt;</span><span class="nx">source</span> <span class="nx">src</span><span class="o">=</span><span class="dl">"</span><span class="s2">assets/ambient/loop.mp3</span><span class="dl">"</span> <span class="nx">type</span><span class="o">=</span><span class="dl">"</span><span class="s2">audio/mpeg</span><span class="dl">"</span> <span class="o">/&gt;</span>
+<span class="o">&lt;</span><span class="sr">/audio</span><span class="err">&gt;
+</span></code></pre></div></div>
+
+<p>Note that the audio element can accept multiple different sources much like the <picture> element. MP3 has pretty good compression and really wide support so why don’t we just use MP3?</picture></p>
+
+<p>MP3 shouldn’t be used for looping audio because the header information often gets misread as a few milliseconds of no sound. This is fine for an MP3 player where the silent parts aren’t recognisable as one song changes to another, but if you are looping some ambient noise then that few ms of no sound is extremely jarring to the listener.</p>
+
+<p>OGG format is really good too and does not have this issue but it isn’t supported on Apple devices. So we fall back to MP3 in that case. Which will give a worse effect but still be okay.</p>
+
+<p>The alternative of using WAV would also not have the muting issue but could be up to 10x larger!! Making it an unsuitable format for the web where quick starts are imperative.</p>
+<blockquote>
+  <h1 id="tip-2-dont-use-auto-playing-audio-have-the-user-turn-audio-on">Tip 2. Don’t use auto-playing audio; have the user turn audio on.</h1>
+</blockquote>
+
+<p>Don’t use auto playing audio, this may seem counter intuitive because if we are adding audio to a game we want to have audio on by default.</p>
+
+<p>From a user perspective people are pretty mixed about whether they want auto-playing audio at all:</p>
+
+<blockquote class="twitter-tweet" data-conversation="none" data-align="center" data-dnt="true"><p>&#x200A;&#x2014;&#x200A;<a href="https://twitter.com/ThisIsJoFrank/status/1315602837599068160">@ThisIsJoFrank</a></p></blockquote>
+
+<p>On top of that some browsers such as Chrome will prevent audio from autoplaying at all until a user event triggers the audio playing. The best way to work with browsers which block autoplaying audio is to have an audio toggle switch which can be built using HTML, CSS and a little JavaScript:</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/2000/1*8U1wq3VFKBHVBAdSGTifmg.png" alt="Toggle Button" /><em>Toggle Button</em></p>
+
+<p>The HTML is a checkbox and a label:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="o">&lt;</span><span class="nx">input</span> <span class="nx">type</span><span class="o">=</span><span class="dl">"</span><span class="s2">checkbox</span><span class="dl">"</span> <span class="nx">id</span><span class="o">=</span><span class="dl">"</span><span class="s2">canaudio</span><span class="dl">"</span> <span class="o">/&gt;</span>
+
+<span class="o">&lt;</span><span class="nx">label</span> <span class="k">for</span><span class="o">=</span><span class="dl">"</span><span class="s2">canaudio</span><span class="dl">"</span><span class="o">&gt;</span><span class="nx">Toggle</span> <span class="nx">Audio</span><span class="o">&lt;</span><span class="sr">/label</span><span class="err">&gt;
+</span></code></pre></div></div>
+
+<p>CSS can be used to hide the label text but show an audio muted symbol if the sound is disabled and a speaker symbol if it’s playing audio.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="err">#</span><span class="nx">canaudio</span> <span class="p">{</span>
+  <span class="nl">opacity</span><span class="p">:</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="nl">position</span><span class="p">:</span> <span class="nx">absolute</span><span class="p">;</span>
+  <span class="nl">top</span><span class="p">:</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="nl">left</span><span class="p">:</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="nl">width</span><span class="p">:</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="nl">height</span><span class="p">:</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="nx">pointer</span><span class="o">-</span><span class="nx">events</span><span class="p">:</span> <span class="nx">none</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nx">label</span><span class="p">[</span><span class="k">for</span><span class="o">=</span><span class="dl">"</span><span class="s2">canaudio</span><span class="dl">"</span><span class="p">]</span> <span class="p">{</span>
+  <span class="nl">position</span><span class="p">:</span> <span class="nx">fixed</span><span class="p">;</span>
+  <span class="nl">bottom</span><span class="p">:</span> <span class="mf">1.5</span><span class="nx">rem</span><span class="p">;</span>
+  <span class="nl">right</span><span class="p">:</span> <span class="mf">1.5</span><span class="nx">rem</span><span class="p">;</span>
+  <span class="nl">background</span><span class="p">:</span> <span class="err">#</span><span class="mi">0004</span><span class="p">;</span>
+  <span class="nl">padding</span><span class="p">:</span> <span class="mf">1.5</span><span class="nx">rem</span><span class="p">;</span>
+  <span class="nx">border</span><span class="o">-</span><span class="nx">radius</span><span class="p">:</span> <span class="mi">50</span><span class="o">%</span><span class="p">;</span>
+  <span class="nl">border</span><span class="p">:</span> <span class="mi">2</span><span class="nx">px</span> <span class="nx">solid</span> <span class="nx">transparent</span><span class="p">;</span>
+  <span class="nl">width</span><span class="p">:</span> <span class="mi">3</span><span class="nx">rem</span><span class="p">;</span>
+  <span class="nl">height</span><span class="p">:</span> <span class="mi">3</span><span class="nx">rem</span><span class="p">;</span>
+  <span class="nx">text</span><span class="o">-</span><span class="nx">align</span><span class="p">:</span> <span class="nx">center</span><span class="p">;</span>
+  <span class="nx">font</span><span class="o">-</span><span class="nx">size</span><span class="p">:</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="nx">white</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="err">#</span><span class="nx">canaudio</span><span class="p">:</span><span class="nx">focus</span> <span class="o">+</span> <span class="nx">label</span><span class="p">[</span><span class="k">for</span><span class="o">=</span><span class="dl">"</span><span class="s2">canaudio</span><span class="dl">"</span><span class="p">]</span> <span class="p">{</span>
+  <span class="nl">border</span><span class="p">:</span> <span class="mi">2</span><span class="nx">px</span> <span class="nx">solid</span> <span class="nx">white</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nx">label</span><span class="p">[</span><span class="k">for</span><span class="o">=</span><span class="dl">"</span><span class="s2">canaudio</span><span class="dl">"</span><span class="p">]::</span><span class="nx">before</span> <span class="p">{</span>
+  <span class="nl">content</span><span class="p">:</span> <span class="dl">"</span><span class="s2">🔇</span><span class="se">\</span><span class="s2">FE0E</span><span class="dl">"</span><span class="p">;</span>
+  <span class="nx">font</span><span class="o">-</span><span class="nx">size</span><span class="p">:</span> <span class="mi">3</span><span class="nx">rem</span><span class="p">;</span>
+  <span class="nx">line</span><span class="o">-</span><span class="nx">height</span><span class="p">:</span> <span class="mi">3</span><span class="nx">rem</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="err">#</span><span class="nx">canaudio</span><span class="p">:</span><span class="nx">checked</span> <span class="o">+</span> <span class="nx">label</span><span class="p">[</span><span class="k">for</span><span class="o">=</span><span class="dl">"</span><span class="s2">canaudio</span><span class="dl">"</span><span class="p">]::</span><span class="nx">before</span> <span class="p">{</span>
+  <span class="nl">content</span><span class="p">:</span> <span class="dl">"</span><span class="s2">🔊</span><span class="se">\</span><span class="s2">FE0E</span><span class="dl">"</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>We then listen for events on this checkbox to start the audio element playing:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="c1">// Ensure the #canaudio element is not checked as some browsers</span>
+<span class="c1">// Will remember it's state</span>
+<span class="nb">window</span><span class="p">.</span><span class="nx">canaudio</span><span class="p">.</span><span class="nx">checked</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+
+<span class="nb">window</span><span class="p">.</span><span class="nx">canaudio</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">'</span><span class="s1">change</span><span class="dl">'</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+ <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">checked</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nb">window</span><span class="p">.</span><span class="nx">bgsound</span><span class="p">.</span><span class="nx">play</span><span class="p">();</span>
+
+  <span class="c1">// initialise the spatial audio</span>
+  <span class="nx">audioInit</span><span class="p">();</span>
+
+<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+  <span class="nb">window</span><span class="p">.</span><span class="nx">bgsound</span><span class="p">.</span><span class="nx">pause</span><span class="p">();</span>
+ <span class="p">}</span>
+<span class="p">});</span>
+</code></pre></div></div>
+<blockquote>
+  <h1 id="tip-3-spatial-audio-in-the-web-isnt-as-hard-to-add-as-youd-expect">Tip 3. Spatial Audio in the Web isn’t as hard to add as you’d expect</h1>
+</blockquote>
+
+<p>The web has had support for 3D audio via the <a href="https://developer.mozilla.org/en-US/docs/Web/API/PannerNode">WebAudio PannerNode</a> for a long time and it is possible to play your sound clips through the Web Audio API and the panner node for positional audio.</p>
+
+<p>This works very well but may not be up to the expectation of game developers or audiophiles but a library by Google called <a href="https://resonance-audio.github.io/resonance-audio/develop/web/getting-started.html">Resonance Audio</a> makes high quality spatial sound available in a neat API.</p>
+
+<p>That is what I worked with for my recent VR experience <a href="https://ada.is/xrgarden">XRGarden</a>. It would play piano notes at random points on the waters surface with an accompanying ripple effect.</p>
+
+<p>The first step is adding the resonance library script:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="dl">"</span><span class="s2">https://cdn.jsdelivr.net/npm/resonance-audio/build/resonance-audio.min.js</span><span class="dl">"</span><span class="o">&gt;&lt;</span><span class="sr">/script</span><span class="err">&gt;
+</span></code></pre></div></div>
+
+<p>The next step is creating an audio context for it to play from, because Chrome does not allow audio contexts to be created without audio being allowed we have to wait for some kind of mouse event, we will use the unmuting button to trigger this:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="o">*</span><span class="kd">let</span><span class="o">*</span> <span class="nx">hasInit</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">audioInit</span><span class="p">()</span> <span class="p">{</span>
+
+  <span class="k">if</span> <span class="p">(</span><span class="nx">hasInit</span><span class="p">)</span> <span class="k">return</span><span class="p">;</span>
+  <span class="nx">hasInit</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+
+  <span class="c1">// Create an AudioContext</span>
+  <span class="kd">const</span> <span class="nx">audioContext</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AudioContext</span><span class="p">();</span>
+  <span class="kd">const</span> <span class="nx">resonanceAudioScene</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ResonanceAudio</span><span class="p">(</span><span class="nx">audioContext</span><span class="p">);</span>
+  <span class="nx">resonanceAudioScene</span><span class="p">.</span><span class="nx">output</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="nx">audioContext</span><span class="p">.</span><span class="nx">destination</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>If your game or experience is inside a room you can <a href="https://resonance-audio.github.io/resonance-audio/develop/web/getting-started.html#add-a-room-to-the-scene">set the size of the room </a>and the material of the walls/floor/ceiling to get accurate reverberations from each surface. You can get the full list of available materials here: <a href="https://resonance-audio.github.io/resonance-audio/reference/web/Utils.html#.ROOM_MATERIAL_COEFFICIENTS">https://resonance-audio.github.io/resonance-audio/reference/web/Utils.html#.ROOM_MATERIAL_COEFFICIENTS</a></p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="kd">const</span> <span class="nx">roomDimensions</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">width</span><span class="p">:</span> <span class="mf">3.1</span><span class="p">,</span>
+  <span class="na">height</span><span class="p">:</span> <span class="mf">2.5</span><span class="p">,</span>
+  <span class="na">depth</span><span class="p">:</span> <span class="mf">3.4</span><span class="p">,</span>
+<span class="p">};</span>
+
+<span class="kd">const</span> <span class="nx">roomMaterials</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">left</span><span class="p">:</span> <span class="dl">'</span><span class="s1">brick-bare</span><span class="dl">'</span><span class="p">,</span>
+  <span class="na">right</span><span class="p">:</span> <span class="dl">'</span><span class="s1">curtain-heavy</span><span class="dl">'</span><span class="p">,</span>
+  <span class="na">front</span><span class="p">:</span> <span class="dl">'</span><span class="s1">marble</span><span class="dl">'</span><span class="p">,</span>
+  <span class="na">back</span><span class="p">:</span> <span class="dl">'</span><span class="s1">glass-thin</span><span class="dl">'</span><span class="p">,</span>
+
+  <span class="c1">// Room floor</span>
+  <span class="na">down</span><span class="p">:</span> <span class="dl">'</span><span class="s1">grass</span><span class="dl">'</span><span class="p">,</span>
+
+  <span class="c1">// Room ceiling</span>
+  <span class="na">up</span><span class="p">:</span> <span class="dl">'</span><span class="s1">transparent</span><span class="dl">'</span><span class="p">,</span>
+<span class="p">};</span>
+
+<span class="nx">resonanceAudioScene</span><span class="p">.</span><span class="nx">setRoomProperties</span><span class="p">(</span><span class="nx">roomDimensions</span><span class="p">,</span> <span class="nx">roomMaterials</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>You’ll also want to sync up the listener position to the camera position so that the sounds are coming from the correct place according to the user’s point of view.</p>
+
+<p>This code example is for the popular WebGL library <a href="https://threejs.org/">THREE.js</a>, we work out the direction the camera is looking and the up direction of the camera and use that to set the listenerOrientation, then we set the listenerPosition from the camera position.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="kd">const</span> <span class="nx">tempForwardVector</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Vector3</span><span class="p">();</span>
+<span class="kd">const</span> <span class="nx">tempUpVector</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Vector3</span><span class="p">();</span>
+
+<span class="kd">function</span> <span class="nx">onRender</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">tempForwardVector</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">);</span>
+  <span class="nx">tempForwardVector</span><span class="p">.</span><span class="nx">applyQuaternion</span><span class="p">(</span><span class="nx">camera</span><span class="p">.</span><span class="nx">quaternion</span><span class="p">);</span>
+
+  <span class="nx">tempUpVector</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+  <span class="nx">tempUpVector</span><span class="p">.</span><span class="nx">applyQuaternion</span><span class="p">(</span><span class="nx">camera</span><span class="p">.</span><span class="nx">quaternion</span><span class="p">);</span>
+
+  <span class="nx">resonanceAudioScene</span><span class="p">.</span><span class="nx">setListenerOrientation</span><span class="p">(</span>
+    <span class="nx">tempForwardVector</span><span class="p">.</span><span class="nx">x</span><span class="p">,</span>
+    <span class="nx">tempForwardVector</span><span class="p">.</span><span class="nx">y</span><span class="p">,</span>
+    <span class="nx">tempForwardVector</span><span class="p">.</span><span class="nx">z</span><span class="p">,</span>
+    <span class="nx">tempUpVector</span><span class="p">.</span><span class="nx">x</span><span class="p">,</span>
+    <span class="nx">tempUpVector</span><span class="p">.</span><span class="nx">y</span><span class="p">,</span>
+    <span class="nx">tempUpVector</span><span class="p">.</span><span class="nx">z</span>
+  <span class="p">);</span>
+
+  <span class="nx">resonanceAudioScene</span><span class="p">.</span><span class="nx">setListenerPosition</span><span class="p">(</span>
+    <span class="nx">camera</span><span class="p">.</span><span class="nx">position</span><span class="p">.</span><span class="nx">x</span><span class="p">,</span>
+    <span class="nx">camera</span><span class="p">.</span><span class="nx">position</span><span class="p">.</span><span class="nx">y</span><span class="p">,</span>
+    <span class="nx">camera</span><span class="p">.</span><span class="nx">position</span><span class="p">.</span><span class="nx">z</span>
+  <span class="p">);</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>This needs to be called every time a frame is rendered to keep the listener position and orientation synced to the camera position.</p>
+
+<p>To play a sound from a position you first need to load it:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="kd">const</span> <span class="nx">audioElement</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="dl">"</span><span class="s2">audio</span><span class="dl">"</span><span class="p">);</span>
+<span class="nx">audioElement</span><span class="p">.</span><span class="nx">src</span> <span class="o">=</span> <span class="nx">filename</span><span class="p">;</span>
+<span class="kd">const</span> <span class="nx">audioElementSource</span> <span class="o">=</span> <span class="nx">audioContext</span><span class="p">.</span><span class="nx">createMediaElementSource</span><span class="p">(</span>
+   <span class="nx">audioElement</span>
+<span class="p">);</span>
+<span class="kd">const</span> <span class="nx">source</span> <span class="o">=</span> <span class="nx">resonanceAudioScene</span><span class="p">.</span><span class="nx">createSource</span><span class="p">();</span>
+<span class="nx">audioElementSource</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="nx">source</span><span class="p">.</span><span class="nx">input</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>Then when you are ready to play it you can set the position and play it:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="nx">source</span><span class="p">.</span><span class="nx">setPosition</span><span class="p">(</span><span class="nx">position</span><span class="p">.</span><span class="nx">x</span><span class="p">,</span> <span class="nx">position</span><span class="p">.</span><span class="nx">y</span><span class="p">,</span> <span class="nx">position</span><span class="p">.</span><span class="nx">z</span><span class="p">);</span>
+<span class="nx">audioElement</span><span class="p">.</span><span class="nx">play</span><span class="p">();</span>
+</code></pre></div></div>
+
+<p>Here is the code I used in my demo for handling the positional audio, for my purposes I made a little class to handle the play back for all the different notes which kept the code pretty neat:
+<a href="https://github.com/AdaRoseCannon/xrgarden/blob/master/src/lib/audio.js"><strong>AdaRoseCannon/xrgarden</strong>
+<em>Contribute to AdaRoseCannon/xrgarden development by creating an account on GitHub.</em>github.com</a></p>
+
+<p>I hope this helps you make engaging web experiences with audio. For my VR scene I used both general background audio and positional audio. An alternative would’ve been to have all of my ambient sounds positioned spatially too. I could put birds in sky and insects flying around at head level and splashing of water from below the user which would be a great way to improve the experience.</p>
+
+<p>By Ada Rose Cannon on October 19, 2020.</p>
+
+<p><a href="https://medium.com/samsung-internet-dev/audio-on-the-web-for-games-and-vr-efcd523a3d58">Canonical link</a></p>

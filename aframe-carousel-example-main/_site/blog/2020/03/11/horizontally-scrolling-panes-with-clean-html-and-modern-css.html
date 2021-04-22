@@ -1,0 +1,126 @@
+<h1 id="horizontally-scrolling-panes-with-clean-html-and-modern-css">Horizontally Scrolling Panes with clean HTML and modern CSS</h1>
+
+<p>This used to be a really hard problem, new CSS tools make it simpler. Here’s how it works…</p>
+
+<p>Isn’t it nice when the tools you work with get better and better when you’re not looking? That’s what it feels like working in the Web some days.</p>
+
+<p>Many years ago when I was still a front-end engineer on real products, I helped maintain a very popular newspaper site. It was one of the very early Web Apps designed to be responsive and touch first.</p>
+
+<p>Since it was a newspaper the aesthetic had pages sat next to each other which could be swiped between with a flick of a finger.</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/3184/1*3UnXFGsneIrFLRplgsD45g.png" alt="3 Pages laid out horizontally" /><em>3 Pages laid out horizontally</em></p>
+
+<p>To implement this was a huge hack involving significant amounts of JavaScript and some really awkward HTML. It was flaky and sometimes suffered from poor performance, since we had to constantly track user input.</p>
+
+<p>I tried remaking it for a project today and I was able to build the whole thing with only CSS!</p>
+
+<p>Here’s how… <em>(Demo at the bottom, <a href="https://pink-paper.glitch.me">direct link</a>)</em></p>
+
+<h3 id="step-1">Step 1</h3>
+
+<p>The markup.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;body&gt;
+  &lt;header&gt;
+    &lt;h1&gt;The Pink Paper&lt;/h1&gt;&lt;h2&gt;It's Salmon Actually&lt;/h2&gt;
+  &lt;/header&gt;
+  &lt;nav&gt;&lt;ul&gt;
+    &lt;li&gt;&lt;a href="#article1"&gt;Article 1&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="#article2"&gt;Article 2&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="#article3"&gt;Article 3&lt;/a&gt;&lt;/li&gt;
+  &lt;/ul&gt;&lt;/nav&gt;
+  &lt;main&gt;
+    &lt;article id="article1"&gt;Some content&lt;/article&gt;
+    &lt;article id="article2"&gt;Some content&lt;/article&gt;
+    &lt;article id="article3"&gt;Some content&lt;/article&gt;
+  &lt;/main&gt;
+&lt;/body&gt;
+</code></pre></div></div>
+
+<p>We have 3 &lt;article&gt; which will contain our content.</p>
+
+<p>We have a &lt;nav&gt; with 3 links, deep linking to the content we don’t want to break this behavior since it is useful for people who can’t scroll in two dimensions such as people using a mouse.</p>
+
+<h3 id="step-2">Step 2</h3>
+
+<p>Layout the <articles> horizontally.</articles></p>
+
+<p>We will use <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Grid_Layout">CSS Grid</a> to do that we will create a grid with the following properties.</p>
+
+<ul>
+  <li>
+    <p>New elements make new columns</p>
+  </li>
+  <li>
+    <p>Each column is the width of the available space</p>
+  </li>
+  <li>
+    <p>Each column fills the remaining height of the page</p>
+  </li>
+</ul>
+
+<p>We will set the width and the height of the body and the html elements so that they fill viewport.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>html,body {
+  *width*: 100%*;
+  height*: 100%;
+  *margin*: 0;
+}
+</code></pre></div></div>
+
+<p>Then we will layout our header our nav and our main using CSS Grid on the body</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>body {
+  *display*: grid;
+  *grid-template-columns*: 1fr;
+  *grid-template-rows*: min-content min-content 1fr;
+}
+</code></pre></div></div>
+
+<p>This makes the header and nav as small as possible ( min-content ) and gives the rest of the space to the main .</p>
+
+<p>Now for the &lt;article&gt; elements. We will make another Grid on &lt;main&gt; to say they should all be laid out side by side each one taking up 100% of the width of the parent.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>main {
+*  display*: grid;
+  *grid-template-rows*: 1fr;
+  *grid-auto-flow*: column;
+  *grid-auto-columns*: 100%;
+}
+</code></pre></div></div>
+
+<p>We tell main to display with grid as before, we will set the the rows to take up all available space but we won’t set the number of columns since we could have any number of children. Instead we use grid-auto-flow: column; to tell it to add new columns when ever a new one has to be added and grid-auto-columns: 100%; to tell it that each new added column is 100% of the parent’s width.</p>
+
+<p>Finally we will make it scroll by adding overflow-x: scroll; so that a scroll bar will always be present on that element and to allow it to scroll horizontally.</p>
+
+<h3 id="step-3">Step 3</h3>
+
+<p>This is okay but not really usable. We want to be able to scroll just the main element and to have the panes snap into place as the user scrolls. Thank fully there is a CSS API for this: <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Scroll_Snap">CSS Scroll Snap</a> which has really good support across browsers.</p>
+
+<p>To use it we configure the parent’s scroll-snap-type and add snap points to it’s descendants using scroll-snap-align .</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>main {
+  ...
+
+  overflow-x: scroll;
+  scroll-snap-type: x mandatory;
+}
+
+main &gt; article {
+  scroll-snap-align: start;
+}
+</code></pre></div></div>
+
+<p>We’ve made it scroll in the x direction, and it will snap into place.</p>
+
+<p>This is almost ready, the deep links in the &lt;nav&gt; still work but the instantaneous jumping to the pages is a poor user experience, to fix that we will add scroll-behavior: smooth; so that when we click on the links we get a smooth scroll to the page. This has no effect when the user is dragging with a finger or using a scroll wheel.</p>
+
+<h3 id="final-demo">Final Demo</h3>
+
+<p>Try opening <a href="https://pink-paper.glitch.me">https://pink-paper.glitch.me</a> in a mobile phone browser to try it with touch.</p>
+
+<iframe src="https://cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fglitch.com%2Fembed%2F%23%21%2Fembed%2Fpink-paper%3FpreviewSize%3D100%26attributionHidden%3Dfalse%26sidebarCollapsed%3Dfalse%26path%3Dindex.html%26previewFirst%3Dfalse&amp;dntp=1&amp;display_name=Glitch&amp;url=https%3A%2F%2Fglitch.com%2Fembed%2F%23%21%2Fembed%2Fpink-paper&amp;image=https%3A%2F%2Fglitch.com%2Fedit%2Fimages%2Flogos%2Fglitch%2Fsocial-card%402x.png&amp;key=a19fcc184b9711e1b4764040d3dc5c07&amp;type=text%2Fhtml&amp;schema=glitch" allowfullscreen="" frameborder="0" scrolling="no"></iframe>
+
+<p>By Ada Rose Cannon on March 11, 2020.</p>
+
+<p><a href="https://medium.com/samsung-internet-dev/horizontally-scrolling-panes-with-clean-html-and-modern-css-7372596932c7">Canonical link</a></p>

@@ -1,0 +1,111 @@
+<p>For my <a href="/blog/2015/04/26/slides/">talk at the Extensible Web Summit</a> I had limiited time because I had put off working on it until the last minute. I also wanted to run and pause javascript in the slides and because of these constraints, I figured it would be quicker to roll my own solution than to use a pre-existing presentation framework such as <a href="https://slid.es">slid.es</a>.</p>
+
+<p>End result: <a href="https://www.1am.club/~ada/ews-slides/">https://www.1am.club/~ada/ews-slides/</a>; it has some issues, but for this situation the slides only needed to work in Chrome.</p>
+
+<h1 id="setup">Setup</h1>
+
+<p>I started off with a custom <a href="http://yeoman.io/">yeoman</a> template I’d made based upon the <a href="https://github.com/yeoman/generator-gulp-webapp">gulp webapp generator</a>. It adds es6 transpiling with traceur and browserify (through traceurify). This boilerplate setup allows me to very quickly prototype webapps with es6 and scss.</p>
+
+<p>I did use JQuery 😞 because I was very short on time and it allowed me to cut corners in writing the code.</p>
+
+<p>The slides are hosted on 1am.club which is a tilde club-like static host.</p>
+
+<p>Currently only chrome and ff are supported and I’ll add iPad support next time I need to give a talk.</p>
+
+<h1 id="how-it-works">How it works</h1>
+
+<p>The slide hiding is handled purely through css transforms, which allows me to animate them in/out at 60fps easily.<br />
+This method unfortunately has issues on osx since compositing changes don’t seem to update on fullscreen on cloned secondary displays. E.g. on the projector at the conf!! 😞</p>
+
+<p>The slideshow code is handled over 3 very small (&lt;100loc) modules.</p>
+
+<ul>
+  <li><a href="https://github.com/AdaRoseCannon/ews-slides/blob/master/app/scripts/main.js"><code class="language-plaintext highlighter-rouge">main.js</code></a></li>
+  <li><a href="https://github.com/AdaRoseCannon/ews-slides/blob/master/app/scripts/lib/slides.js"><code class="language-plaintext highlighter-rouge">slides.js</code></a></li>
+  <li><a href="https://github.com/AdaRoseCannon/ews-slides/blob/master/app/scripts/lib/webrtc.js"><code class="language-plaintext highlighter-rouge">webrtc.js</code></a></li>
+</ul>
+
+<h2 id="mainjs">main.js</h2>
+
+<p><code class="language-plaintext highlighter-rouge">main.js</code> is the browserify entry point. It handles DOM manipulation and sets up listeners for keypress/clicks. I initially used <a href="http://hammerjs.github.io/">hammerjs</a> to allow for touch swiping on mobile devices, but this prevented me from scrolling the notes so I disabled it for this build.</p>
+
+<h2 id="slidesjs">slides.js</h2>
+
+<p><code class="language-plaintext highlighter-rouge">slides.js</code> is quite lovely (if I do say so myself)! Each slide has 3 functions– <code class="language-plaintext highlighter-rouge">setup: function ()</code>, <code class="language-plaintext highlighter-rouge">teardown: function ()</code> and <code class="language-plaintext highlighter-rouge">action: function *()</code> . If you have a keen eye you’ll notice the <code class="language-plaintext highlighter-rouge">*</code> which denotes the action function as a generator.</p>
+
+<p><code class="language-plaintext highlighter-rouge">setup</code> is run when the slide is first initiated (see <code class="language-plaintext highlighter-rouge">goToSlide()</code> in <code class="language-plaintext highlighter-rouge">main.js</code>). The action is the generator, which is then setup and run once to reach the first <code class="language-plaintext highlighter-rouge">yield</code> statement. When the user interacts with the page <code class="language-plaintext highlighter-rouge">.next()</code> is run and if it is <code class="language-plaintext highlighter-rouge">done</code> then it triggers progression to the next slide. (See <code class="language-plaintext highlighter-rouge">triggerEvent()</code> in <code class="language-plaintext highlighter-rouge">main.js</code>).</p>
+
+<p>This allows me to easily step through a large block of code so we can see the status of the DOM at each <code class="language-plaintext highlighter-rouge">yield</code>, allowing us to break down the animation code into steps.</p>
+
+<p>The downside of this is that to use the generators the traceur transpiler needs to add a runtime component, which is about 100kB, but for an entirely front loaded media heavy page such as a slideshow presentation this is not a big issue.</p>
+
+<h2 id="webrtcjs">webrtc.js</h2>
+
+<blockquote class="twitter-tweet" lang="en"><p>In my nightmares i will lose the webrtc connection to my notes/slide controller and everything will break.</p>&mdash; Ada Rose Cannon ♥ (@Lady_Ada_King) <a href="https://twitter.com/Lady_Ada_King/status/590190029277802497">April 20, 2015</a></blockquote>
+<script async="" src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+<p><code class="language-plaintext highlighter-rouge">webrtc.js</code> is the controller for recieving/sending commands to the client. To save time here we use the great <a href="http://peerjs.com/"><code class="language-plaintext highlighter-rouge">PeerJS</code></a>.</p>
+
+<p>If a client connects with a <code class="language-plaintext highlighter-rouge">location.hash</code> of <code class="language-plaintext highlighter-rouge">#controller</code> then they will become the master slideshow. They will be shown the slideshow notes regardless of the screen size.</p>
+
+<p>If that hash is not present or the master role is taken then they will fallback to being the client and will connect to the master slideshow via webRTC.</p>
+
+<p>When the master slideshow performs any action this action gets passed to all of the client slideshows. The client slideshows then fire the appropriate event, which then gets acted upon in <code class="language-plaintext highlighter-rouge">main.js</code>. This allows me to control every slideshow whilst I am giving my presentation from my smartphone whilst also getting having my notes to hand. It also allows me to demo my talk remotely without screen casting.</p>
+
+<blockquote class="twitter-tweet" lang="en"><p>Oh god! Web RTC disconnected and my notes broke, so did it from memory. Fortunately all of my demos worked!!!</p>&mdash; Ada Rose Cannon ♥ (@Lady_Ada_King) <a href="https://twitter.com/Lady_Ada_King/status/590199639128702977">April 20, 2015</a></blockquote>
+<script async="" src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+<p>https + cloudflare + peerjs provided some unexpected issues. I am hosting the presentation on https://1am.club, which is https only. This means that I need to run peer.js in secure mode so will need to host my own instance of the PeerJS server. Fortunately I already run PeerJS on 1am club, but it had been untested since I put cloudflare infront of the server to speed up connections and provide caching. Unfortunately PeerJS relies on websockets to connect to the signalling server and cloudflare, as of writing, cannot handle websockets for non-business customers. I tweaked my cloudflare setup to run <code class="language-plaintext highlighter-rouge">//www.1am.club</code> through cloudflare and <code class="language-plaintext highlighter-rouge">//1am.club</code> to go straight through to the aws server. I then set peerjs to connect straight to <code class="language-plaintext highlighter-rouge">1am.club</code>.</p>
+
+<h1 id="issues">Issues</h1>
+
+<p>On the morning of the presentation the presentation computer lost connection because it was put to sleep.  Also, since it was a lightning talk and I only had limited time, instead of faffing with refreshing the target computer over flaky wifi and hoping it would connect, I just gave the talk from memory, controlling the presentation from the presentation computer. This was not as flashy as controlling the presentation over webRTC, but if I wasn’t panicking I probably could have quickly restored the connection by refreshing the presentation. I should add automatic reconnection for next time.</p>
+
+<p>With fullscreen + mac + secondary monitor, it seems the compositing effects would not show up on the sencond monitor when fullscreen, which is odd. I do not have a mac so cannot debug this; any insight would be welcome. This lead to the slides not updating on the projector and to fix this we just took the browser out of fullscreen.</p>
+
+<h1 id="styling">Styling</h1>
+
+<p>For the general styling: the app is built using <a href="http://getbootstrap.com/">Bootstrap</a> and <a href="https://fezvrasta.github.io/bootstrap-material-design/">Bootstrap-Material-Design</a>. This is <em>extremely</em> wasteful since 90% of the provided styles and scripts will not be used at all.</p>
+
+<p>The material design elements were very useful for quickly assembling realistic looking demo webapps for the slides. I made 4 demos in 4 hours on the flight from the UK to San Francisco.</p>
+
+<p>The presentation has two main modes, if the device is the master controller or a mobile phone then then the notes are displayed and the slideshow is hidden. This allows me to have notes on my phone if I need them and the slideshow on the presentation medium which is quite neat.</p>
+
+<p>The slide transition animation: for a little bit of flair at no extra cost I use a custom transition function I designed using the <a href="http://matthewlein.com/ceaser/">Ceaser editor</a>. It has a small anticipation and elasticity.</p>
+
+<p>The slide transformations are quite nice too and pretty neat:</p>
+
+<div class="language-scss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">.slide</span> <span class="p">{</span>
+
+	<span class="c1">// By default all slides are off to the left</span>
+	<span class="nl">transition</span><span class="p">:</span> <span class="n">transform</span> <span class="m">1</span><span class="mi">.5s</span> <span class="nf">cubic-bezier</span><span class="p">(</span><span class="m">0</span><span class="mi">.030</span><span class="o">,</span> <span class="m">0</span><span class="mi">.200</span><span class="o">,</span> <span class="m">0</span><span class="mi">.360</span><span class="o">,</span> <span class="m">1</span><span class="mi">.210</span><span class="p">);</span>
+	<span class="nl">transform</span><span class="p">:</span> <span class="nf">translateX</span><span class="p">(</span><span class="m">-100%</span><span class="p">)</span> <span class="nf">translateZ</span><span class="p">(</span><span class="m">-50px</span><span class="p">)</span> <span class="nf">rotateY</span><span class="p">(</span><span class="m">-10deg</span><span class="p">);</span>
+
+	<span class="c1">// The active slide has no transform</span>
+	<span class="k">&amp;</span><span class="nc">.active</span> <span class="p">{</span>
+		<span class="nl">transform</span><span class="p">:</span> <span class="nf">translateX</span><span class="p">(</span><span class="m">0</span><span class="p">);</span>
+	<span class="p">}</span>
+
+	<span class="c1">// All of the slides after the active one are off to the right</span>
+	<span class="k">&amp;</span><span class="nc">.active</span><span class="o">~</span><span class="nc">.slide</span> <span class="p">{</span>
+		<span class="nl">transform</span><span class="p">:</span> <span class="nf">translateX</span><span class="p">(</span><span class="m">100%</span><span class="p">)</span> <span class="nf">translateZ</span><span class="p">(</span><span class="m">-50px</span><span class="p">)</span> <span class="nf">rotateY</span><span class="p">(</span><span class="m">10deg</span><span class="p">);</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>The small translateZ and rotateY give a really nice ‘album cover switcher’ effect. Even if many slides get skipped at once it still looks really nice.</p>
+
+<h1 id="to-do">To do</h1>
+
+<ul>
+  <li>Address issues listed above</li>
+  <li>Clean up and seperate sass so that the talk specific styles go in their own file.</li>
+  <li>Namespace the master controller’s PeerJS id to the talk name</li>
+  <li>Remove dependence on bootstrap and jquery</li>
+</ul>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>For a small, quick and dirty ‘Ada-Special’ solution to doing a presentation it worked really well–the tech is neat and it doesn’t need much cleaning up to be ready for a 1.0 release.</p>
+
+<p>Definitely a project to keep working on.</p>

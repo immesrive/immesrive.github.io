@@ -1,0 +1,174 @@
+<h1 id="making-a-useful-offline-page-for-your-web-app">Making a useful ‘offline’ page for your web app.</h1>
+
+<p>Making a useful ‘offline’ page for your web app.</p>
+
+<h3 id="we-cant-guarantee-our-users-have-a-good-internet-connection-but-we-can-still-be-helpful-when-they-dont">We can’t guarantee our users have a good internet connection but we can still be helpful when they don’t.</h3>
+
+<p>In ideal conditions the user will always maintain a good connection to the web but things are seldom ideal. Fortunately since we’re been building a web app we have a <a href="https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API">service worker</a> which has the capability of caching network responses.</p>
+
+<p>If the network fails or takes too long to respond we can then use these cached responses to show the user the page they were looking for, letting people continue to use the app despite not being connected. Unfortunately our cache isn’t always perfect. Sometimes the user will be trying to go to a page which hasn’t been cached yet.</p>
+
+<p>If we haven’t anticipated this we may see the dreaded no connection message:</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/2000/1*Y8lvzpBP9Sux4LR4AnQUEw.png" alt="" /></p>
+
+<p>Fortunately we are very smart developers [<a href="https://xkcd.com/285/">citation needed</a>] and can show a branded offline page. So the user still feels like they are using our web app when the connection is lost. here are some examples:</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/2000/1*5STmlrBSr_I2JBk1FU16cw.png" alt="" /></p>
+
+<p>These are great for maintaining a consistent user experience during network failures which is the expected behaviour of a native app.</p>
+
+<p>These pages can do even more though, they can be used to provide entertainment such as The Guardian’s developer blog <a href="https://www.theguardian.com/info/developer-blog/2015/nov/04/building-an-offline-page-for-theguardiancom">providing a crossword</a> on their offline page. Which unfortunately I can’t find a live version of any more.</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/2000/0*qhpLOzJQNz9uWsyk" alt="The Guardian’s crossword offline page." /><em>The Guardian’s crossword offline page.</em></p>
+
+<h3 id="a-useful-offline-page-for-almost-any-web-app">A useful offline page for almost any Web App</h3>
+
+<p>I’m going to propose, and build, a feature which should be useful to many apps and websites and would make your app still partly usable whilst your offline. This is to show a lit of relevant cached pages to the user:</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/2000/1*VymXa3fC_jpV6L5sj_sC-Q.png" alt="" /></p>
+
+<p>This example app is an RSS Feed reader. Where the user can read an RSS feed at a URL like so:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="o">/</span><span class="nx">feed</span><span class="o">/</span><span class="p">?</span><span class="nx">url</span><span class="o">=</span><span class="nx">https</span><span class="p">:</span><span class="c1">//ada.is/feed</span>
+</code></pre></div></div>
+
+<p>This app is rendered on the server so it returns all the information in the HTML page, these pages get cached by the <a href="https://medium.com/samsung-internet-dev/pwa-series-service-workers-the-basics-about-offline-a6e8f1d92dfd">service worker</a>. If your app uses JSON to populate pages on the client side this technique still works as long as you cache both the JSON responses and the pages which show them.</p>
+
+<p>This is a common pattern in many Web Apps and will work as long as you have pages cached.</p>
+
+<h3 id="step-1-be-prepared-by-pre-caching-the-offline-page">Step 1. Be prepared, by pre-caching the offline page</h3>
+
+<p>Firstly we need to store the offline page, when the app starts. To do this I had the HTML file /offline/ and it’s resources /offline.js cached as soon as the app starts, by populating the cache during the service worker’s install event.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="kd">const</span> <span class="nx">CACHE_NAME</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">DENORSS-v1.0.0</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="nb">self</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">"</span><span class="s2">install</span><span class="dl">"</span><span class="p">,</span> <span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+ <span class="nx">event</span><span class="p">.</span><span class="nx">waitUntil</span><span class="p">(</span>
+  <span class="nx">caches</span>
+   <span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="nx">CACHE_NAME</span><span class="p">)</span>
+   <span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">cache</span><span class="p">)</span> <span class="o">=&gt;</span>
+    <span class="nx">cache</span><span class="p">.</span><span class="nx">addAll</span><span class="p">([</span><span class="dl">"</span><span class="s2">/</span><span class="dl">"</span><span class="p">,</span> <span class="dl">"</span><span class="s2">/offline/</span><span class="dl">"</span><span class="p">,</span> <span class="dl">"</span><span class="s2">/offline.js</span><span class="dl">"</span><span class="p">])</span>
+   <span class="p">)</span>
+   <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nb">self</span><span class="p">.</span><span class="nx">skipWaiting</span><span class="p">())</span>
+ <span class="p">);</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<h3 id="step-2-show-the-offline-page">Step 2. Show the offline page</h3>
+
+<p>Then when the user tries to navigate to a page we do not have we can show that cached /offline/ page.</p>
+
+<p>Our existing code first tried to respond with a live page, if that failed it would try retrieving the page from cache, if that fails instead of just failing and showing the browser error message we instead respond with the offline page.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="c1">// Try showing the offline page if it's a navigation</span>
+<span class="k">if</span> <span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">request</span><span class="p">.</span><span class="nx">mode</span> <span class="o">===</span> <span class="dl">"</span><span class="s2">navigate</span><span class="dl">"</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">offlinePage</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">caches</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="dl">"</span><span class="s2">/offline/</span><span class="dl">"</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">offlinePage</span><span class="p">)</span> <span class="k">return</span> <span class="nx">offlinePage</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="step-3-getting-a-list-of-cached-pages">Step 3. Getting a list of cached pages</h3>
+
+<p>This now shows the offline page when there is no alternative. Now lets provide a list of cached pages the user might like to read instead. Like in the example below.</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/2000/1*VymXa3fC_jpV6L5sj_sC-Q.png" alt="" /></p>
+
+<p>The first step we need to do is to open the web apps caches to find pages we want to access:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="kd">const</span> <span class="nx">cacheKeys</span> <span class="o">=</span> <span class="k">await</span> <span class="nb">window</span><span class="p">.</span><span class="nx">caches</span><span class="p">.</span><span class="nx">keys</span><span class="p">();</span>
+<span class="kd">const</span> <span class="nx">caches</span> <span class="o">=</span> <span class="k">await</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">all</span><span class="p">(</span>
+ <span class="nx">cacheKeys</span><span class="p">.</span><span class="nx">map</span><span class="p">((</span><span class="nx">cacheName</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nb">window</span><span class="p">.</span><span class="nx">caches</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="nx">cacheName</span><span class="p">))</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<p>This gives us an array of caches.</p>
+
+<p>Next we want to find all of the cached pages from those caches, this works by using cache.matchAll with ignoreSearch: true to find all cache results from the /feed/ endpoint.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="kd">const</span> <span class="nx">results</span> <span class="o">=</span> <span class="k">await</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">all</span><span class="p">(</span>
+  <span class="nx">caches</span><span class="p">.</span><span class="nx">map</span><span class="p">((</span><span class="nx">cache</span><span class="p">)</span> <span class="o">=&gt;</span>
+   <span class="nx">cache</span><span class="p">.</span><span class="nx">matchAll</span><span class="p">(</span><span class="dl">"</span><span class="s2">/feed/</span><span class="dl">"</span><span class="p">,</span> <span class="p">{</span>
+    <span class="na">ignoreSearch</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+   <span class="p">})</span>
+  <span class="p">)</span>
+ <span class="p">);</span>
+</code></pre></div></div>
+
+<p>I only looked at the /feed/ end point because I felt that pages like /search/ with search results or the error pages like /404.html would not be useful to users and main pages like the home page / are already linked to in the navigation bar.</p>
+
+<p>Our results returns an array of arrays for the results from each cache. We will flatten this and then handle each cached response:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="nx">results</span><span class="p">.</span><span class="nx">flat</span><span class="p">().</span><span class="nx">forEach</span><span class="p">(</span><span class="k">async</span> <span class="p">(</span><span class="nx">response</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="c1">// Code goes here</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>We only want to get the useful pages to the users so we will look at the query parameters to find only the pages are interesting. For our example they are requesting an RSS feed via the url parameter.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="kd">const</span> <span class="nx">params</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">URLSearchParams</span><span class="p">(</span><span class="k">new</span> <span class="nx">URL</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">url</span><span class="p">).</span><span class="nx">search</span><span class="p">);</span>
+
+<span class="kd">const</span> <span class="nx">urlParam</span> <span class="o">=</span> <span class="nx">params</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="dl">'</span><span class="s1">url</span><span class="dl">'</span><span class="p">);</span>
+
+<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">urlParam</span><span class="p">)</span> <span class="k">return</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>If there is no url query parameter, it’s not interesting so we won’t show it.</p>
+
+<h3 id="step-4-rendering-the-list">Step 4. Rendering the list</h3>
+
+<p>We have the URLs of the pages now and the raw query parameters but that won’t look very good for users. We can get some better labels to show to users by looking at the cached content itself.</p>
+
+<p>To get the data out of the response we need to get the text of the response:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="kd">const</span> <span class="nx">dataAsString</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">response</span><span class="p">.</span><span class="nx">text</span><span class="p">();</span>
+</code></pre></div></div>
+
+<p>If your data is stored as JSON then a JSON.parse should be enough to retrieve any interesting information such as a good page title.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="kd">const</span> <span class="nx">data</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">dataAsString</span><span class="p">);</span>
+
+<span class="kd">const</span> <span class="nx">title</span> <span class="o">=</span> <span class="nx">data</span><span class="p">.</span><span class="nx">title</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>For our example website, since it is server side rendered it uses HTML so I will parse the HTML instead, fortunately web browsers are good at HTML parsing. We will turn our raw text into a document fragment which can be queried using the usual DOM methods.</p>
+
+<p>In this example we read the text in the <title> tag. Other good elements to query would be &lt;h1&gt; or &lt;h2&gt; to get the first header in the document.</title></p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="kd">const</span> <span class="nx">html</span> <span class="o">=</span> <span class="nb">document</span>
+  <span class="p">.</span><span class="nx">createRange</span><span class="p">()</span>
+  <span class="p">.</span><span class="nx">createContextualFragment</span><span class="p">(</span><span class="nx">dataAsString</span><span class="p">);</span>
+
+<span class="kd">const</span> <span class="nx">title</span> <span class="o">=</span> <span class="nx">html</span>
+ <span class="p">.</span><span class="nx">querySelector</span><span class="p">(</span><span class="dl">"</span><span class="s2">title</span><span class="dl">"</span><span class="p">)</span>
+ <span class="p">.</span><span class="nx">textContent</span><span class="p">.</span><span class="nx">trim</span><span class="p">();</span>
+</code></pre></div></div>
+
+<p>We use this title and the response URL to generate a link we can append to the list element to make a list of pages.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="nx">el</span><span class="p">.</span><span class="nx">insertAdjacentHTML</span><span class="p">(</span>
+  <span class="dl">"</span><span class="s2">beforeend</span><span class="dl">"</span><span class="p">,</span>
+  <span class="s2">`&lt;li&gt;&lt;a href="</span><span class="p">${</span><span class="nx">response</span><span class="p">.</span><span class="nx">url</span><span class="p">}</span><span class="s2">"&gt;</span><span class="p">${</span><span class="nx">title</span><span class="p">}</span><span class="s2">&lt;/a&gt;&lt;/li&gt;`</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<p>Here is a gif of it working, this was recorded with Chrome emulating an offline network connection:</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/2000/1*sskypZ1btwR2BKuTSmG5dA.gif" alt="" /></p>
+
+<p>Thanks for reading and hope this helps.</p>
+
+<p>By Ada Rose Cannon on July 27, 2020.</p>
+
+<p><a href="https://medium.com/samsung-internet-dev/making-a-useful-offline-page-for-your-web-app-f319423a2c29">Canonical link</a></p>

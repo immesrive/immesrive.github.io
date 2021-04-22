@@ -1,0 +1,47 @@
+<h1 id="using-webxr-in-html-iframes">Using WebXR in HTML IFrames</h1>
+
+<p>Using WebXR in HTML IFrames</p>
+
+<h3 id="its-really-useful-but-there-are-a-few-pitfalls-to-avoid">It’s really useful but there are a few pitfalls to avoid.</h3>
+
+<p>IFrames are really useful for WebXR. Often WebXR web pages are large with a lot of code and many 3D frameworks default to taking up all the available space on the page. IFrames solve these issues by letting you put all the XR code into another webpage, which can even be on a different domain, they also let you choose exactly how much space they take up on the page and can be used with Flexbox and CSS Grid.</p>
+
+<p>There are some very important things to be aware of before you can get it working though:</p>
+
+<ul>
+  <li>
+    <p>iFrame source needs to use <a href="https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts">secure context</a> (https://)</p>
+  </li>
+  <li>
+    <p>The parent page also needs to use secure context</p>
+  </li>
+  <li>
+    <p>The iframe needs to have allow=”xr-spatial-tracking” as a property</p>
+  </li>
+</ul>
+
+<p>Example code:</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;iframe</span> <span class="na">src=</span><span class="s">"[https://ada.is/DSC-WOW-Demo/](https://ada.is/DSC-WOW-Demo/)"</span> <span class="na">name=</span><span class="s">"iframe"</span> <span class="na">frameborder=</span><span class="s">"0"</span> <span class="na">allow=</span><span class="s">"xr-spatial-tracking"</span> <span class="na">allowfullscreen=</span><span class="s">""</span><span class="nt">&gt;&lt;/iframe&gt;</span>
+
+<span class="nt">&lt;ul&gt;</span>
+    <span class="nt">&lt;li&gt;&lt;a</span> <span class="na">target=</span><span class="s">"iframe"</span> <span class="na">href=</span><span class="s">"[https://ada.is/DSC-WOW-Demo/](https://ada.is/DSC-WOW-Demo/)"</span><span class="nt">&gt;</span>Cactus Demo<span class="nt">&lt;/a&gt;&lt;/li&gt;</span>
+    <span class="nt">&lt;li&gt;&lt;a</span> <span class="na">target=</span><span class="s">"iframe"</span> <span class="na">href=</span><span class="s">"[https://ada.is/basketball-demo/](https://ada.is/basketball-demo/)"</span><span class="nt">&gt;</span>Basketball Demo<span class="nt">&lt;/a&gt;&lt;/li&gt;</span>
+    <span class="nt">&lt;li&gt;&lt;a</span> <span class="na">target=</span><span class="s">"iframe"</span> <span class="na">href=</span><span class="s">"[https://ada.is/xrgarden/](https://ada.is/xrgarden/)"</span><span class="nt">&gt;</span>Fish Demo<span class="nt">&lt;/a&gt;&lt;/li&gt;</span>
+<span class="nt">&lt;/ul&gt;</span>
+</code></pre></div></div>
+
+<p>This simple demo has an iFrame with 3 links which change the URL of the iFrame. Each link works with WebXR provided the page is hosted on https:
+<a href="https://fold-me.glitch.me/"><strong>WebXR IFrame Demo!</strong>
+fold-me.glitch.me</a></p>
+
+<blockquote class="twitter-tweet"><p lang="en" dir="ltr">This is really useful for having a web page with a lot of demos on it. Using links with target=&quot;iframe&quot; to switch between them. <a href="https://t.co/35pEqzP2Ko">pic.twitter.com/35pEqzP2Ko</a></p>&mdash; Ada Rose Cannon (@Lady_Ada_King) <a href="https://twitter.com/Lady_Ada_King/status/1347152755530596354?ref_src=twsrc%5Etfw">January 7, 2021</a></blockquote>
+<script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+<p>Try it today in the <a href="https://play.google.com/store/apps/details?id=com.sec.android.app.sbrowser.beta&amp;hl=en_GB&amp;gl=US">Samsung Internet Beta on Android!</a></p>
+
+<p>Hope this helps!</p>
+
+<p>By Ada Rose Cannon on January 7, 2021.</p>
+
+<p><a href="https://medium.com/samsung-internet-dev/using-webxr-in-html-iframes-629c248ff96d">Canonical link</a></p>

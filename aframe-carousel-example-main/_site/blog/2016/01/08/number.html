@@ -1,0 +1,110 @@
+<h3 id="more-accurately-what-can-be-represented-by-a-javascript-number-object">More accurately, what can be represented by a JavaScript Number object?</h3>
+
+<p>Recently on twitter I saw a question about adding on a Gigasecond (1 Billion seconds), and how it seems inappropriate you need to convert times and dates to milliseconds, thus making 1Gs into an even larger numbers. But 1Gs in ms (10^12 seconds) fits easily in the range of numbers available in JavaScript. This got me thinking what are the limits of what can be represented by natural numbers in JS.</p>
+
+<h2 id="what-is-the-range-of-numbers-in-js">What is the range of numbers in JS?</h2>
+
+<p>Naively one may assume that querying the biggest and smallest numbers</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="c1">// largest natural number which can be represented by a Number</span>
+<span class="nb">Number</span><span class="p">.</span><span class="nx">MAX_VALUE</span>
+<span class="mf">1.7976931348623157</span><span class="nx">e</span><span class="o">+</span><span class="mi">308</span>
+
+<span class="nb">Number</span><span class="p">.</span><span class="nx">MIN_VALUE</span>
+<span class="mi">5</span><span class="nx">e</span><span class="o">-</span><span class="mi">324</span> <span class="c1">// smallest non-zero number</span>
+
+
+<span class="nb">Number</span><span class="p">.</span><span class="nx">MIN_VALUE</span> <span class="o">&gt;</span> <span class="mi">0</span>
+<span class="kc">true</span>
+
+<span class="nb">Number</span><span class="p">.</span><span class="nx">MAX_VALUE</span> <span class="o">&lt;</span> <span class="kc">Infinity</span>
+<span class="kc">true</span>
+
+</code></pre></div></div>
+
+<p>Numbers in JavaScript are <a href="https://en.wikipedia.org/wiki/Double-precision_floating-point_format">Double-precision floating-point format</a> which has 53 bits of precision.</p>
+
+<p>53 bits is not enough to represent the <code class="language-plaintext highlighter-rouge">10^308</code> stated above.
+This means that part of this range must be non-contiguous, there are going to be gaps if you try counting up to this number in JavaScript.</p>
+
+<h3 id="so-at-what-point-can-we-no-longer-count-any-more">So at what point can we no longer count any more?</h3>
+
+<p>Well 53 bits can represent up to:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">Math</span><span class="p">.</span><span class="nx">pow</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">53</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+<span class="mi">9007199254740991</span> <span class="c1">// ~~ 9×10^15</span>
+</code></pre></div></div>
+
+<p>Handily this number is a constant on the Number object:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="nb">Number</span><span class="p">.</span><span class="nx">MAX_SAFE_INTEGER</span>
+<span class="mi">9007199254740991</span>
+
+<span class="nb">Number</span><span class="p">.</span><span class="nx">MIN_SAFE_INTEGER</span>
+<span class="o">-</span><span class="mi">9007199254740991</span>
+
+</code></pre></div></div>
+
+<p>Beyond this limit you start to lose precision.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="nb">Number</span><span class="p">.</span><span class="nx">MAX_SAFE_INTEGER</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="mi">9007199254740992</span>
+
+<span class="nb">Number</span><span class="p">.</span><span class="nx">MAX_SAFE_INTEGER</span> <span class="o">+</span> <span class="mi">2</span>
+<span class="mi">9007199254740992</span>
+
+<span class="nb">Number</span><span class="p">.</span><span class="nx">MAX_SAFE_INTEGER</span> <span class="o">+</span> <span class="mi">3</span>
+<span class="mi">9007199254740994</span>
+
+</code></pre></div></div>
+
+<h2 id="what-can-we-precisely-represent-with-limit">What can we precisely represent with limit?</h2>
+
+<p>So what exactly can one count with 9 Quadrillion?</p>
+
+<p>Lot’s of fun on wikipedia: <a href="Orders of Magnitude">https://en.wikipedia.org/wiki/Category:Orders_of_magnitude</a></p>
+
+<ul>
+  <li>This is about 500× US Debt in Dollars</li>
+  <li><a href="https://en.wikipedia.org/wiki/Orders_of_magnitude_\(numbers\)#1015">Number of Synapses in the Human Brain is of this Magnitude</a></li>
+  <li>Number of atoms in about 10 nanograms of material.</li>
+  <li><a href="https://en.wikipedia.org/wiki/Orders_of_magnitude_/\(mass\)#1012_to_1017_kg">Earths atmosphere is about 5×10^15 Tons</a></li>
+  <li><a href="http://www.kokogiak.com/megapenny/seventeen.asp">One Quadrillion Pennies</a></li>
+  <li>One quadrillion seconds is about 31M years.</li>
+  <li>One quadrillion meters is about 6685 × The distance between the Earth and Sun. (~0.1 light years).</li>
+  <li>One quadrillion bytes is a Petabyte.</li>
+</ul>
+
+<h2 id="when-does-javascript-expire">When does JavaScript expire?</h2>
+
+<p>I initially thought the Date object would only be limited by the max integer.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="k">new</span> <span class="nb">Date</span><span class="p">(</span><span class="nb">Number</span><span class="p">.</span><span class="nx">MAX_SAFE_INTEGER</span><span class="p">)</span>
+<span class="nx">Invalid</span> <span class="nb">Date</span> <span class="c1">// Awww</span>
+
+</code></pre></div></div>
+
+<p>Apparently it is limited to one hundred million days (<code class="language-plaintext highlighter-rouge">10^12</code>) days either side of 1/1/1970 which is <code class="language-plaintext highlighter-rouge">100000000*24*3600*1000 = 8640000000000000ms</code>. About 95% of the <code class="language-plaintext highlighter-rouge">MAX_SAFE_INTEGER</code></p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="k">new</span> <span class="nb">Date</span><span class="p">(</span><span class="mi">8640000000000000</span><span class="p">)</span>
+<span class="nx">Sat</span> <span class="nx">Sep</span> <span class="mi">13</span> <span class="mi">275760</span> <span class="mi">01</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span> <span class="nx">GMT</span><span class="o">+</span><span class="mi">0100</span> <span class="p">(</span><span class="nx">BST</span><span class="p">)</span>
+
+<span class="k">new</span> <span class="nb">Date</span><span class="p">(</span><span class="o">-</span><span class="mi">8640000000000000</span><span class="p">)</span>
+<span class="nx">Tue</span> <span class="nx">Apr</span> <span class="mi">20</span> <span class="o">-</span><span class="mi">271821</span> <span class="mi">01</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span> <span class="nx">GMT</span><span class="o">+</span><span class="mi">0100</span> <span class="p">(</span><span class="nx">BST</span><span class="p">)</span>
+
+<span class="c1">// That only gives us 273744 years of JavaScript left!!!</span>
+
+</code></pre></div></div>
+
+<p>Unfortunately on a cosmological scale (Billions of years) this timeline is nothing. It doesn’t really scratch the age of the sun. (5 Billion years)</p>
+
+<p>Nor does it even approach a geological timeline. Pangea broke apart 200 million years ago.</p>
+
+<p>But it does encompass human history quite nicely: Modern humans evolved and started migrating from africa about 200,000 years ago.</p>
+
+<p>Although I doubt early homo sapiens would have much use for milisecond levels of precision.</p>
