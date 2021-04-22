@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+
+<head>
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <title>Random Shapes</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+    <script src="https://raw.githack.com/jeromeetienne/AR.js/2.0.5/aframe/build/aframe-ar.js"></script>
+    <script src="js/gesture-detector.js"></script>
+    <script src="js/gesture-handler.js"></script>
+    <script src="./model-interaction-event.js"></script>
+</head>
+
+<body style="margin: 0px; overflow: hidden;">
+    <a-scene arjs="debugUIEnabled: false; sourceType: webcam;" embedded renderer="logarithmicDepthBuffer: true;" vr-mode-ui="enabled: false" gesture-detector id="scene">
+        <!-- <a-assets>
+            <a-asset-item id="random_shapes" src="./models/random_shapes.gltf"></a-asset-item>
+        </a-assets> -->
+
+        <a-marker shapeinteractionhandler preset="hiro" raycaster="objects: .clickable" emitevents="true" cursor="fuse: false; rayOrigin: mouse;" id="hiroMarker">
+            <a-entity id="shapes" gltf-model="url(./models/random_shapes.gltf)" position="0 0 0" scale="0.09 0.09 0.09" class="clickable" gesture-handler></a-entity>
+        </a-marker>
+
+        <a-entity camera></a-entity>
+    </a-scene>
+</body>
+
+</html>

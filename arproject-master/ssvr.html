@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <title>Solar System VR</title>
+    <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+    <script src="https://unpkg.com/aframe-particle-system-component@1.0.x/dist/aframe-particle-system-component.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="./css/style.css" />
+</head>
+
+<body style="background-color: #000;">
+    <a-scene>
+        <a-entity position="0 0 16">
+            <a-camera></a-camera>
+        </a-entity>
+
+        <a-entity position="0 2.25 -15" particle-system="preset: dust; color: #FFFFFF"></a-entity>
+
+        <a-entity>
+            <a-sphere position="0 0 0" scale="2.5 2.5 2.5" material="src: ./assets/sun2.jpg"></a-sphere>
+        </a-entity>
+
+        <a-entity
+            rotation="0 0 0" animation="property: rotation; to: 0 -360 0; loop: true; dur: 2000; easing: linear" >
+            <a-sphere
+                scale="0.3 0.3 0.3"
+                position="3 0 0"
+                material="src: ./assets/mercury.jpg"
+                
+            ></a-sphere>
+            <a-text
+                position="2.4 0.8 0"
+                value="Mercury"
+            ></a-text>
+        </a-entity>
+
+        <a-entity
+            rotation="0 0 0" animation="property: rotation; to: 0 -360 0; loop: true; dur: 2500; easing: linear" >
+            <a-sphere
+                scale="0.5 0.5 0.5"
+                position="4.2 0 0"
+                rotation="0 0 0"
+                material="src: ./assets/venus.jpg"
+                animation="property: rotation; to: 0 -360 0; loop: true; dur: 3000; easing: linear"
+            ></a-sphere>
+            <a-text
+                position="3.6 0.8 0"
+                value="Venus"
+            ></a-text>
+        </a-entity>
+
+        <a-entity
+            rotation="0 0 0" animation="property: rotation; to: 0 -360 0; loop: true; dur: 5000; easing: linear" >
+            <a-sphere
+                scale="0.6 0.6 0.6"
+                position="6 0 0"
+                rotation="0 0 0"
+                material="src: ./assets/earth.jpg"
+                animation="property: rotation; to: 0 360 0; loop: true; dur: 3000; easing: linear"
+            ></a-sphere>
+            <a-text
+                position="5.6 0.8 0"
+                value="Earth"
+            ></a-text>
+        </a-entity>
+
+        <a-entity
+            rotation="0 0 0" animation="property: rotation; to: 0 -360 0; loop: true; dur: 6500; easing: linear" >
+            <a-sphere
+                scale="0.45 0.45 0.45"
+                position="9 0 0"
+                rotation="0 0 0"
+                material="src: ./assets/mars.jpg"
+                animation="property: rotation; to: 0 360 0; loop: true; dur: 3000; easing: linear"
+            ></a-sphere>
+            <a-text
+                position="8.8 0.8 0"
+                value="Mars"
+            ></a-text>
+        </a-entity>
+
+        <a-entity
+            rotation="0 0 0" animation="property: rotation; to: 0 -360 0; loop: true; dur: 8000; easing: linear" >
+            <a-sphere
+                scale="0.8 0.8 0.8"
+                position="13 0 0"
+                rotation="0 0 0"
+                material="src: ./assets/jupiter.jpg"
+                animation="property: rotation; to: 0 -360 0; loop: true; dur: 3000; easing: linear"
+            ></a-sphere>
+            <a-text
+                position="12.7 1.1 0"
+                value="Jupiter"
+            ></a-text>
+        </a-entity>
+
+        <a-entity
+            rotation="0 0 0" animation="property: rotation; to: 0 -360 0; loop: true; dur: 5500; easing: linear" >
+            <a-sphere
+                scale="0.7 0.7 0.7"
+                position="15 0 0"
+                rotation="0 0 0"
+                material="src: ./assets/saturn.jpg"
+                animation="property: rotation; to: 0 -360 0; loop: true; dur: 3000; easing: linear"
+            ></a-sphere>
+            <a-text
+                position="14.7 1.1 0"
+                value="Saturn"
+            ></a-text>
+        </a-entity>
+
+        <a-entity
+            rotation="0 0 0" animation="property: rotation; to: 0 -360 0; loop: true; dur: 4200; easing: linear" >
+            <a-sphere
+                scale="0.47 0.47 0.47"
+                position="17 0 0"
+                rotation="0 0 0"
+                material="src: ./assets/uranus.jpg"
+                animation="property: rotation; to: 0 -360 0; loop: true; dur: 3000; easing: linear"
+            ></a-sphere>
+            <a-text
+                position="16.7 1.1 0"
+                value="Uranus"
+            ></a-text>
+        </a-entity>
+
+        <a-entity
+            rotation="0 0 0" animation="property: rotation; to: 0 -360 0; loop: true; dur: 6750; easing: linear" >
+            <a-sphere
+                scale="0.45 0.45 0.45"
+                position="20 0 0"
+                rotation="0 0 0"
+                material="src: ./assets/neptune.jpg"
+                animation="property: rotation; to: 0 -360 0; loop: true; dur: 3000; easing: linear"
+            ></a-sphere>
+            <a-text
+                position="19.7 1.1 0"
+                value="Neptune"
+            ></a-text>
+        </a-entity>
+    </a-scene>
+</body>
+
+</html>
