@@ -1,0 +1,531 @@
+html, body {
+  height: 100vh;
+  margin: 0;
+}
+
+body {
+  background-color: black;
+  background-image: url('../media/textures/splash.jpg');
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  font: 1rem/1.4 -apple-system, BlinkMacSystemFont,
+    Segoe UI, Roboto, Oxygen,
+    Ubuntu, Cantarell, Fira Sans,
+    Droid Sans, Helvetica Neue, sans-serif;
+  color: #DEDEDE;
+}
+
+body.ar {
+  background-color: transparent;
+}
+
+a {
+  color: #9999DE;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+h1 {
+  text-align: center;
+}
+
+article {
+  margin: 0;
+}
+
+article.hidden {
+  display: none;
+}
+
+#landingPage {
+  margin: 0;
+  height: 100vh;
+}
+
+/*
+ * Dinosaur selection menu
+ */
+
+#dinosaurSelection .button-bar {
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: rgba(0.0, 0.0, 0.0, 0.7);
+}
+
+#closeSelection {
+  margin: 1em;
+  float: right;
+  text-indent: -9999px;
+  width: 32px;
+  height: 32px;
+  background-image: url('../media/textures/close-icon.svg');
+  background-color: transparent;
+  border: 0;
+}
+
+#arScale {
+  margin: 1em;
+  float: right;
+}
+
+#dinosaurSelection #arScale {
+  display: none;
+}
+
+#dinosaurSelection.ar #arScale {
+  display: inline;
+}
+
+#dinosaurSelection {
+  position: absolute;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  transform: translateX(0);
+  background-color: black;
+  transition: all 0.5s;
+  font-size: 0.9em;
+}
+
+#dinosaurSelection.hidden {
+  display: block;
+  transform: translateX(-100%);
+}
+
+#dinosaurSelection .menu {
+  margin: auto;
+  max-width: 968px;
+  margin-top: 48px;
+}
+
+#dinosaurSelection li {
+  min-height: 128px;
+}
+
+#dinosaurSelection li:before {
+  display: block;
+  float: left;
+  width: 128px;
+  height: 128px;
+  content: '';
+  background-image: url('../media/textures/button-atlas.png');
+  background-repeat: no-repeat;
+  background-size: 400%;
+}
+
+li[data-dinosaur="ankylosaurus"]:before {
+  background-position: 0 0;
+}
+
+li[data-dinosaur="brachiosaurus"]:before {
+  background-position: -128px 0;
+}
+
+li[data-dinosaur="dilophosaurus"]:before {
+  background-position: 0px -384px;
+}
+
+li[data-dinosaur="raptor"]:before {
+  background-position: -384px -128px;
+}
+
+li[data-dinosaur="triceratops"]:before {
+  background-position: -128px -128px;
+}
+
+li[data-dinosaur="parasaurolophus"]:before {
+  background-position: -384px 0;
+}
+
+li[data-dinosaur="pachycephalosaurus"]:before {
+  background-position: -256px 0;
+}
+
+li[data-dinosaur="spinosaurus"]:before {
+  background-position: -128px -384px;
+}
+
+li[data-dinosaur="stegosaurus"]:before {
+  background-position: 0 -128px;
+}
+
+li[data-dinosaur="trex"]:before {
+  background-position: -256px -128px;
+}
+
+/*
+ *
+ */
+
+#canvasContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+}
+
+#canvasContainer .button-bar {
+  display: block;
+  position: fixed;
+  z-index: 10;
+  height: 64px;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-image: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.5) 80%, rgba(0,0,0,0) 100%);
+}
+
+#canvasContainer .button-bar>button {
+  margin: 1em;
+  background-color: transparent;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  text-indent: -9999px;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  cursor: pointer;
+}
+
+#canvasContainer .button-bar>button.hidden {
+  display: none;
+}
+
+.ar #canvasContainer canvas {
+  display: none;
+}
+
+#showSelection {
+  background-image: url('../media/textures/back-icon.svg');
+}
+
+#showDinosaurVR {
+  float: right;
+  background-image: url('../media/textures/vr-icon.svg');
+}
+
+#showDinosaurAR {
+  float: right;
+  background-image: url('../media/textures/ar-icon.svg');
+}
+
+body.ar #showDinosaurVR {
+  display: none;
+}
+
+body.ar #showDinosaurAR {
+  background-image: url('../media/textures/ar-exit-icon.svg');
+}
+
+body.vr #showDinosaurVR {
+  background-image: url('../media/textures/vr-exit-icon.svg');
+}
+
+body.vr #showDinosaurAR {
+  display: none
+}
+
+/*
+ *
+ */
+
+.dg.main {
+  position: absolute;
+  z-index: 100;
+  top: 1em;
+  right: 1em;
+}
+
+header {
+  display: block;
+  min-height: 50%;
+  padding: 0 1em 0 1em;
+}
+
+header h1 {
+  margin: 0;
+  background-image: url('../media/textures/title.png');
+  min-width: 100%;
+  max-width: 968px;
+  height: 200px;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  overflow: hidden;
+  text-indent:-99999em;
+}
+
+header section {
+  position: relative;
+  background-color: rgba(0.3, 0.3, 0.3, 0.7);
+  margin: auto;
+  max-width: 786px;
+  padding: 1em;
+  border-radius: 5px;
+}
+
+header h2 {
+  margin-top: 0.5em;
+  text-align: center;
+}
+
+main {
+  padding: 1em;
+  margin: 1em auto;
+  background-color: rgba(0.3, 0.3, 0.3, 0.7);
+  border-radius: 5px;
+  max-width: 786px;
+  max-height: 1000px;
+  overflow: hidden;
+  transition: all 1s;
+}
+
+main.loading {
+  background-color: transparent;
+  max-height: 80px;
+}
+
+main>.lds-ellipsis {
+  display: none;
+}
+
+main.loading>.lds-ellipsis {
+  display: block;
+  margin: auto;
+}
+
+#canvasContainer>.lds-ellipsis {
+  display: none;
+}
+
+#canvasContainer.loading>.lds-ellipsis {
+  display: block;
+  margin: auto;
+  margin-top: 25%;
+}
+
+.loading .main-menu {
+  margin: 0;
+  height: 0px;
+}
+
+.main-menu {
+  margin: auto;
+  max-width: 786px;
+  transition: all 1s;
+}
+
+ul.menu {
+  list-style: none;
+  padding: 0;
+}
+
+ul.menu>li {
+  font-size: 1.8em;
+  padding: 0.5em;
+  min-height: 3em;
+  transition: color 0.5s;
+}
+
+ul.menu>li>p {
+  font-size: 0.6em;
+}
+
+ul.menu>li:hover {
+  cursor: pointer;
+  color: rgb(80,168,252);
+}
+
+ul.menu>li:not(:last-child) {
+  border-bottom: 1px solid grey;
+}
+
+ul.menu>li:before {
+  margin-right: 0.5em;
+  width: 3em;
+}
+
+ul.menu>li.disabled {
+  color: rgb(90,90,90);
+}
+
+ul.menu>li.disabled:hover {
+  color: rgb(80,80,120);
+}
+
+#view2DButton:before {
+  content: url('../media/textures/browser-icon.svg');
+}
+
+#viewVRButton:before {
+  content: url('../media/textures/vr-icon.svg');
+}
+
+#viewVRButton.disabled:before {
+  content: url('../media/textures/vr-error-icon.svg');
+}
+
+#viewARButton:before {
+  content: url('../media/textures/ar-icon.svg');
+}
+
+#viewARButton.disabled:before {
+  content: url('../media/textures/ar-error-icon.svg');
+}
+
+footer {
+  font-size: 0.8em;
+  border-top: 1px solid grey;
+  padding: 1em;
+  margin: 0;
+  height: 10em;
+}
+
+canvas {
+  position: absolute;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  margin: 0;
+  touch-action: none;
+}
+
+#showSelection {
+  position: absolute;
+  z-index: 1;
+}
+
+.webxr-experience {
+  width: 50%;
+  float: left;
+}
+
+.webxr-experience::before {
+  float: left;
+  padding-right: 0.5em;
+  content: url('../media/textures/webxr-32.png');
+}
+
+.source-link {
+  display: block;
+  margin-bottom: 0.75em;
+}
+
+.credits {
+  text-align: right;
+  float: right;
+  width: 50%;
+}
+
+.credits ul {
+  list-style: none;
+  padding: 0;
+  margin-top: 0;
+}
+
+.credits li {
+  display: inline;
+}
+
+.credits li:not(:last-child)::after {
+  padding-left: 0.25em;
+  content: '·';
+}
+
+.screenshot-list {
+  display: block;
+  position: absolute;
+  z-index: 10000;
+  top: 10px;
+  left: 10px;
+
+}
+.screenshot {
+  float: left;
+  height: 64px;
+}
+
+footer h3 {
+  margin-top: 7em;
+  text-align: center;
+}
+
+#mainLoader {
+  display: block;
+  margin: 2em auto;
+}
+
+/* Loading spinner from https://loading.io/css/ */
+
+.lds-ellipsis {
+  display: inline-block;
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+.lds-ellipsis div {
+  position: absolute;
+  top: 33px;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: #fff;
+  animation-timing-function: cubic-bezier(0, 1, 1, 0);
+}
+.lds-ellipsis div:nth-child(1) {
+  left: 8px;
+  animation: lds-ellipsis1 0.6s infinite;
+}
+.lds-ellipsis div:nth-child(2) {
+  left: 8px;
+  animation: lds-ellipsis2 0.6s infinite;
+}
+.lds-ellipsis div:nth-child(3) {
+  left: 32px;
+  animation: lds-ellipsis2 0.6s infinite;
+}
+.lds-ellipsis div:nth-child(4) {
+  left: 56px;
+  animation: lds-ellipsis3 0.6s infinite;
+}
+@keyframes lds-ellipsis1 {
+  0% {
+    transform: scale(0);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes lds-ellipsis3 {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(0);
+  }
+}
+@keyframes lds-ellipsis2 {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(24px, 0);
+  }
+}
