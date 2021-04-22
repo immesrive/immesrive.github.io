@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Testing</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="./css/style.css">
+
+    <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+</head>
+
+<body>
+    <a-scene>
+        <a-entity gltf-model="./models/sofa.gltf" visible="" position="0 1.2 -0.3" rotation="0 40.940 0" scale="0.3 0.3 0.3"></a-entity>
+        <a-entity gltf-model="./models/room.glb" visible="" position="0 0 0" scale="0.5 0.5 0.5"></a-entity>
+        <a-entity position="10 7 8" rotation="-19 43 3">
+            <a-camera></a-camera>
+        </a-entity>
+    </a-scene>
+</body>
+
+</html>
