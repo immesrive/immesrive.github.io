@@ -53,20 +53,20 @@
         <br />
         <h2><b>PNJ silver</b></h2>
         <h6>Thử nhẫn tại nhà</h6>
-        <h6>mang lại trải nghiệm chân thật nhất mà không cần đến cửa hàng/h6>
+        <h6>mang lại trải nghiệm chân thật nhất mà không cần đến cửa hàng </h6>
         <br />
         <br />
         <model-viewer id="model-viewer" 
         src="./assets/models/PNJ ring model.glb" 
         ios-src="" 
-        environment-image="./assets/image/empty_warehouse_01_2k.hdr" 
+        
         exposure="0.86" 
         shadow-intensity="0" 
         shadow-softness="1"
         ar 
-        camera-controls 
+        camera-controls auto-rotate
         interaction-prompt="none"
-        auto-rotate
+        environment-image="./assets/image/empty_warehouse_01_2k.hdr" 
         ar-modes="scene-viewer quick-look webxr" 
         ar-scale="auto"
         autoplay
@@ -225,6 +225,8 @@
             if(event.detail.status === 'session-started'){
             }
         });
+
+
     </script>
 </html>
 
