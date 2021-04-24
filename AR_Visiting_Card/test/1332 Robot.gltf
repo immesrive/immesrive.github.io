@@ -1,0 +1,191 @@
+{
+    "asset" : {
+        "generator" : "Khronos glTF Blender I/O v1.5.17",
+        "version" : "2.0"
+    },
+    "scene" : 0,
+    "scenes" : [
+        {
+            "name" : "Scene",
+            "nodes" : [
+                3,
+                5,
+                6
+            ]
+        }
+    ],
+    "nodes" : [
+        {
+            "mesh" : 0,
+            "name" : "node-0"
+        },
+        {
+            "children" : [
+                0
+            ],
+            "name" : "Node_3",
+            "translation" : [
+                -13.847026824951172,
+                -54.66353225708008,
+                -0.35983410477638245
+            ]
+        },
+        {
+            "children" : [
+                1
+            ],
+            "name" : "Node_2",
+            "translation" : [
+                13.847026824951172,
+                54.66353225708008,
+                0.35983410477638245
+            ]
+        },
+        {
+            "children" : [
+                2
+            ],
+            "name" : "Node_1"
+        },
+        {
+            "name" : "headLightNode",
+            "translation" : [
+                -72.17132568359375,
+                36.085662841796875,
+                -36.085662841796875
+            ]
+        },
+        {
+            "children" : [
+                4
+            ],
+            "name" : "Camera.001",
+            "rotation" : [
+                0.5409505367279053,
+                0.3890170454978943,
+                -0.31037455797195435,
+                0.678016185760498
+            ],
+            "translation" : [
+                182.5829620361328,
+                99.23821258544922,
+                98.9250259399414
+            ]
+        },
+        {
+            "name" : "keyLightNode",
+            "rotation" : [
+                -0.14607977867126465,
+                -0.26535338163375854,
+                0.26535338163375854,
+                0.9153337478637695
+            ],
+            "scale" : [
+                0,
+                72.8930435180664,
+                0
+            ],
+            "translation" : [
+                -53.04756546020508,
+                194.05711364746094,
+                -72.8930435180664
+            ]
+        }
+    ],
+    "materials" : [
+        {
+            "doubleSided" : true,
+            "name" : "Mat",
+            "pbrMetallicRoughness" : {
+                "baseColorFactor" : [
+                    0.49999991059303284,
+                    0.0851965919137001,
+                    0,
+                    1
+                ],
+                "metallicFactor" : 0,
+                "roughnessFactor" : 0.9699476361274719
+            }
+        }
+    ],
+    "meshes" : [
+        {
+            "name" : "buffer-0-mesh-0",
+            "primitives" : [
+                {
+                    "attributes" : {
+                        "POSITION" : 0,
+                        "NORMAL" : 1,
+                        "TEXCOORD_0" : 2
+                    },
+                    "indices" : 3,
+                    "material" : 0
+                }
+            ]
+        }
+    ],
+    "accessors" : [
+        {
+            "bufferView" : 0,
+            "componentType" : 5126,
+            "count" : 143266,
+            "max" : [
+                41.04828643798828,
+                114.73275756835938,
+                24.197450637817383
+            ],
+            "min" : [
+                -3.2795448303222656,
+                -1.4197609424591064,
+                -24.197450637817383
+            ],
+            "type" : "VEC3"
+        },
+        {
+            "bufferView" : 1,
+            "componentType" : 5126,
+            "count" : 143266,
+            "type" : "VEC3"
+        },
+        {
+            "bufferView" : 2,
+            "componentType" : 5126,
+            "count" : 143266,
+            "type" : "VEC2"
+        },
+        {
+            "bufferView" : 3,
+            "componentType" : 5125,
+            "count" : 219456,
+            "type" : "SCALAR"
+        }
+    ],
+    "bufferViews" : [
+        {
+            "buffer" : 0,
+            "byteLength" : 1719192,
+            "byteOffset" : 0
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 1719192,
+            "byteOffset" : 1719192
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 1146128,
+            "byteOffset" : 3438384
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 877824,
+            "byteOffset" : 4584512
+        }
+    ],
+    "buffers" : [
+        {
+            "byteLength" : 5462336,
+            "uri" : "1332 Robot.bin"
+        }
+    ]
+}
