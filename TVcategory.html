@@ -19,8 +19,8 @@
     <br />
     <div class="title"> LG SIGNATURE OLED 8K</div>
     <div id="modelSizeDesc"></div> <br />
-    <model-viewer id="model-viewer" src="./assets/models/LG SIGNATURE OLED 8K/88Z1.glb" 
-                  ios-src="./assets/models/LG SIGNATURE OLED 8K/88Z1.usdz"
+    <model-viewer id="model-viewer" src="./assets/models/LG SIGNATURE OLED 8K/88Z1/88Z1.glb" 
+                  ios-src="./assets/models/LG SIGNATURE OLED 8K/88Z1/88Z1.usdz"
                   ar camera-controls interaction-prompt="none" 
                   auto-rotate ar-modes="scene-viewer quick-look webxr"
                   ar-scale="auto" autoplay>
@@ -37,21 +37,55 @@
     </div>
 
 <script> 
-    const ColorData = [ {name : '88inch', color :[ "Stand"], ProductName : 'LG SIGNATURE OLED 8K'}, {name : '75inch', color :[ "Stand", "Wall Mount" ], ProductName : 'LG SIGNATURE OLED 8K'}, ]; 
-    const tvInfos = [ {modelName : '88inch_Stand', fileName : '88Z1' , size : 'W1961 x H1456 x D281mm'}, {modelName : '75inch_Wall Mount', fileName : '77Z1_Wall' , size : 'W1717 x H984 x D32.2mm'}, {modelName : '75inch_Stand', fileName : '77Z1' , size : 'W1717 x H1044 x D323mm'}, ]; 
+    const ColorData = [
+                        { name: '88inch', color: ["Stand"], ProductName: 'LG SIGNATURE OLED 8K' },
+                        { name: '75inch', color: ["Stand", "Wall Mount"], ProductName: 'LG SIGNATURE OLED 8K' },
+                        ];
+    const tvInfos = [
+                        { modelName: '88inch_Stand', fileName: '88Z1', size: 'W1961 x H1456 x D281mm' },
+                        { modelName: '75inch_Wall Mount', fileName: '77Z1_Wall', size: 'W1717 x H984 x D32.2mm' },
+                        { modelName: '75inch_Stand', fileName: '77Z1', size: 'W1717 x H1044 x D323mm' },
+                    ];
     init(); 
-    function getDirName(name) { return './assets/models/LG SIGNATURE OLED 8K/'; } 
-    function selectBoxChange() { var selectedModel = ("#selectBox option:selected").val(); colorArray = ColorData.find(x => { return x.name == selectedModel}); 
-        if (colorArray == undefined) return; $('#productName').html(colorArray.ProductName);
-        $("select[id='selectColor'] option").remove(); colorArray.color.forEach( function(item,index,arr2){ $("#selectColor").append('<option value="' + item + '">' + item + '</option'); }) 
-        $('#selectColor option:eq(0)').attr('selected', 'selected'); modelChange(); } 
-    function modelChange() { var selectBox = document.getElementById("selectBox"); 
-        var selecrArray = selectBox.options[selectBox.selectedIndex].value; 
+    function getDirName(name) {
+        if (name.indexOf('77Z1') != -1)
+            return './assets/models/LG SIGNATURE OLED 8K/77Z1';
+        else if (name.indexOf('55C1') != -1)
+            return './assets/models/LG SIGNATURE OLED 8K/88Z1';
+        else
+            return Error;
+    }
+    function selectBoxChange()
+    {
+        var selectedModel = $("#selectBox option:selected").val();
+        colorArray = ColorData.find(x => { return x.name == selectedModel });
+        if (colorArray == undefined) return;
+        $('#productName').html(colorArray.ProductName);
+        $("select[id='selectColor'] option").remove();
+        colorArray.color.forEach(
+                                        function (item, index, arr2)
+                                        {
+                                            $("#selectColor").append('<option value="' + item + '">' + item + '</option');
+                                        })
+        $('#selectColor option:eq(0)').attr('selected', 'selected');
+        modelChange();
+    }
+    function modelChange()
+    {
+        var selectBox = document.getElementById("selectBox");
+        var selecrArray = selectBox.options[selectBox.selectedIndex].value;
+
         var tvInfo = tvInfos.find(x => { return x.modelName == $("#selectBox option:selected").val() + '_' + $("#selectColor option:selected").val() }) ;
-        if (tvInfo == undefined) return; var selectedValue = tvInfo.fileName; var size = tvInfo.size; $("#modelSizeDesc").html(size); 
+        if (tvInfo == undefined) return; var selectedValue = tvInfo.fileName; var size = tvInfo.size; $("#modelSizeDesc").html(size);
+
         var modelViewer = document.querySelector("model-viewer")
         const base = getDirName(selectedValue) + selectedValue; modelViewer.src = base + '.glb'; modelViewer.iosSrc = base + '.usdz';
-        if (selectedValue.indexOf('Wall') != -1) { modelViewer.arPlacement = 'wall' } else { modelViewer.arPlacement = 'floor' } modelViewer.resetTurntableRotation(); } 
+        if (selectedValue.indexOf('Wall') != -1)
+          { modelViewer.arPlacement = 'wall' }
+        else
+        { modelViewer.arPlacement = 'floor' }
+        modelViewer.resetTurntableRotation();
+    }
     function activateAR_click() { var modelViewer = document.getElementById('model-viewer'); modelViewer.activateAR(); } 
     function init() { var selectedModel = $("#selectBox option:selected").val(); colorArray = ColorData.find(x => { return x.name == selectedModel}) ;
         if (colorArray == undefined) return; $('#productName').html(colorArray.ProductName); $("select[id='selectColor'] option").remove();
