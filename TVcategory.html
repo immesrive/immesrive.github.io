@@ -57,7 +57,7 @@
     }
     function selectBoxChange()
     {
-        var selectedModel = $("#selectBox option:selected").val();
+        var selectedModel = ("#selectBox option:selected").val();
         colorArray = ColorData.find(x => { return x.name == selectedModel });
         if (colorArray == undefined) return;
         $('#productName').html(colorArray.ProductName);
