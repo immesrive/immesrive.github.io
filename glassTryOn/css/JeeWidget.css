@@ -45,7 +45,7 @@ button:hover {
 
 .header {
   width: 100%;
-  height: 140px;
+  height: 100px;
   box-shadow: 0 0 3px black;
   background-color: rgba(254, 254, 255, 0.048);
   color: rgba(255, 255, 255, 0.062);
