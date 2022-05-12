@@ -18,6 +18,10 @@ omer@creatorsar.com
     <script src='release/JeelizNNCwidget.js'></script>
     <!-- For icons adjust fame or resize canvas -->
     <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
+    <!-- add camera capture script  -->
+    <!-- <script src="./main.js" type="module"></script>
+    <script src="./libs/mindar/mindar-face-three.prod.js"></script> -->
+
 
     <!-- Font for the header only: -->
     <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed" rel="stylesheet">
@@ -25,7 +29,12 @@ omer@creatorsar.com
     <!-- main stylesheet: -->
     <link rel='stylesheet' href='css/JeeWidget.css' />
 
-    <script>const glassesSkus = [
+    <script>
+        //screenshot part 
+       
+		
+	
+    const glassesSkus = [
             "glasses3D/glasses3-1710-fix.json",
             "glasses3D/glasses6-fix-v1.json",
             "glasses3D/glasses4-2210-fix-1.json",
@@ -33,13 +42,13 @@ omer@creatorsar.com
         ];
         const productURLs = [
             //glass 03
-            "https://www.carolinalemke.co.il/841313120906",
+            "https://www.amazon.com/Ray-Ban-Unisex-Adult-Wayfarer-Square-Sunglasses/dp/B016DEKFVK/ref=sr_1_4_sspa?crid=3A32YWMARISM0&keywords=rayban+glasses&qid=1652344145&sprefix=rayban+glasses+%2Caps%2C342&sr=8-4-spons&psc=1&spLa=ZW5jcnlwdGVkUXVhbGlmaWVyPUExRkJRODFCVjNGODUmZW5jcnlwdGVkSWQ9QTAzMzIwOTMzVUpCSFhXSDBMRExPJmVuY3J5cHRlZEFkSWQ9QTA3MTY4ODgzMTVMQTY5NUk1TExKJndpZGdldE5hbWU9c3BfYXRmJmFjdGlvbj1jbGlja1JlZGlyZWN0JmRvTm90TG9nQ2xpY2s9dHJ1ZQ==",
             //glass06
-            "https://www.carolinalemke.co.il/9900000046477",
+            "https://www.amazon.com/Ray-Ban-CLUBMASTER-ARISTA-CRYSTAL-Non-Polarized/dp/B07Y81TQZ4/ref=sr_1_9?crid=3A32YWMARISM0&keywords=rayban%2Bglasses&qid=1652344145&sprefix=rayban%2Bglasses%2B%2Caps%2C342&sr=8-9&th=1",
             //glass 05
-            "https://www.carolinalemke.co.il/841313126274",
+            "https://www.amazon.com/Ray-Ban-RB3565-Sunglasses-Silver-Gradient/dp/B08S6WLJ5V/ref=pd_di_sccai_cn_sccl_2_7/137-3050514-7786951?pd_rd_w=o6WW9&pf_rd_p=1ed8df3a-0df8-4988-98b9-252e4c99c568&pf_rd_r=H5SS7N9E6WXDK8THQT46&pd_rd_r=2a9c1336-37b2-4f3e-a68f-266b87b19a8f&pd_rd_wg=SXZ2f&pd_rd_i=B08S6WLJ5V&psc=1",
             //glass 04
-            "https://www.carolinalemke.co.il/cl1647-06",
+            "https://www.amazon.com/OAKLEY-OX5126-512602-GAUGE-Eyeglasses/dp/B073QT4G3W/ref=sr_1_18?crid=2NDDO2JIBZ9UG&keywords=frameless+glasses&qid=1652344421&sprefix=frameless+glasses%2Caps%2C277&sr=8-18",
         ];
         let _isResized = false;
         function test_resizeCanvas() {
@@ -204,6 +213,15 @@ omer@creatorsar.com
 
     <!-- <button onclick="JEEWIDGET.load_modelStandalone('glasses3D/glass2Updated.json')"><img src="./images/model3.png"></button>--> 
             </div>
+            
+          
+              <!-- <button id="capture"></button>
+          
+              <div id="preview">
+                <div id="preview-close">X</div>
+                <img id="preview-image"/>
+                <div id="preview-share">Share</div>
+              </div> -->
             <!-- BEGIN ADJUST NOTICE -->
             <div id='JeeWidgetAdjustNotice'>
                 Move the glasses to adjust them.

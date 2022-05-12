@@ -97,6 +97,9 @@ button:hover {
 #JeeWidgetChangeModelContainer {
     bottom: 16px;
     height: 40px;
+    transform: translateX(2%);
+
+   
 }
  #JeeWidgetChangeModelContainer > button {
         width: 20%;
@@ -118,7 +121,59 @@ button:hover {
   font-size: 32pt;
   margin-top: 40vh;
 }
+#preview {
+	position: fixed;
+	z-index: 10;
+	left: 10%;
+	top: 10%;
+	width: 80%;
+	height: 80%;
+	border: solid 10px white;
+	visibility: hidden;
+      }
+      #preview-image {
+	width: 100%;
+	height: 100%;
+      }
+      #preview-close {
+	position: absolute;
+	right: 0;
+	top: 0;
+	font-size: 20px;
+	padding: 5px;
+	border: solid 1px;
+	cursor: pointer;
+	color: white;
+	border: solid 5px white;
+	right: -5px;
+	top: -5px;
+      }
+      #preview-share {
+	border: solid 1px;
+	text-align: center;
+	cursor: pointer;
+	background: white;
 
+	position: absolute;
+	left: 50%;
+	transform: translateX(-50%);
+	bottom: 10px;
+	padding: 10px 30px;
+	border-radius: 10px;
+	border: none;
+      }
+      #capture {
+	position: fixed;
+	bottom: 2vh;
+	left: 50%;
+	height: 6vw;
+	width: 6vw;
+	border: solid 2px;
+	border-radius: 50%;
+	/* transform: translateX(50%); */
+  transform: translateY(-50%);
+	z-index: 10;
+      }
 #JeeWidgetAdjustNotice {
   width: 100%;
   position: absolute;
