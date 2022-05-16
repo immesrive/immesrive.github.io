@@ -1,0 +1,11 @@
+{
+  "name": "js-cq5wgn",
+  "description": "",
+  "homepage": "https://stackblitz.com/edit/js-cq5wgn",
+  "dependencies": {
+    "three": "0.92.0",
+    "three.ar.js": "0.1.8",
+    "three-vrcontrols-module": "2.1.0"
+  },
+  "version": "1.0.0"
+}
