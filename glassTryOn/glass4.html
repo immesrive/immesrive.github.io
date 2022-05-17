@@ -11,6 +11,9 @@ omer@creatorsar.com
 
 </div> -->
       </div>      
+      <!-- <div id="capture" style="padding: 10px; background: #f5da55">
+        <h4 style="color: #000; "></h4>
+    </div> -->
     <!-- Forbid resize on pinch with IOS Safari: -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
 
@@ -141,7 +144,11 @@ omer@creatorsar.com
                 const button = document.getElementById("buttonSeePrice");
                 button.setAttribute("href", productURLs[index]);
             }
-        }</script>
+        }
+        html2canvas(document.querySelector("#capture")).then(canvas => {
+    document.body.appendChild(canvas)
+});
+        </script>
 </head>
 <body onload="main()">
     <div class='content'>
