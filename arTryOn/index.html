@@ -128,12 +128,31 @@
                 element.setAttribute('href', image);
                     element.setAttribute('download', filename);
                     element.click();
-                    image.onload = function() { 
-            var canvas = Pixastic.process(img); 
+                    canvas.toBlob((blob) => {
+	                    const file = new File([blob], "GlazzAR.png", {type: "image/png"});
+	                const files = [file];
+	                    if (navigator.canShare && navigator.canShare({files})) {
+                    navigator.share({
+                        files: files,
+                        title: 'AR Photo',
+                    })
+                    } else {
+                    const link = document.createElement('a');
+                    link.download = 'ARphoto.png';
+                    link.href = previewImage.src;
+                    link.click();
+                    }
+                    });
+   
+    //                 image.onload = function() { 
+    //         var canvas = Pixastic.process(img); 
  
-            chrome.tabs.sendRequest(tab.id, {cmd: "replace", data: canvas.toDataURL()}); 
-    }; 
-    img.src = src; 
+    //         chrome.tabs.sendRequest(tab.id, {cmd: "replace", data: canvas.toDataURL()}); 
+    //        img.src = src; 
+    //    }; 
+           
+     
+   
                     JEELIZWIDGET.resume();
 
 		};
