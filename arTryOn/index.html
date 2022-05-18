@@ -122,12 +122,12 @@
             var ctx = canvas.getContext("2d");
             var ox = canvas.width / 2;
             var oy = canvas.height / 2;
-             var image = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
-             var element = document.createElement('a');
-                var filename = 'GlazzAR.png';
-                element.setAttribute('href', image);
-                    element.setAttribute('download', filename);
-                    element.click();
+            //  var image = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+            //  var element = document.createElement('a');
+            //     var filename = 'GlazzAR.png';
+            //     element.setAttribute('href', image);
+            //         element.setAttribute('download', filename);
+            //         element.click();
                     canvas.toBlob((blob) => {
 	                    const file = new File([blob], "GlazzAR.png", {type: "image/png"});
 	                const files = [file];
