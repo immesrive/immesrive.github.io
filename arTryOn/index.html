@@ -128,6 +128,7 @@
             //     element.setAttribute('href', image);
             //         element.setAttribute('download', filename);
             //         element.click();
+            
                     canvas.toBlob((blob) => {
 	                    const file = new File([blob], "GlazzAR.png", {type: "image/png"});
 	                const files = [file];
@@ -245,7 +246,7 @@
 
 
             </div>
-            <button id="capture" onclick="JEEWIDGET.capture_image(15, captureAR(), false)">
+            <button id="capture" onclick="JEEWIDGET.capture_image(5, captureAR(), false)">
 
             </button>
             <div class="center">
