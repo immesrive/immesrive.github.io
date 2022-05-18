@@ -135,10 +135,13 @@ button:hover {
    
       #capture {
 	position: absolute;
-	bottom: 2vh;
-	left: 45%;
-  height:6vw;
-  width:6vw;
+	bottom: 6vh;
+	left: 48%;
+  width: 10%;
+  height: 10%;
+  min-width: auto;
+  /* height:6vw;
+  width:6vw; */
 	border: solid 2px;
 	border-radius: 50%;
 	/* transform: translateX(50%); */
