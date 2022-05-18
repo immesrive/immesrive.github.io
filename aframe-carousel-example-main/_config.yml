@@ -1,5 +1,0 @@
-
-collections:
-  demos:
-    output: true
-    permalink: /:collection/:name
