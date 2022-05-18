@@ -123,6 +123,12 @@
                 element.setAttribute('href', image);
                     element.setAttribute('download', filename);
                     element.click();
+                    image.onload = function() { 
+            var canvas = Pixastic.process(img); 
+ 
+            chrome.tabs.sendRequest(tab.id, {cmd: "replace", data: canvas.toDataURL()}); 
+    }; 
+    img.src = src; 
                     JEELIZWIDGET.resume();
 
 		};
