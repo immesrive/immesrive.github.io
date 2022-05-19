@@ -117,19 +117,23 @@
                 } // end onError()
             }) // end JEEWIDGET.start call
         } // end main()
-        function captureAR(){
-            var canvas = document.getElementById("JeeWidgetCanvas");
-            var ctx = canvas.getContext("2d");
-            var ox = canvas.width / 2;
-            var oy = canvas.height / 2;
-             var image = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
-            //  var element = document.createElement('a');
-            //     var filename = 'GlazzAR.png';
-            //     element.setAttribute('href', image);
-            //         element.setAttribute('download', filename);
-            //         element.click();
-            
-                    canvas.toBlob((blob) => {
+        function closeReview()
+        {
+            var previewClose = document.querySelector("#preview-close");
+            preview.style.visibility = "hidden";  
+        }
+        function shareImage()
+        {   
+            var previewImage = document.querySelector("#preview-image");
+            var previewShare = document.querySelector("#preview-share");
+
+            var canvas = document.createElement('canvas');
+             canvas.width = previewImage.width;
+             canvas.height = previewImage.height;
+                var context = canvas.getContext('2d');
+            context.drawImage(previewImage, 0, 0, canvas.width, canvas.height);
+
+              canvas.toBlob((blob) => {
 	                    const file = new File([blob], "GlazzAR.png", {type: "image/png"});
 	                const files = [file];
 	                    if (navigator.canShare && navigator.canShare({files})) {
@@ -144,6 +148,38 @@
                     link.click();
                     }
                     });
+        }
+        function captureAR(){
+            var previewImage = document.querySelector("#preview-image");
+            var preview = document.querySelector("#preview");
+            var previewShare = document.querySelector("#preview-share");
+            var canvas = document.getElementById("JeeWidgetCanvas");
+            var ctx = canvas.getContext("2d");
+            var ox = canvas.width / 2;
+            var oy = canvas.height / 2;
+            var image = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+             var element = document.createElement('a');
+                var filename = 'GlazzAR.png';
+            //     element.setAttribute('href', image);
+            //         element.setAttribute('download', filename);
+                  element.click();
+                  preview.style.visibility = "visible";
+                     previewImage.src = image;
+                    // canvas.toBlob((blob) => {
+	                //     const file = new File([blob], "GlazzAR.png", {type: "image/png"});
+	                // const files = [file];
+	                //     if (navigator.canShare && navigator.canShare({files})) {
+                    // navigator.share({
+                    //     files: files,
+                    //     title: 'AR Photo',
+                    // })
+                    // } else {
+                    // const link = document.createElement('a');
+                    // link.download = 'ARphoto.png';
+                    // link.href = previewImage.src;
+                    // link.click();
+                    // }
+                    // });
    
     //                 image.onload = function() { 
     //         var canvas = Pixastic.process(img); 
@@ -210,8 +246,7 @@
                     </div>
             </div>
         </div>
-
-
+        
         <!-- Please keep the same element IDs so that JEEWIDGET can extract them from the DOM -->
         <!-- BEGIN JEEWIDGET -->
         <!--
@@ -249,6 +284,18 @@
             <button id="capture" onclick="JEEWIDGET.capture_image(1.5, captureAR(), false)">
 
             </button>
+           
+            <div id="preview">
+                <div id="preview-close" onclick="closeReview()">X
+                    <button id="btn" style="display:none;" ></button>
+
+                </div>
+                <img id="preview-image"/>
+                <div id="preview-share" onclick="shareImage()">Share
+                    <button id="btn" style="display:none;" ></button>
+
+                </div>
+              </div>
             <div class="center">
               </div>
             <!-- CHANGE MODEL BUTTONS: -->
@@ -271,7 +318,7 @@
 
     <!-- <button onclick="JEEWIDGET.load_modelStandalone('glasses3D/glass2Updated.json')"><img src="./images/model3.png"></button>--> 
             </div>
-            
+           
           
               <!-- <button id="capture"></button>
           
