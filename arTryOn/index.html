@@ -183,14 +183,13 @@
                 //         preview.style.visibility = "visible";
                 //         previewImage.src = image;
                 //   }
-                if(isSafari)
-                  { 
-                    preview.style.visibility = "visible";
-                    previewImage.src = image;
-                  }else if(isAndroid)
+                 if(isAndroid)
                   {
                     element.setAttribute('download', filename);
                       element.click();
+                  }else{
+                    preview.style.visibility = "visible";
+                    previewImage.src = image;
                   }
                 //   }else
                 //   {
