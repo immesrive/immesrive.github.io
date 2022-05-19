@@ -147,14 +147,17 @@ button:hover {
       #preview {
         position: fixed;
         z-index: 10;
-        left: 20%;
+        left:8%;
         top: 10%;
-        width: 55%;
-        height: 55%;
-        border: solid 10px rgb(143, 142, 142);
+        width: 90%;
+        height: 90%;
+        border: solid 10px white;
         visibility: hidden;
             }
-        
+            #preview-image {
+        width: 100%;
+        height: 100%;
+            }
             #preview-close {
         position: absolute;
         right: 0;
@@ -163,8 +166,8 @@ button:hover {
         padding: 5px;
         border: solid 1px;
         cursor: pointer;
-        color: rgb(153, 152, 152);
-        border: solid 5px rgb(143, 142, 142);
+        color: rgb(121, 119, 119);
+        border: solid 5px rgb(122, 120, 120);
         right: -5px;
         top: -5px;
             }
