@@ -146,7 +146,7 @@ button:hover {
       } */ 
       #capture {
         position: fixed;
-        bottom: 2vh;
+        bottom: 4vh;
         left: 46%;
         height: 10vw;
         width: 10vw;
