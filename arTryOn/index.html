@@ -153,13 +153,20 @@
                     // }
                     });
         }
+        function isIOSDevice(){
+
+            return /iPhone|iPad|iPod/i.test(navigator.userAgent);;
+         }
+
         function captureAR(){
             var previewImage = document.querySelector("#preview-image");
             var preview = document.querySelector("#preview");
             var previewShare = document.querySelector("#preview-share");
             var canvas = document.getElementById("JeeWidgetCanvas");
-            var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            var isSafari = /constructor/i.test(window.HTMLElement) || (function (p) { return p.toString() === "[object SafariRemoteNotification]"; })(!window['safari'] || (typeof safari !== 'undefined' && window['safari'].pushNotification));
 
+            //var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            let userAgent = navigator.userAgent;
             var ctx = canvas.getContext("2d");
             var ox = canvas.width / 2;
             var oy = canvas.height / 2;
@@ -169,12 +176,16 @@
                 element.setAttribute('href', image);
                     element.setAttribute('download', filename);
                   element.click();
-                  if(navigator.userAgent.toLowerCase().indexOf("iphone") ==-1 ||navigator.userAgent.toLowerCase().indexOf("ipad") ==-1) 
-                    {
-                        preview.style.visibility = "visible";
-                        previewImage.src = image;
+                //   if(navigator.userAgent.toLowerCase().indexOf("iphone") ==-1 ||navigator.userAgent.toLowerCase().indexOf("ipad") ==-1) 
+                //     {
+                //         preview.style.visibility = "visible";
+                //         previewImage.src = image;
+                //   }
+                if(isSafari)
+                  { 
+                    preview.style.visibility = "visible";
+                    previewImage.src = image;
                   }
-
                  
                     // canvas.toBlob((blob) => {
 	                //     const file = new File([blob], "GlazzAR.png", {type: "image/png"});
