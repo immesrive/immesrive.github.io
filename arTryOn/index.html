@@ -137,17 +137,21 @@
               canvas.toBlob((blob) => {
 	                    const file = new File([blob], "GlazzAR.png", {type: "image/png"});
 	                const files = [file];
-	                    if (navigator.canShare && navigator.canShare({files})) {
                     navigator.share({
                         files: files,
                         title: 'AR Photo',
                     })
-                    } else {
-                    const link = document.createElement('a');
-                    link.download = 'ARphoto.png';
-                    link.href = previewImage.src;
-                    link.click();
-                    }
+	                //     if (navigator.canShare && navigator.canShare({files})) {
+                    // navigator.share({
+                    //     files: files,
+                    //     title: 'AR Photo',
+                    // })
+                    // } else {
+                    // const link = document.createElement('a');
+                    // link.download = 'ARphoto.png';
+                    // link.href = previewImage.src;
+                    // link.click();
+                    // }
                     });
         }
         function captureAR(){
@@ -282,7 +286,7 @@
 
 
             </div>
-            <button id="capture" onclick="JEEWIDGET.capture_image(1.5, captureAR(), false)">
+            <button id="capture" onclick="JEEWIDGET.capture_image(15, captureAR(), false)">
 
             </button>
            
