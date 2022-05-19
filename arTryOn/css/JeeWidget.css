@@ -128,7 +128,7 @@ button:hover {
  
       }
    
-      #capture {
+      /* #capture {
 	position: absolute;
 	bottom: 6vh;
 	left: 48%;
@@ -137,13 +137,26 @@ button:hover {
   min-width: auto;
   /* height:6vw;
   width:6vw; */
-	border: solid 2px;
-	border-radius: 50%;
+	/* border: solid 2px;
+	border-radius: 50%; */
 	/* transform: translateX(50%); */
-  transform: translateY(-50%);
+  /* transform: translateY(-50%);
 	z-index: 10;
   white-space: nowrap;
-      }
+      } */ 
+      #capture {
+        position: fixed;
+        bottom: 2vh;
+        left: 46%;
+        height: 10vw;
+        width: 10vw;
+        border: solid 2px;
+        border-radius: 50%;
+        transform: translateX(-50%);
+        transform: translateY(-30%);
+
+        z-index: 10;
+            }
       #preview {
         position: fixed;
         z-index: 10;
