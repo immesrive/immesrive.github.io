@@ -149,8 +149,8 @@ button:hover {
         z-index: 10;
         left: 20%;
         top: 10%;
-        width: 80%;
-        height: 80%;
+        width: 50%;
+        height: 50%;
         border: solid 10px rgb(143, 142, 142);
         visibility: hidden;
             }
