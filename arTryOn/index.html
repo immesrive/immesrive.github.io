@@ -163,8 +163,10 @@
             var preview = document.querySelector("#preview");
             var previewShare = document.querySelector("#preview-share");
             var canvas = document.getElementById("JeeWidgetCanvas");
-            var isSafari = /constructor/i.test(window.HTMLElement) || (function (p) { return p.toString() === "[object SafariRemoteNotification]"; })(!window['safari'] || (typeof safari !== 'undefined' && window['safari'].pushNotification));
-
+            //var isSafari = /constructor/i.test(window.HTMLElement) || (function (p) { return p.toString() === "[object SafariRemoteNotification]"; })(!window['safari'] || (typeof safari !== 'undefined' && window['safari'].pushNotification));
+            var ua = navigator.userAgent.toLowerCase();
+            var isAndroid = ua.indexOf("android") > -1; //&& ua.indexOf("mobile");
+            var isSafari = ua.indexOf("ios") > -1;
             //var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
             let userAgent = navigator.userAgent;
             var ctx = canvas.getContext("2d");
@@ -174,8 +176,8 @@
              var element = document.createElement('a');
                 var filename = 'GlazzAR.png';
                 element.setAttribute('href', image);
-                    element.setAttribute('download', filename);
-                  element.click();
+                //     element.setAttribute('download', filename);
+                //   element.click();
                 //   if(navigator.userAgent.toLowerCase().indexOf("iphone") ==-1 ||navigator.userAgent.toLowerCase().indexOf("ipad") ==-1) 
                 //     {
                 //         preview.style.visibility = "visible";
@@ -185,7 +187,16 @@
                   { 
                     preview.style.visibility = "visible";
                     previewImage.src = image;
+                  }else if(isAndroid)
+                  {
+                    element.setAttribute('download', filename);
+                      element.click();
                   }
+                //   }else
+                //   {
+                //     element.setAttribute('download', filename);
+                //       element.click();
+                //   }
                  
                     // canvas.toBlob((blob) => {
 	                //     const file = new File([blob], "GlazzAR.png", {type: "image/png"});
