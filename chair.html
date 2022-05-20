@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+    <div class="fullscreen">
+        <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+        <script src="https://unpkg.com/focus-visible@5.0.2/dist/focus-visible.js" defer></script>
+
+        <model-viewer id="menu" shadow-intensity="0" shadow-softness="1"
+            src="https://cdn.glitch.com/b06033cd-83d1-40e4-a18c-54cd054132b0%2Fcheri_chair.glb?v=1621247155240" ar
+            ar-modes="webxr scene-viewer quick-look" quick-look-browsers="safari chrome"
+            camera-controls camera-orbit="41.24deg 77.1deg 1.577m" min-camera-orbit="auto auto auto"
+            max-camera-orbit="auto auto 1.59m">
+
+
+
+            <div class="controls">
+                <table>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div>
+                                    <p>Fabric</p>
+                                    <select id="diffuse">
+                                        <option
+                                            value="https://cdn.glitch.com/b06033cd-83d1-40e4-a18c-54cd054132b0%2Fiker_cheri1_D.jpg?v=1621247167555">
+                                            Light green</option>
+                                        <option
+                                            value="https://cdn.glitch.com/b06033cd-83d1-40e4-a18c-54cd054132b0%2Fiker_cheri5_D.jpg?v=1621247167481">
+                                            Leather</option>
+                                        <option
+                                            value="https://cdn.glitch.global/98d6b349-7a65-4678-b739-69665aaf728a/mint.jpg?v=1652077888467">
+                                            mint</option>
+                                            <option
+                                            value="https://cdn.glitch.global/98d6b349-7a65-4678-b739-69665aaf728a/purple.jpg?v=1652077875855">
+                                            Purple</option>          
+                                        <!-- <option value="brown.jpeg">brown</option> -->
+                                    </select>
+                                </div>
+                            </td>
+                            <td>
+                                <!-- <div>
+                                    <p>Base</p>
+                                    <select id="diffuse2">
+                                        <option
+                                            value="https://cdn.glitch.com/b06033cd-83d1-40e4-a18c-54cd054132b0%2Fiker_cheri1_D.jpg?v=1621247167555">
+                                            Chrome</option>
+                                        <option
+                                            value="https://cdn.glitch.com/b06033cd-83d1-40e4-a18c-54cd054132b0%2Fiker_cheri5_D.jpg?v=1621247167481">
+                                            Black</option>
+
+                                    </select>
+                                </div> -->
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+
+        </model-viewer>
+        <script type="module">
+            const modelViewerTexture = document.querySelector("model-viewer#menu");
+
+            modelViewerTexture.addEventListener("load", (ev) => {
+
+                let material = modelViewerTexture.model.materials[0];
+                let material1 = modelViewerTexture.model.materials[1];
+
+
+                let applyPBRTexture = (channel, event) => {
+                    material.pbrMetallicRoughness[channel].texture.source.setURI(event.target.value);
+                }
+                let applyPBRTexture1 = (channel, event) => {
+                    material1.pbrMetallicRoughness[channel].texture.source.setURI(event.target.value);
+                }
+
+                document.querySelector('#diffuse').addEventListener('input', (event) => {
+                    applyPBRTexture('baseColorTexture', event);
+                });
+                document.querySelector('#diffuse2').addEventListener('input', (event) => {
+                    applyPBRTexture1('baseColorTexture', event);
+                });
+
+            })
+
+        </script>
+    </div>
+</body>
+
+</html>

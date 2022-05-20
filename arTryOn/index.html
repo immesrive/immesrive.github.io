@@ -153,10 +153,7 @@
                     // }
                     });
         }
-        function isIOSDevice(){
-
-            return /iPhone|iPad|iPod/i.test(navigator.userAgent);;
-         }
+        
 
         function captureAR(){
             var previewImage = document.querySelector("#preview-image");
@@ -178,11 +175,6 @@
                 element.setAttribute('href', image);
                 //     element.setAttribute('download', filename);
                 //   element.click();
-                //   if(navigator.userAgent.toLowerCase().indexOf("iphone") ==-1 ||navigator.userAgent.toLowerCase().indexOf("ipad") ==-1) 
-                //     {
-                //         preview.style.visibility = "visible";
-                //         previewImage.src = image;
-                //   }
                  if(isAndroid)
                   {
                     element.setAttribute('download', filename);
@@ -279,13 +271,8 @@
             </div>
         </div>
         
-        <!-- Please keep the same element IDs so that JEEWIDGET can extract them from the DOM -->
-        <!-- BEGIN JEEWIDGET -->
-        <!--
-          div with id='JeeWidget' is the placeholder
-          you need to size and position it according to where the VTO widget should be
-          if you resize it, the widget will be automatically resized
-        -->
+      
+        <!-- BEGIN WIDGET -->
         <div id='JeeWidget'>
             <!-- MAIN CANVAS: -->
             <!--
@@ -345,10 +332,7 @@
                     <img src="./images/glasses5.png" />
                 </button>
 
-                <!-- <button onclick="JEEWIDGET.load_modelStandalone('glasses3D/glasses-SF-test.json')"><img src="./images/model2.png"></button>
-    <button onclick="JEEWIDGET.load_modelStandalone('glasses3D/glassOmer.json')"><img src="./images/model1.png"></button>
-
-    <!-- <button onclick="JEEWIDGET.load_modelStandalone('glasses3D/glass2Updated.json')"><img src="./images/model3.png"></button>--> 
+             
             </div>
            
           
