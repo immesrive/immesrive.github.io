@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="{{ site.lang | default: "en-US" }}">
+
+<head>
+ <meta charset="UTF-8">
+ <meta http-equiv="X-UA-Compatible" content="IE=edge">
+ <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-PX9H79G');</script>
+<!-- End Google Tag Manager -->
+ 
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-205255955-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-205255955-1');
+ 
+ </script>
+
+ </head>
+ 
+ <!-- Loads <model-viewer> for modern browsers: -->
+ <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.js"></script>
+  
+ <script nomodule="" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+ <script src="{{ "/assets/js/scale.fix.js" | relative_url }}"></script>
+  <!-- The following libraries and polyfills are recommended to maximize browser support -->  
+  <!-- REQUIRED: Web Components polyfill to support Edge and Firefox < 63 -->
+  <script src="https://unpkg.com/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
+
+  <!-- OPTIONAL: Intersection Observer polyfill for better performance in Safari and IE11 -->
+  <script src="https://unpkg.com/intersection-observer/intersection-observer.js"></script>
+
+  <!-- OPTIONAL: Resize Observer polyfill improves resize behavior in non-Chrome browsers -->
+  <script src="https://unpkg.com/resize-observer-polyfill/dist/ResizeObserver.js"></script>
+ 
+ 
+ <script>
+      function Sync(selector, audioSelector) {
+        var modelViewer = document.querySelector(selector);
+        var sound = document.querySelector(audioSelector);
+        var playRequest = document.querySelector("#overlay");
+
+   sound.addEventListener("timeupdate", () => {
+          modelViewer.currentTime = sound.currentTime;
+          console.log("modelViewer time: " + modelViewer.currentTime);
+        });
+
+   sound.addEventListener("pause", () => {
+          modelViewer.pause();
+        });
+
+   sound.addEventListener("play", () => {
+          modelViewer.play();
+
+   playRequest.classList.add("hide");
+        });
+
+   document.addEventListener("visibilitychange", () => {
+          if (document.visibilityState !== "visible") {
+            sound.pause();
+          }
+        });
+var promise = sound.play();
+        if (promise !== undefined) {
+          promise
+            .then(_ => {
+              console.log("Autoplay has worked");
+              playRequest.classList.add("hide");
+            })
+            .catch(error => {
+              // Show a "Play" button so that user can start playback.
+              console.log("Autoplay has not worked");
+
+   // show the modal dialogue to play this
+   playRequest.classList.remove("hide");
+            });
+        }
+
+   }  
+      function playNow() {
+        var playRequest = document.querySelector("#overlay");
+        playRequest.classList.add("hide");
+
+   var sound = document.querySelector("#sound");
+        sound.play();
+      }
+
+   function jumpTo(time) {
+        var sound = document.querySelector("#sound");
+        sound.currentTime = time;
+      }
+   </script>
+ 
+ <script>
+/**
+* Function that registers a click on an outbound link in Analytics.
+* This function takes a valid URL string as an argument, and uses that URL string
+* as the event label. Setting the transport method to 'beacon' lets the hit be sent
+* using 'navigator.sendBeacon' in browser that support it.
+*/
+var getOutboundLink = function(url) {
+  gtag('event', 'click', {
+    'event_category': 'outbound',
+    'event_label': url,
+    'transport_type': 'beacon',
+    'event_callback': function(){document.location = url;}
+  });
+}
+</script>
+
+ <style> 
+ 
+.container {
+ column-count: 2;
+ column-width: 400px;
+ column-gap: 5px;
+}
+  .card {
+  break-inside: avoid;
+  background-color: #00BBB4;
+  border: 2px solid rgb(0, 187, 185);
+  padding: 5px;
+  margin: 0 0 1em 0;
+}
+  .card1 {
+  break-inside: avoid;
+  background-color: #FFFFFF;
+  border: 2px solid rgb(0, 187, 185);
+  padding: 5px;
+  margin: 0 0 1em 0;
+}
+}
+  .stack-top{
+   z-index: 9;
+}
+ .marginauto {
+    margin: 10px auto 10px;
+    display: block;
+}
+ .centerImage
+{
+ text-align:center;
+ display:block;
+}
+</style>
+ 
+<body bgcolor= #00BBB4>
+
+ <body>
+<!-- <h1>The column-count Property</h1> -->
+<!-- <p>The column-count property defines the number of columns an element is divided into:</p> -->
+
+  <!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PX9H79G"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+  
+<div class="container">
+    <div class="card">
+      <img class="marginauto" src="images/K18_Logo_White.png" alt="Logo" style="width: auto; height: 100px"> 
+    
+   <div class="card">
+       <model-viewer src="Models/AR_57seconds_withoutBanner.glb?sound=Sound/K18 Edit 57sec_3.mp3"
+                    autoplay animation-name="" id="interaction" ar ar-modes="scene-viewer webxr quick-look" ios-src="Models/K18.reality"
+                    alt="K18 Fiber Journey" auto-rotate-delay="0" ar-scale="auto"
+                    slot= "progress-bar"
+                    style="z-index: 1; width: 100%; height: 480px; position: static; ">
+                    <button slot="ar-button" 
+                    style="z-index: 9; background-color: #ff595a; border-radius: 8px; border: 1 px solid white; position: absolute; top: 0; right: 0; height: 40px; width: auto; ">
+                     👆 <b style="color:#FFFFFF;"><strong>AR Click Here</strong></button>  
+                     
+     <div class="card1">
+     <model-viewer id="model-viewer" loading="eager" src="Models/K18_TEST_Ver.5.glb?sound=Sound/K18 VOICE.mp3" camera-controls
+                   camera-orbit="0deg 90deg 30%" autoplay animation-name="" id="reveal"
+                   ios-src="Models/K18.reality" alt="K18 Fiber Journey" auto-rotate-delay="0" camera-controls alt="K18-Test-Demo-3"
+                   style="z-index: 2; width: 100%; height: 500px; position: static; ">
+  
+     </model-viewer>
+     </div>   
+   </model-viewer>
+        </div>
+  
+     <section class="attribution">
+        <div>
+          <span>
+         <h1 style="text-align: center;" markdown="1"><b style="color:#FFFFFF;"><p style="font-family: '-apple-system', helvetica neue LT Pro"><b>LISTEN TO NARRATION</b>
+              <p align="center">
+              <span>
+              <audio controls autoplay loop id="sound">
+                <source src="Sound/K18 VOICE.mp3"/>
+              </audio
+            ></span> 
+             </p>
+            </span>
+         </div>
+   </section>
+   <script>    
+        window.addEventListener("load", () => {
+          Sync("#model-viewer", "#sound");
+        });
+      </script>
+   <div class="centerImage">   
+   <!-- <button onclick="location.href='https://avertek.github.io/K18-Hair-Analysis-espanol/'" type="button" id="SP button" slot="" 
+                    style="z-index: 9; background-color: #ff595a; border-radius: 8px; border: 1 px solid white; position: static; height: 35px; width: auto;
+                          color:#FFFFFF; font-family: '-apple-system', helvetica neue LT Pro; "><strong>EN ESPANOL</strong>
+       </button>  -->
+         </div>
+         <br><br>
+  
+    <h2 style="text-align: center;" markdown="1"><b style="color:#FFFFFF;"><p style="font-family: '-apple-system', helvetica neue LT Pro"><b>CAN'T GET ENOUGH?</b>
+     <br><br>
+   
+     <button onclick="location.href='https://www.k18hair.com/pages/our-science'" type="button" id="website" slot="" style="z-index: 9; background-color: #ff595a; border-radius: 8px; border: 1 px solid white; position: static; height: 35px; width: 180px;
+                          color:#FFFFFF; font-family: '-apple-system', helvetica neue LT Pro; "><strong>HOW K18 WORKS</strong>
+     </button> 
+   
+    <button onclick="location.href='https://www.instagram.com/k18hair/?hl=en'" type="button" id="instagram" slot="" style="z-index: 9; background-color: #ff595a; border-radius: 8px; border: 1 px solid white; position: static; height: 35px; width: 180px;
+                           color:#FFFFFF; font-family: '-apple-system', helvetica neue LT Pro; "><strong>JOIN OUR CRUSADE</strong>
+       </button> 
+       </div>
+       
+    <div class="card">
+      <img class="marginauto" src="images/K18 Symbology Sheet 8final750c.png" style="max-width: 100%; max-height: 100%"> 
+       
+    </div>
+
+    <div class="card">
+   <br><br>
+     <h4 style="text-align: center;" markdown="1"><b style="color:#FFFFFF;"><p style="font-family: '-apple-system', helvetica neue LT Pro"><em> If AR button does not appear on mobile device, use another browser</em></p></h4></b>
+
+    
+    <h3 style="text-align: center;" markdown="1"><p style="font-family: '-apple-system', helvetica neue LT Pro"><a href="https://avertek.net/" onclick="getOutboundLink('https://avertek.net/'); return false;" style="text-decoration: helvetica neue bold; border-bottom: 1px solid #ffffff; color: #ffffff;">Learn more about AVERtek's XR-NOW</a></h3>
+     
+    </div>
+
+
+</div>
+</body>
+</html>
+
