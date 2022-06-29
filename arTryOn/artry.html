@@ -7,7 +7,6 @@
     <title>AR Try</title>
     <script src='release/JeelizNNCwidget.js'></script>
     <script src="./static/js/jquery.min.js"></script>
-    <script src='release/JeelizNNCwidget.js'></script>
     <!-- For icons adjust fame or resize canvas -->
     <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
     <script type="text/javascript" src="https://unpkg.com/webcam-easy/dist/webcam-easy.min.js"></script>
@@ -546,25 +545,26 @@ const glassesSkus = [
                     <div class="resList">
                         <ul class="resBox">
                             <li>
-                                <div class="box-sizing over">                             
-                                        <img src="./static/res/res_1.png" onClick="loadModel(1)"/>
-                         
+                                <div class="box-sizing">                             
+                                    <div><img src="./images/glasses3.png" onClick="loadModel(2)"/></div>
+        
+                                        
                                 </div>
                             </li>
                             <li>
                                 <div class="box-sizing">
                                    
-                                    <div><img src="./static/res/res_2.png" onClick="loadModel(2)"/></div>
+                                    <div><img src="./images/glasses6.png" onClick="loadModel(2)"/></div>
                                 </div>
                             </li>
                             <li>
                                 <div class="box-sizing">
-                                    <div><img src="./static/res/res_3.png" onClick="loadModel(3)"/></div>
+                                    <div><img src="./images/glasses4.png" onClick="loadModel(3)"/></div>
                                 </div>
                             </li>
                             <li>
                                 <div class="box-sizing">
-                                    <div><img src="./static/res/res_1.png"  onClick="loadModel(4)"/></div>
+                                    <div><img src="./images/glasses5.png"  onClick="loadModel(4)"/></div>
                                 </div>
                             </li>
                             <li>
@@ -584,7 +584,7 @@ const glassesSkus = [
     <script type="text/javascript">
         $(document).ready(function () {
             $(".back").click(function () {
-                window.location.href = "./index1.html"
+                window.location.href = "./index.html"
             });
 
             // 调整眼镜
