@@ -7,7 +7,7 @@
     <title>AR Try</title>
     <script src='release/JeelizNNCwidget.js'></script>
     <script src="./static/js/jquery.min.js"></script>
-    <script src='release/JeelizNNCwidget.js'></script>
+    <script src='dist/JeelizVTOWidget.js'></script>
     <!-- For icons adjust fame or resize canvas -->
     <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
     <script type="text/javascript" src="https://unpkg.com/webcam-easy/dist/webcam-easy.min.js"></script>
@@ -245,7 +245,11 @@ const glassesSkus = [
     }
    
    
-
+    function get_isShadow(){
+        const queryString = window.location.search;
+        const URLParams = new URLSearchParams(queryString);
+        return URLParams.get('isHideShadow') ? false : true;
+      }
     
     function main() {
         init();
@@ -255,12 +259,15 @@ const glassesSkus = [
     function init() {
 
         JEEWIDGET.start({
-            sku: '',
+            isShadow: get_isShadow(),
+            sku: 'rayban_justin_gris_argentDegrade',
             searchImageMask: 'https://silversea-media.com/wp-content/uploads/2021/02/Silvrsea-Logo-2-1.png',
             // https://silversea-media.com/wp-content/uploads/2021/02/Silvrsea-Logo-2-1.png
             searchImageColor: 0x4a8aa4 ,
             callbackReady: function () {
                 console.log('INFO: glazz is ready :)');
+                //JEELIZVTOWIDGET.set_LUT('images/LUTs/LUTGrayscale.png');
+           JEELIZVTOWIDGET.set_LUT('images/LUTs/LUTImprove.jpg');
             },
             onError: function (errorLabel) { // this function catches errors, so you can display custom integrated messages
                 alert('An error happened. errorLabel =' + errorLabel)
@@ -403,13 +410,15 @@ const glassesSkus = [
         switch (clicked_id) {
             case 1:
                 // And load the model
+                JEEWIDGET.load('rayban_justin_gris_argentDegrade');
 
-                JEEWIDGET.load_modelStandalone(glassesSkus[0]);
+                 //JEEWIDGET.load_modelStandalone(glassesSkus[0]);
                 setURLButtonSeePrice(0);
                 break;
             case 2:
+            JEEWIDGET.load('rayban_clubmaster_noir_bleuGris');
 
-                JEEWIDGET.load_modelStandalone(glassesSkus[1]);
+                // JEEWIDGET.load_modelStandalone(glassesSkus[1]);
                 setURLButtonSeePrice(1);
                 break;
             case 3:
