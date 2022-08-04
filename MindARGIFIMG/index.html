@@ -1,0 +1,185 @@
+<html>
+<head>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.1.4/dist/mindar-image.prod.js"></script>
+  <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.1.4/dist/mindar-image-aframe.prod.js"></script>
+
+  <!-- Für gifs -->
+  <script src="https://rawgit.com/mayognaise/aframe-gif-shader/master/dist/aframe-gif-shader.min.js"></script>
+  <script src="https://rawgit.com/mayognaise/aframe-gif-component/master/dist/aframe-gif-component.min.js"></script>
+
+  
+
+<script>
+   function closeReview()
+    {
+        var previewClose = document.querySelector("#preview-close");
+        preview.style.visibility = "hidden"; 
+        window.location.reload(); 
+    }
+    function shareImage()
+    {   
+        var previewImage = document.querySelector("#preview-image");
+
+        var canvas = document.createElement('canvas');
+         canvas.width = previewImage.width;
+         canvas.height = previewImage.height;
+            var context = canvas.getContext('2d');
+        context.drawImage(previewImage, 0, 0, canvas.width, canvas.height);
+
+          canvas.toBlob((blob) => {
+                    const file = new File([blob], "GlazzAR.png", {type: "image/png"});
+                const files = [file];
+                navigator.share({
+                    files: files,
+                    title: 'AR Photo',
+                })            
+                });
+    }
+    
+
+    function captureAR(){
+        var previewImage = document.querySelector("#preview-image");
+        var preview = document.querySelector("#preview");
+        var previewShare = document.querySelector("#preview-share");
+        var canvas = document.getElementById("Canvas");
+        //var isSafari = /constructor/i.test(window.HTMLElement) || (function (p) { return p.toString() === "[object SafariRemoteNotification]"; })(!window['safari'] || (typeof safari !== 'undefined' && window['safari'].pushNotification));
+        var ua = navigator.userAgent.toLowerCase();
+        var isAndroid = ua.indexOf("android") > -1; //&& ua.indexOf("mobile");
+        var isSafari = ua.indexOf("ios") > -1;
+        //var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        let userAgent = navigator.userAgent;
+        var ctx = canvas.getContext("2d");
+        var ox = canvas.width / 2;
+        var oy = canvas.height / 2;
+        var image = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+         var element = document.createElement('a');
+            var filename = 'GlazzAR.png';
+            element.setAttribute('href', image);
+            //     element.setAttribute('download', filename);
+            //   element.click();
+             if(isAndroid)
+              {
+                element.setAttribute('download', filename);
+                  element.click();
+              }else{
+                preview.style.visibility = "visible";
+                previewImage.src = image;
+              }
+    };
+</script>
+  <style>
+      html, body {position: relative; margin: 0; width: 100%; height: 100%; overflow: hidden}
+
+#container {
+width: 100vw;
+height: 100vh;
+position: relative;
+overflow: hidden;
+}
+/* capture part */
+#preview {
+position: fixed;
+z-index: 10;
+left: 10%;
+top: 10%;
+width: 80%;
+height: 80%;
+border: solid 10px white;
+visibility: hidden;
+}
+#preview-image {
+width: 100%;
+height: 100%;
+}
+#preview-close {
+position: absolute;
+right: 0;
+top: 0;
+font-size: 20px;
+padding: 5px;
+border: solid 1px;
+cursor: pointer;
+color: white;
+border: solid 5px white;
+right: -5px;
+top: -5px;
+}
+#preview-share {
+border: solid 1px;
+text-align: center;
+cursor: pointer;
+background: white;
+
+position: absolute;
+left: 50%;
+transform: translateX(-50%);
+bottom: 10px;
+padding: 10px 30px;
+border-radius: 10px;
+border: none;
+}
+#capture {
+position: fixed;
+bottom: 2vh;
+left: 50%;
+height: 12vw;
+width: 12vw;
+border: solid 2px;
+border-radius: 50%;
+transform: translateX(-50%);
+z-index: 10;
+}
+  </style>
+</head>
+
+<body>
+  <canvas id='Canvas'></canvas>
+
+<a-scene  mindar-image="imageTargetSrc: ./targets.mind;" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false"  environment="preset: default;" >
+  <a-assets>
+    <!-- IMAGES -->
+    <img id="card" src="src/images/8359_BG2.png" />
+    <img id="cardmain" src="src/8359.png" />
+
+    <!-- GIF -->
+    <img id="ballon" src="src/gif/8359.gif" />
+  </a-assets>
+
+  <a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false; rayOrigin: mouse;" raycaster="far: ${customFields.libVersion}; objects: .clickable"></a-camera>
+  <a-entity id="ballon-target"  mindar-image-target="targetIndex: 0" >
+    <!-- <a-plane src="#cardmain" position="0 0 0.1" scale="1 1.5 1"></a-plane> -->
+
+    <a-entity id="myBallon" class="clickable" geometry="primitive:plane;" scale="1 1.5 1" position="0 0 0.1" material="shader:gif;src:#ballon;autoplay:true" play-on-clickkk ></a-entity>
+  
+  </a-entity>
+
+  
+  </a-entity>
+
+
+  
+</a-scene>
+<div id="container"></div>
+<button id="capture" onclick=" captureAR()"></button>
+
+<div id="preview">
+  <div id="preview-close" onclick="closeReview()">X
+      <button id="btn" style="display:none;" ></button>
+
+  </div>
+  <img id="preview-image"/>
+  <div id="preview-share" onclick="shareImage()">Share
+      <button id="btn" style="display:none;" ></button>
+
+  </div>
+</div>
+
+
+
+</body>
+</html>
