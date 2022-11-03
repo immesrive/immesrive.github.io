@@ -23,7 +23,7 @@ omer@creatorsar.com
     <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed" rel="stylesheet">
 
     <!-- main stylesheet: -->
-    <link rel='stylesheet' href='css/JeeWidget.css' />
+    <link rel='stylesheet' href='css/JeeWidgetCustom.css' />
 
     <script>const glassesSkus = [
             "glasses3D/glasses3-1710-fix.json",
@@ -60,7 +60,6 @@ omer@creatorsar.com
             JEEWIDGET.start({
                 sku: '',
                 searchImageMask: 'https://https://github.com/FutureEyes/FutureEyes.github.io/blob/main/rayban.png',
-                // https://silversea-media.com/wp-content/uploads/2021/02/Silvrsea-Logo-2-1.png
                 searchImageColor: 0x4a8aa4,
                 callbackReady: function () {
                     console.log('INFO: glazz is ready :)');
@@ -143,7 +142,7 @@ omer@creatorsar.com
                 <img src="https://irp.cdn-website.com/88aa29b6/dms3rep/multi/248335158_630910241624379_6256416903840671602_n.png">
                 <br>
                 <div style="color:#89BEE8;font-size:14px">Virtual Try-On demo
-                    
+                    omer@creatorsar.com
                     
                     </div>
             </div>
@@ -164,6 +163,7 @@ omer@creatorsar.com
              it should have CSS attribute position: absolute so that it can be resized without
              changing the total size of the placeholder
             -->
+          
             <canvas id='JeeWidgetCanvas'></canvas>
             <div class='JeeWidgetControls JeeWidgetControlsTop'>
 
@@ -185,11 +185,12 @@ omer@creatorsar.com
 
             </div>
             <!-- CHANGE MODEL BUTTONS: -->
+
             <div class='JeeWidgetControls' id='JeeWidgetChangeModelContainer'>
                 <button id="1" onClick="loadModel(1)">
                     <img src="./images/glasses3.png" />
                 </button>
-                <button id="2" onClick="loadModel(2)">
+                <!-- <button id="2" onClick="loadModel(2)">
                     <img src="./images/glasses6.png" />
                 </button>
                 <button id="2" onClick="loadModel(3)">
@@ -197,10 +198,10 @@ omer@creatorsar.com
                 </button>
                 <button id="2" onClick="loadModel(4)">
                     <img src="./images/glasses5.png" />
-                </button>
+                </button> -->
                 <!-- <button onclick="JEEWIDGET.load_modelStandalone('glasses3D/glasses-SF-test.json')"><img src="./images/model2.png"></button>
     <button onclick="JEEWIDGET.load_modelStandalone('glasses3D/glassOmer.json')"><img src="./images/model1.png"></button>
-    <!-- button onclick="JEEWIDGET.load('rayban_erika_havaneGun_marronDegrade')"><img src="./images/model3.png"></button> -->
+    <button onclick="JEEWIDGET.load('rayban_erika_havaneGun_marronDegrade')"><img src="./images/model3.png"></button> -->
 
     <!-- <button onclick="JEEWIDGET.load_modelStandalone('glasses3D/glass2Updated.json')"><img src="./images/model3.png"></button>--> 
             </div>
