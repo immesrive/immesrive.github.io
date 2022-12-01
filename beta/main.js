@@ -5,6 +5,8 @@ const THREE = window.MINDAR.IMAGE.THREE;
 document.addEventListener('DOMContentLoaded', () => {
   const start = async() => {
     const mindarThree = new window.MINDAR.IMAGE.MindARThree({
+      filterMinCF: 0.0001 ,
+      filterBeta: 0.0001 ,
       container: document.querySelector("#container"),
       imageTargetSrc: './assets/targets/card.mind',
       uiScanning: "#scanning",
