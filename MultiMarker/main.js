@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const start = async() => {
     const mindarThree = new window.MINDAR.IMAGE.MindARThree({
       container: document.querySelector("#container"),
-      imageTargetSrc: './assets/targets/multi.mind',
+      imageTargetSrc: './assets/targets/multi2.mind',
       maxTrack: 3,
 
     });
@@ -53,14 +53,14 @@ document.addEventListener('DOMContentLoaded', () => {
     coffee.scene.scale.set(1, 1, 1);
     coffee.scene.position.set(0, -0.4, 0);
 
-    const raccoonAnchor = mindarThree.addAnchor(0);
-    raccoonAnchor.group.add(raccoon.scene);
+    const coffeeAnchor = mindarThree.addAnchor(0);
+    coffeeAnchor.group.add(coffee.scene);
 
     const bearAnchor = mindarThree.addAnchor(1);
     bearAnchor.group.add(bear.scene);
 
-    const coffeeAnchor = mindarThree.addAnchor(2);
-    coffeeAnchor.group.add(coffee.scene);
+    const raccoonAnchor = mindarThree.addAnchor(2);
+    raccoonAnchor.group.add(raccoon.scene);
     
    
    const previewImage = document.querySelector("#preview-image");
